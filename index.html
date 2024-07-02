@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>歡迎頁面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .welcome-container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        #greeting {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <h1>歡迎來到我們的網站！</h1>
+        <p id="greeting"></p>
+    </div>
+
+    <script>
+        function getGreeting() {
+            const hour = new Date().getHours();
+            let greeting;
+            if (hour < 12) {
+                greeting = "早安";
+            } else if (hour < 18) {
+                greeting = "午安";
+            } else {
+                greeting = "晚安";
+            }
+            return greeting;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const greetingElement = document.getElementById('greeting');
+            const greeting = getGreeting();
+            greetingElement.textContent = `${greeting}，歡迎您的到來！希望您今天過得愉快。`;
+        });
+    </script>
+</body>
+</html>
