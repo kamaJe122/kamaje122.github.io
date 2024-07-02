@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -26,20 +26,17 @@
             color: white;
             border: none;
             cursor: pointer;
-            margin-bottom: 20px;
         }
         button:hover {
             background-color: #45a049;
-        }
-        iframe {
-            width: 100%;
-            height: 500px;
-            border: 1px solid #ccc;
         }
     </style>
 </head>
 <body>
     <h1>任務輸入與複製</h1>
+    
+    <label for="role">設定角色：</label>
+    <textarea id="role"></textarea>
     
     <label for="task">Task (任務)：</label>
     <textarea id="task"></textarea>
@@ -55,17 +52,15 @@
     
     <button onclick="copyAll()">複製所有欄位</button>
 
-    <h2>Perplexity.ai 網站視窗</h2>
-    <iframe src="https://www.perplexity.ai/" frameborder="0"></iframe>
-
     <script>
         function copyAll() {
+            const role = document.getElementById('role').value;
             const task = document.getElementById('task').value;
             const requirement = document.getElementById('requirement').value;
             const information = document.getElementById('information').value;
             const output = document.getElementById('output').value;
 
-            const allContent = `• Task (任務)：${task}\n• Requirement (要求)：${requirement}\n• Information (資訊)：${information}\n• Output (輸出)：${output}`;
+            const allContent = `• 設定角色：${role}\n• Task (任務)：${task}\n• Requirement (要求)：${requirement}\n• Information (資訊)：${information}\n• Output (輸出)：${output}`;
 
             navigator.clipboard.writeText(allContent).then(() => {
                 alert('已成功複製所有欄位內容！');
