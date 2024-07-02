@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,54 +7,59 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
-        }
-        .welcome-container {
-            text-align: center;
             padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background-color: #f0f0f0;
         }
         h1 {
             color: #333;
+            text-align: center;
         }
-        #greeting {
-            font-size: 18px;
+        .project-container {
+            background-color: white;
+            border-radius: 5px;
+            padding: 20px;
             margin-top: 20px;
+        }
+        .project-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
         }
     </style>
 </head>
 <body>
-    <div class="welcome-container">
-        <h1>歡迎來到我們的網站！</h1>
-        <p id="greeting"></p>
+    <h1>歡迎來到我的專案頁面</h1>
+    <div class="project-container">
+        <h2>目前所做的專案</h2>
+        <div id="projectList"></div>
     </div>
 
     <script>
-        function getGreeting() {
-            const hour = new Date().getHours();
-            let greeting;
-            if (hour < 12) {
-                greeting = "早安";
-            } else if (hour < 18) {
-                greeting = "午安";
-            } else {
-                greeting = "晚安";
-            }
-            return greeting;
+        // 專案資料
+        const projects = [
+            { name: "網站重構專案", date: "2024-06-15" },
+            { name: "行動應用程式開發", date: "2024-05-20" },
+            { name: "資料分析儀表板", date: "2024-04-10" }
+        ];
+
+        // 顯示專案列表
+        function displayProjects() {
+            const projectList = document.getElementById("projectList");
+            projects.forEach(project => {
+                const projectItem = document.createElement("div");
+                projectItem.className = "project-item";
+                projectItem.innerHTML = `
+                    <strong>${project.name}</strong><br>
+                    製作日期: ${project.date}
+                `;
+                projectList.appendChild(projectItem);
+            });
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const greetingElement = document.getElementById('greeting');
-            const greeting = getGreeting();
-            greetingElement.textContent = `${greeting}，歡迎您的到來！希望您今天過得愉快。`;
-        });
+        // 頁面載入時顯示專案
+        window.onload = displayProjects;
     </script>
 </body>
 </html>
