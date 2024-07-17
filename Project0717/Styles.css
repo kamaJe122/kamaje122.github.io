@@ -1,0 +1,54 @@
+body {
+  font-family: Arial, sans-serif;
+  width: 300px;
+  padding: 10px;
+  background-color: #FFF9E6; /* 淡黃色背景 */
+  color: #4D3900; /* 深棕色文字 */
+}
+
+#clipboard {
+  margin-top: 20px;
+  background-color: #FFE066; /* 淺黃色背景 */
+  border-radius: 10px; /* 圓角邊框 */
+  padding: 10px;
+}
+
+#snippetsList {
+  list-style-type: none;
+  padding: 0;
+}
+
+#snippetsList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  padding: 10px;
+  border: 2px solid #FFC400; /* 黃色邊框 */
+  background-color: #FFFBF0; /* 極淺黃色背景 */
+  border-radius: 8px; /* 圓角邊框 */
+}
+
+#snippetsList li span {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+#snippetsList li .button-container {
+  display: flex;
+  gap: 5px;
+}
+
+button {
+  background-color: #FFC400; /* 主題黃色 */
+  color: #4D3900; /* 深棕色文字 */
+  border: none;
+  padding: 8px 15px;
+  border-radius: 20px; /* 圓形按鈕 */
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #FFD633; /* 淺黃色 */
+}
