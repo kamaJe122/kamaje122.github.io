@@ -1,1 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>Kama的剪貼板管理器</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      width: 300px;
+      padding: 10px;
+      background-color: #FFF9E6;
+      color: #4D3900;
+    }
 
+    #clipboard {
+      margin-top: 20px;
+      background-color: #FFE066;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    #snippetsList {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #snippetsList li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+      padding: 10px;
+      border: 2px solid #FFC400;
+      background-color: #FFFBF0;
+      border-radius: 8px;
+    }
+
+    #snippetsList li span {
+      flex-grow: 1;
+      margin-right: 10px;
+    }
+
+    #snippetsList li .button-container {
+      display: flex;
+      gap: 5px;
+    }
+
+    button {
+      background-color: #FFC400;
+      color: #4D3900;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #FFD633;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="clipboard">
+      <input type="text" id="newSnippet" placeholder="輸入要保存的文字">
+      <button id="saveSnippet">保存</button>
+      <ul id="snippetsList"></ul>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('saveSnippet').addEventListener('click', () => {
+      const snippet = document.getElementById('newSnippet').value;
+      if (snippet) {
+        chrome.storage.sync.get({ snippets: [] }, (data) => {
+          const snippets = data.snippets;
+          snippets.push(snippet);
+          chrome.storage.sync.set({ snippets }, () => {
+            displaySnippets();
+            document.getElementById('newSnippet').value = '';
+          });
+        });
+      }
+    });
+
+    function displaySnippets() {
+      chrome.storage.sync.get({ snippets: [] }, (data) => {
+        const snippetsList = document.getElementById('snippetsList');
+        snippetsList.innerHTML = '';
+        data.snippets.forEach((snippet, index) => {
+          const li = document.createElement('li');
+          
+          const snippetText = document.createElement('span');
+          snippetText.textContent = snippet;
+          snippetText.addEventListener('dblclick', () => {
+            const input = document.createElement('input');
+            input.value = snippet;
+            li.replaceChild(input, snippetText);
+            input.focus();
+            input.addEventListener('blur', () => {
+              data.snippets[index] = input.value;
+              chrome.storage.sync.set({ snippets: data.snippets }, displaySnippets);
+            });
+          });
+          li.appendChild(snippetText);
+
+          const copyButton = document.createElement('button');
+          copyButton.textContent = '複製';
+          copyButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(snippet).then(() => {
+              console.log('文字已複製到剪貼板');
+            }).catch(err => {
+              console.error('無法複製文字: ', err);
+            });
+          });
+
+          const deleteButton = document.createElement('button');
+          deleteButton.textContent = '刪除';
+          deleteButton.addEventListener('click', () => {
+            data.snippets.splice(index, 1);
+            chrome.storage.sync.set({ snippets: data.snippets }, displaySnippets);
+          });
+
+          li.draggable = true;
+          li.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', index);
+          });
+
+          li.addEventListener('dragover', (e) => {
+            e.preventDefault();
+          });
+
+          li.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const draggedIndex = e.dataTransfer.getData('text/plain');
+            const targetIndex = index;
+            const draggedSnippet = data.snippets[draggedIndex];
+            data.snippets.splice(draggedIndex, 1);
+            data.snippets.splice(targetIndex, 0, draggedSnippet);
+            chrome.storage.sync.set({ snippets: data.snippets }, displaySnippets);
+          });
+
+          li.appendChild(copyButton);
+          li.appendChild(deleteButton);
+          snippetsList.appendChild(li);
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', displaySnippets);
+  </script>
+</body>
+</html>
