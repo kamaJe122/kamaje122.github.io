@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kama版懶人複製貼上</title>
   <style>
-    /* 設置整體頁面樣式 */
+    /* 保持原有的樣式不變 */
     body {
       font-family: Arial, sans-serif;
       max-width: 600px;
@@ -17,7 +17,6 @@
       box-sizing: border-box;
     }
 
-    /* 設置剪貼板容器樣式 */
     #clipboard {
       margin-top: 20px;
       background-color: #FFE066;
@@ -25,13 +24,11 @@
       padding: 10px;
     }
 
-    /* 設置輸入區域的容器樣式 */
     #inputContainer {
       display: flex;
       margin-bottom: 10px;
     }
 
-    /* 設置新增文字輸入框樣式 */
     #newSnippet {
       flex-grow: 1;
       padding: 10px;
@@ -43,18 +40,15 @@
       min-height: 60px;
     }
 
-    /* 設置新增按鈕樣式 */
     #saveSnippet {
       align-self: flex-start;
     }
 
-    /* 設置文字列表樣式 */
     #snippetsList {
       list-style-type: none;
       padding: 0;
     }
 
-    /* 設置每個文字項目的樣式 */
     #snippetsList li {
       display: flex;
       justify-content: space-between;
@@ -66,7 +60,6 @@
       border-radius: 8px;
     }
 
-    /* 設置文字內容的樣式 */
     #snippetsList li span {
       flex-grow: 1;
       margin-right: 10px;
@@ -74,13 +67,11 @@
       white-space: pre-wrap;
     }
 
-    /* 設置按鈕容器的樣式 */
     #snippetsList li .button-container {
       display: flex;
       gap: 5px;
     }
 
-    /* 設置按鈕的基本樣式 */
     button {
       background-color: #FFC400;
       color: #4D3900;
@@ -91,12 +82,10 @@
       transition: background-color 0.3s;
     }
 
-    /* 設置按鈕懸停效果 */
     button:hover {
       background-color: #FFD633;
     }
 
-    /* 響應式設計：針對小螢幕設備的調整 */
     @media (max-width: 480px) {
       body {
         padding: 5px;
@@ -115,48 +104,52 @@
 <body>
   <div id="app">
     <div id="clipboard">
-      <!-- 輸入新文字的區域 -->
       <div id="inputContainer">
         <textarea id="newSnippet" placeholder="輸入要複製的文字"></textarea>
         <button id="saveSnippet">新增</button>
       </div>
-      <!-- 顯示已保存文字的列表 -->
       <ul id="snippetsList"></ul>
     </div>
   </div>
 
   <script>
-    // 儲存所有文字片段的數組
     let snippets = [];
-    // 用於長按觸發的計時器
     let longPressTimer;
-    // 標記是否正在拖曳
     let isDragging = false;
 
-    // 為新增按鈕添加點擊事件監聽器
+    // 從本地存儲加載數據
+    function loadSnippets() {
+      const savedSnippets = localStorage.getItem('snippets');
+      if (savedSnippets) {
+        snippets = JSON.parse(savedSnippets);
+      }
+    }
+
+    // 保存數據到本地存儲
+    function saveSnippetsToStorage() {
+      localStorage.setItem('snippets', JSON.stringify(snippets));
+    }
+
     document.getElementById('saveSnippet').addEventListener('click', saveSnippet);
 
-    // 保存新的文字片段
     function saveSnippet() {
       const snippet = document.getElementById('newSnippet').value;
       if (snippet) {
         snippets.push(snippet);
+        saveSnippetsToStorage();
         displaySnippets();
         document.getElementById('newSnippet').value = '';
       }
     }
 
-    // 顯示所有保存的文字片段
     function displaySnippets() {
       const snippetsList = document.getElementById('snippetsList');
       snippetsList.innerHTML = '';
       snippets.forEach((snippet, index) => {
         const li = document.createElement('li');
         
-        // 創建顯示文字的span元素
         const snippetText = document.createElement('span');
         snippetText.textContent = snippet;
-        // 添加雙擊編輯功能
         snippetText.addEventListener('dblclick', () => {
           const textarea = document.createElement('textarea');
           textarea.value = snippet;
@@ -166,12 +159,12 @@
           textarea.focus();
           textarea.addEventListener('blur', () => {
             snippets[index] = textarea.value;
+            saveSnippetsToStorage();
             displaySnippets();
           });
         });
         li.appendChild(snippetText);
 
-        // 創建複製按鈕
         const copyButton = document.createElement('button');
         copyButton.textContent = '複製';
         copyButton.addEventListener('click', () => {
@@ -182,15 +175,14 @@
           });
         });
 
-        // 創建刪除按鈕
         const deleteButton = document.createElement('button');
         deleteButton.textContent = '刪除';
         deleteButton.addEventListener('click', () => {
           snippets.splice(index, 1);
+          saveSnippetsToStorage();
           displaySnippets();
         });
 
-        // 添加拖曳功能
         li.draggable = true;
         li.addEventListener('dragstart', (e) => {
           e.dataTransfer.setData('text/plain', index);
@@ -207,10 +199,10 @@
           const draggedSnippet = snippets[draggedIndex];
           snippets.splice(draggedIndex, 1);
           snippets.splice(targetIndex, 0, draggedSnippet);
+          saveSnippetsToStorage();
           displaySnippets();
         });
 
-        // 長按觸發拖曳（移動設備）
         li.addEventListener('touchstart', (e) => {
           longPressTimer = setTimeout(() => {
             isDragging = true;
@@ -238,23 +230,22 @@
           if (isDragging) {
             isDragging = false;
             li.classList.remove('dragging');
+            saveSnippetsToStorage();
             displaySnippets();
           }
         });
 
-        // 將按鈕添加到列表項
         li.appendChild(copyButton);
         li.appendChild(deleteButton);
         snippetsList.appendChild(li);
       });
     }
 
-    // 初始化時添加預設內容
-    snippets.push('一個鐵道行2');
-
-
-    // 頁面加載完成後顯示文字列表
-    document.addEventListener('DOMContentLoaded', displaySnippets);
+    // 頁面加載時從本地存儲讀取數據
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSnippets();
+      displaySnippets();
+    });
   </script>
 </body>
 </html>
