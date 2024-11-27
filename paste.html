@@ -2,14 +2,18 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>快速文字管理器</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      width: 300px;
+      max-width: 600px;
+      width: 100%;
+      margin: 0 auto;
       padding: 10px;
       background-color: #FFF9E6;
       color: #4D3900;
+      box-sizing: border-box;
     }
 
     #clipboard {
@@ -17,6 +21,12 @@
       background-color: #FFE066;
       border-radius: 10px;
       padding: 10px;
+    }
+
+    #newSnippet {
+      width: calc(100% - 80px);
+      padding: 8px;
+      margin-right: 5px;
     }
 
     #snippetsList {
@@ -38,6 +48,7 @@
     #snippetsList li span {
       flex-grow: 1;
       margin-right: 10px;
+      word-break: break-all;
     }
 
     #snippetsList li .button-container {
@@ -58,6 +69,20 @@
     button:hover {
       background-color: #FFD633;
     }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 5px;
+      }
+
+      #newSnippet {
+        width: calc(100% - 70px);
+      }
+
+      button {
+        padding: 6px 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -71,6 +96,8 @@
 
   <script>
     let snippets = [];
+    let longPressTimer;
+    let isDragging = false;
 
     document.getElementById('saveSnippet').addEventListener('click', () => {
       const snippet = document.getElementById('newSnippet').value;
@@ -135,6 +162,38 @@
           snippets.splice(draggedIndex, 1);
           snippets.splice(targetIndex, 0, draggedSnippet);
           displaySnippets();
+        });
+
+        // 長按觸發拖曳（移動設備）
+        li.addEventListener('touchstart', (e) => {
+          longPressTimer = setTimeout(() => {
+            isDragging = true;
+            li.classList.add('dragging');
+          }, 500);
+        });
+
+        li.addEventListener('touchmove', (e) => {
+          if (isDragging) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const draggedOver = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (draggedOver && draggedOver.tagName === 'LI') {
+              const draggedOverIndex = Array.from(snippetsList.children).indexOf(draggedOver);
+              snippetsList.insertBefore(li, draggedOver);
+              const temp = snippets[index];
+              snippets[index] = snippets[draggedOverIndex];
+              snippets[draggedOverIndex] = temp;
+            }
+          }
+        });
+
+        li.addEventListener('touchend', () => {
+          clearTimeout(longPressTimer);
+          if (isDragging) {
+            isDragging = false;
+            li.classList.remove('dragging');
+            displaySnippets();
+          }
         });
 
         li.appendChild(copyButton);
