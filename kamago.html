@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>即時資訊整合</title>
+  <style>
+    /* Basic reset and font settings */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    /* Wrapper using flex layout */
+    .wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      height: 100vh;
+    }
+    /* Each frame container */
+    .frame-container {
+      position: relative;
+      flex: 1 1 50%;
+      border: 1px solid #aaa;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    /* Title bar styling */
+    .frame-container .title {
+      background: #333;
+      color: #fff;
+      padding: 10px;
+      font-size: 16px;
+      text-align: center;
+    }
+    /* Iframe takes the remaining space */
+    .frame-container iframe {
+      width: 100%;
+      height: calc(100% - 40px);
+      border: none;
+    }
+    /* For smaller screens, stack the windows in one column */
+    @media (max-width: 768px) {
+      .frame-container {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <!-- YouBike window -->
+    <div class="frame-container">
+      <div class="title">仁愛街70巷即時Youbike</div>
+      <iframe id="youbikeFrame" src="https://www.youbike.com.tw/region/main/stations/?search=%E4%BB%81%E6%84%9B%E8%A1%9710%E5%B7%B7%E5%8F%A3"></iframe>
+    </div>
+
+    <!-- 蘆洲捷運站 window -->
+    <div class="frame-container">
+      <div class="title">蘆洲捷運站即時進出站</div>
+      <iframe src="https://www.opendata.vip/metro/departure/%E8%98%86%E6%B4%B2"></iframe>
+    </div>
+
+    <!-- 忠孝新生捷運站 window -->
+    <div class="frame-container">
+      <div class="title">忠孝新生捷運站即時進出站</div>
+      <iframe src="https://www.opendata.vip/metro/departure/%E5%BF%A0%E5%AD%9D%E6%96%B0%E7%94%9F"></iframe>
+    </div>
+  </div>
+  
+  <script>
+    // JavaScript section reserved for further interactivity.
+    // Note: Directly controlling iframe content from another domain is restricted.
+    // Here, we have appended a search query ("search=仁愛街70巷口") to the first iframe's URL.
+    // If additional interactive control is needed and the target pages support postMessage APIs,
+    // that code could be added below.
+  </script>
+</body>
+</html>
