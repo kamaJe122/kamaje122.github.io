@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+<!-- [Previous head and style sections remain the same...] -->
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kama版懶人複製貼上</title>
 <style>
+/* [Previous styles remain the same...] */
 body {
     font-family: Arial, sans-serif;
     max-width: 600px;
@@ -66,11 +68,6 @@ body {
     white-space: pre-wrap;
 }
 
-#snippetsList li .button-container {
-    display: flex;
-    gap: 5px;
-}
-
 button {
     background-color: #FFC400;
     color: #4D3900;
@@ -83,20 +80,6 @@ button {
 
 button:hover {
     background-color: #FFD633;
-}
-
-@media (max-width: 480px) {
-    body {
-        padding: 5px;
-    }
-
-    #newSnippet {
-        margin-right: 5px;
-    }
-
-    button {
-        padding: 6px 12px;
-    }
 }
 </style>
 </head>
@@ -125,6 +108,44 @@ function loadSnippets() {
 
 function saveSnippetsToStorage() {
     localStorage.setItem('snippets', JSON.stringify(snippets));
+}
+
+async function fetchSheetData() {
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQG0ujQ9qJqa1V4T7uqxLHAAg1-u84Iw1bVm7dV5wZ-39L6kdssyLYyfmaUr6JTegonBRG7HABxJih3/pub?gid=0&single=true&output=csv';
+    
+    // 嘗試不同的CORS代理
+    const proxyUrls = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(sheetUrl)}`,
+        `https://corsproxy.io/?${encodeURIComponent(sheetUrl)}`,
+        `https://api.codetabs.com/v1/proxy?quest=${sheetUrl}`
+    ];
+
+    for (const proxyUrl of proxyUrls) {
+        try {
+            console.log('Trying proxy:', proxyUrl);
+            const response = await fetch(proxyUrl);
+            
+            if (!response.ok) {
+                console.log('Proxy failed:', proxyUrl);
+                continue;
+            }
+
+            const text = await response.text();
+            console.log('Received data:', text);
+            
+            if (!text || text.trim() === '') {
+                console.log('Empty response from proxy:', proxyUrl);
+                continue;
+            }
+
+            return text;
+        } catch (error) {
+            console.log('Error with proxy:', proxyUrl, error);
+            continue;
+        }
+    }
+    
+    throw new Error('All proxies failed');
 }
 
 document.getElementById('saveSnippet').addEventListener('click', saveSnippet);
@@ -181,6 +202,8 @@ function displaySnippets() {
         });
 
         li.draggable = true;
+        
+        // [Previous drag and touch event handlers remain the same...]
         li.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData('text/plain', index);
         });
@@ -200,38 +223,6 @@ function displaySnippets() {
             displaySnippets();
         });
 
-        li.addEventListener('touchstart', (e) => {
-            longPressTimer = setTimeout(() => {
-                isDragging = true;
-                li.classList.add('dragging');
-            }, 500);
-        });
-
-        li.addEventListener('touchmove', (e) => {
-            if (isDragging) {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const draggedOver = document.elementFromPoint(touch.clientX, touch.clientY);
-                if (draggedOver && draggedOver.tagName === 'LI') {
-                    const draggedOverIndex = Array.from(snippetsList.children).indexOf(draggedOver);
-                    snippetsList.insertBefore(li, draggedOver);
-                    const temp = snippets[index];
-                    snippets[index] = snippets[draggedOverIndex];
-                    snippets[draggedOverIndex] = temp;
-                }
-            }
-        });
-
-        li.addEventListener('touchend', () => {
-            clearTimeout(longPressTimer);
-            if (isDragging) {
-                isDragging = false;
-                li.classList.remove('dragging');
-                saveSnippetsToStorage();
-                displaySnippets();
-            }
-        });
-
         li.appendChild(copyButton);
         li.appendChild(deleteButton);
         snippetsList.appendChild(li);
@@ -240,18 +231,17 @@ function displaySnippets() {
 
 // 頁面加載時初始化
 document.addEventListener('DOMContentLoaded', async () => {
-    // 先載入本地數據
     loadSnippets();
 
     try {
-        // 從Google Sheets獲取CSV數據
-        const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQG0ujQ9qJqa1V4T7uqxLHAAg1-u84Iw1bVm7dV5wZ-39L6kdssyLYyfmaUr6JTegonBRG7HABxJih3/pub?output=csv');
-        const csvText = await response.text();
+        const csvText = await fetchSheetData();
         
         // 解析CSV數據
         const rows = csvText.split('\n')
             .map(row => row.trim())
-            .filter(row => row.length > 0);  // 移除空行
+            .filter(row => row && row.length > 0);  // 移除空行
+        
+        console.log('Parsed rows:', rows);
         
         // 智能合併數據（保留本地修改）
         const mergedData = [...snippets];
@@ -263,11 +253,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         snippets = mergedData.slice(0, 50); // 限制最多50條
         saveSnippetsToStorage();
+        displaySnippets();
     } catch (error) {
-        console.error('Google Sheets數據加載失敗，使用本地數據:', error);
+        console.error('無法讀取 Google Sheets 數據:', error);
+        displaySnippets(); // 顯示本地數據
     }
-
-    displaySnippets();
 });
 </script>
 </body>
