@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-<!-- [Previous head and style sections remain the same...] -->
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kama版懶人複製貼上</title>
 <style>
-/* [Previous styles remain the same...] */
 body {
     font-family: Arial, sans-serif;
     max-width: 600px;
@@ -80,6 +78,14 @@ button {
 
 button:hover {
     background-color: #FFD633;
+}
+
+#footer {
+    text-align: center; /* 水平置中 */
+    position: fixed; /* 固定在螢幕上 */
+    bottom: 10px; /* 距離底部10px */
+    left: 0;
+    width: 100%;
 }
 </style>
 </head>
@@ -260,5 +266,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 </script>
+
+<div id="footer">
+    <a href="https://docs.google.com/spreadsheets/d/1Rb3NJ1nsjCEn6OswNtOrRzuYiI4dN3Er8k5nR3iIrW8/edit?usp=sharing">Kama懶人版複製貼上Google Sheets</a>
+</div>
+
 </body>
 </html>
