@@ -1,253 +1,278 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kama版懶人複製貼上</title>
-  <style>
-    /* 保持原有的樣式不變 */
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 10px;
-      background-color: #FFF9E6;
-      color: #4D3900;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kama版懶人複製貼上</title>
+<style>
+/* 保持原有的樣式不變 */
+body {
+font-family: Arial, sans-serif;
+max-width: 600px;
+width: 100%;
+margin: 0 auto;
+padding: 10px;
+background-color: #FFF9E6;
+color: #4D3900;
+box-sizing: border-box;
+}
 
-    #clipboard {
-      margin-top: 20px;
-      background-color: #FFE066;
-      border-radius: 10px;
-      padding: 10px;
-    }
+#clipboard {
+margin-top: 20px;
+background-color: #FFE066;
+border-radius: 10px;
+padding: 10px;
+}
 
-    #inputContainer {
-      display: flex;
-      margin-bottom: 10px;
-    }
+#inputContainer {
+display: flex;
+margin-bottom: 10px;
+}
 
-    #newSnippet {
-      flex-grow: 1;
-      padding: 10px;
-      margin-right: 10px;
-      border: 2px solid #FFC400;
-      background-color: #FFFBF0;
-      border-radius: 8px;
-      resize: vertical;
-      min-height: 60px;
-    }
+#newSnippet {
+flex-grow: 1;
+padding: 10px;
+margin-right: 10px;
+border: 2px solid #FFC400;
+background-color: #FFFBF0;
+border-radius: 8px;
+resize: vertical;
+min-height: 60px;
+}
 
-    #saveSnippet {
-      align-self: flex-start;
-    }
+#saveSnippet {
+align-self: flex-start;
+}
 
-    #snippetsList {
-      list-style-type: none;
-      padding: 0;
-    }
+#snippetsList {
+list-style-type: none;
+padding: 0;
+}
 
-    #snippetsList li {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 5px;
-      padding: 10px;
-      border: 2px solid #FFC400;
-      background-color: #FFFBF0;
-      border-radius: 8px;
-    }
+#snippetsList li {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+margin-bottom: 5px;
+padding: 10px;
+border: 2px solid #FFC400;
+background-color: #FFFBF0;
+border-radius: 8px;
+}
 
-    #snippetsList li span {
-      flex-grow: 1;
-      margin-right: 10px;
-      word-break: break-all;
-      white-space: pre-wrap;
-    }
+#snippetsList li span {
+flex-grow: 1;
+margin-right: 10px;
+word-break: break-all;
+white-space: pre-wrap;
+}
 
-    #snippetsList li .button-container {
-      display: flex;
-      gap: 5px;
-    }
+#snippetsList li .button-container {
+display: flex;
+gap: 5px;
+}
 
-    button {
-      background-color: #FFC400;
-      color: #4D3900;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
+button {
+background-color: #FFC400;
+color: #4D3900;
+border: none;
+padding: 8px 15px;
+border-radius: 20px;
+cursor: pointer;
+transition: background-color 0.3s;
+}
 
-    button:hover {
-      background-color: #FFD633;
-    }
+button:hover {
+background-color: #FFD633;
+}
 
-    @media (max-width: 480px) {
-      body {
-        padding: 5px;
-      }
+@media (max-width: 480px) {
+body {
+padding: 5px;
+}
 
-      #newSnippet {
-        margin-right: 5px;
-      }
+#newSnippet {
+margin-right: 5px;
+}
 
-      button {
-        padding: 6px 12px;
-      }
-    }
-  </style>
+button {
+padding: 6px 12px;
+}
+}
+</style>
 </head>
 <body>
-  <div id="app">
-    <div id="clipboard">
-      <div id="inputContainer">
-        <textarea id="newSnippet" placeholder="輸入要複製的文字"></textarea>
-        <button id="saveSnippet">新增</button>
-      </div>
-      <ul id="snippetsList"></ul>
-    </div>
-  </div>
+<div id="app">
+<div id="clipboard">
+<div id="inputContainer">
+<textarea id="newSnippet" placeholder="輸入要複製的文字"></textarea>
+<button id="saveSnippet">新增</button>
+</div>
+<ul id="snippetsList"></ul>
+</div>
+</div>
 
-  <script>
-    let snippets = [];
-    let longPressTimer;
-    let isDragging = false;
+<script>
+let snippets = [];
+let longPressTimer;
+let isDragging = false;
 
-    // 從本地存儲加載數據
-    function loadSnippets() {
-      const savedSnippets = localStorage.getItem('snippets');
-      if (savedSnippets) {
-        snippets = JSON.parse(savedSnippets);
-      }
-    }
+// 從本地存儲加載數據
+function loadSnippets() {
+const savedSnippets = localStorage.getItem('snippets');
+if (savedSnippets) {
+snippets = JSON.parse(savedSnippets);
+}
+}
 
-    // 保存數據到本地存儲
-    function saveSnippetsToStorage() {
-      localStorage.setItem('snippets', JSON.stringify(snippets));
-    }
+// 保存數據到本地存儲
+function saveSnippetsToStorage() {
+localStorage.setItem('snippets', JSON.stringify(snippets));
+}
 
-    document.getElementById('saveSnippet').addEventListener('click', saveSnippet);
+document.getElementById('saveSnippet').addEventListener('click', saveSnippet);
 
-    function saveSnippet() {
-      const snippet = document.getElementById('newSnippet').value;
-      if (snippet) {
-        snippets.push(snippet);
-        saveSnippetsToStorage();
-        displaySnippets();
-        document.getElementById('newSnippet').value = '';
-      }
-    }
+function saveSnippet() {
+const snippet = document.getElementById('newSnippet').value;
+if (snippet) {
+snippets.push(snippet);
+saveSnippetsToStorage();
+displaySnippets();
+document.getElementById('newSnippet').value = '';
+}
+}
 
-    function displaySnippets() {
-      const snippetsList = document.getElementById('snippetsList');
-      snippetsList.innerHTML = '';
-      snippets.forEach((snippet, index) => {
-        const li = document.createElement('li');
-        
-        const snippetText = document.createElement('span');
-        snippetText.textContent = snippet;
-        snippetText.addEventListener('dblclick', () => {
-          const textarea = document.createElement('textarea');
-          textarea.value = snippet;
-          textarea.style.width = '100%';
-          textarea.style.minHeight = '60px';
-          li.replaceChild(textarea, snippetText);
-          textarea.focus();
-          textarea.addEventListener('blur', () => {
-            snippets[index] = textarea.value;
-            saveSnippetsToStorage();
-            displaySnippets();
-          });
-        });
-        li.appendChild(snippetText);
+function displaySnippets() {
+const snippetsList = document.getElementById('snippetsList');
+snippetsList.innerHTML = '';
+snippets.forEach((snippet, index) => {
+const li = document.createElement('li');
 
-        const copyButton = document.createElement('button');
-        copyButton.textContent = '複製';
-        copyButton.addEventListener('click', () => {
-          navigator.clipboard.writeText(snippet).then(() => {
-            console.log('文字已複製到剪貼板');
-          }).catch(err => {
-            console.error('無法複製文字: ', err);
-          });
-        });
+const snippetText = document.createElement('span');
+snippetText.textContent = snippet;
+snippetText.addEventListener('dblclick', () => {
+const textarea = document.createElement('textarea');
+textarea.value = snippet;
+textarea.style.width = '100%';
+textarea.style.minHeight = '60px';
+li.replaceChild(textarea, snippetText);
+textarea.focus();
+textarea.addEventListener('blur', () => {
+snippets[index] = textarea.value;
+saveSnippetsToStorage();
+displaySnippets();
+});
+});
+li.appendChild(snippetText);
 
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = '刪除';
-        deleteButton.addEventListener('click', () => {
-          snippets.splice(index, 1);
-          saveSnippetsToStorage();
-          displaySnippets();
-        });
+const copyButton = document.createElement('button');
+copyButton.textContent = '複製';
+copyButton.addEventListener('click', () => {
+navigator.clipboard.writeText(snippet).then(() => {
+console.log('文字已複製到剪貼板');
+}).catch(err => {
+console.error('無法複製文字: ', err);
+});
+});
 
-        li.draggable = true;
-        li.addEventListener('dragstart', (e) => {
-          e.dataTransfer.setData('text/plain', index);
-        });
+const deleteButton = document.createElement('button');
+deleteButton.textContent = '刪除';
+deleteButton.addEventListener('click', () => {
+snippets.splice(index, 1);
+saveSnippetsToStorage();
+displaySnippets();
+});
 
-        li.addEventListener('dragover', (e) => {
-          e.preventDefault();
-        });
+li.draggable = true;
+li.addEventListener('dragstart', (e) => {
+e.dataTransfer.setData('text/plain', index);
+});
 
-        li.addEventListener('drop', (e) => {
-          e.preventDefault();
-          const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'));
-          const targetIndex = index;
-          const draggedSnippet = snippets[draggedIndex];
-          snippets.splice(draggedIndex, 1);
-          snippets.splice(targetIndex, 0, draggedSnippet);
-          saveSnippetsToStorage();
-          displaySnippets();
-        });
+li.addEventListener('dragover', (e) => {
+e.preventDefault();
+});
 
-        li.addEventListener('touchstart', (e) => {
-          longPressTimer = setTimeout(() => {
-            isDragging = true;
-            li.classList.add('dragging');
-          }, 500);
-        });
+li.addEventListener('drop', (e) => {
+e.preventDefault();
+const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'));
+const targetIndex = index;
+const draggedSnippet = snippets[draggedIndex];
+snippets.splice(draggedIndex, 1);
+snippets.splice(targetIndex, 0, draggedSnippet);
+saveSnippetsToStorage();
+displaySnippets();
+});
 
-        li.addEventListener('touchmove', (e) => {
-          if (isDragging) {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const draggedOver = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (draggedOver && draggedOver.tagName === 'LI') {
-              const draggedOverIndex = Array.from(snippetsList.children).indexOf(draggedOver);
-              snippetsList.insertBefore(li, draggedOver);
-              const temp = snippets[index];
-              snippets[index] = snippets[draggedOverIndex];
-              snippets[draggedOverIndex] = temp;
-            }
-          }
-        });
+li.addEventListener('touchstart', (e) => {
+longPressTimer = setTimeout(() => {
+isDragging = true;
+li.classList.add('dragging');
+}, 500);
+});
 
-        li.addEventListener('touchend', () => {
-          clearTimeout(longPressTimer);
-          if (isDragging) {
-            isDragging = false;
-            li.classList.remove('dragging');
-            saveSnippetsToStorage();
-            displaySnippets();
-          }
-        });
+li.addEventListener('touchmove', (e) => {
+if (isDragging) {
+e.preventDefault();
+const touch = e.touches[0];
+const draggedOver = document.elementFromPoint(touch.clientX, touch.clientY);
+if (draggedOver && draggedOver.tagName === 'LI') {
+const draggedOverIndex = Array.from(snippetsList.children).indexOf(draggedOver);
+snippetsList.insertBefore(li, draggedOver);
+const temp = snippets[index];
+snippets[index] = snippets[draggedOverIndex];
+snippets[draggedOverIndex] = temp;
+}
+}
+});
 
-        li.appendChild(copyButton);
-        li.appendChild(deleteButton);
-        snippetsList.appendChild(li);
-      });
-    }
+li.addEventListener('touchend', () => {
+clearTimeout(longPressTimer);
+if (isDragging) {
+isDragging = false;
+li.classList.remove('dragging');
+saveSnippetsToStorage();
+displaySnippets();
+}
+});
 
-    // 頁面加載時從本地存儲讀取數據
-    document.addEventListener('DOMContentLoaded', () => {
-      loadSnippets();
-      displaySnippets();
-    });
-    // 初始化時添加預設內容
-    snippets.push('天天都是快樂的一天');
-  </script>
+li.appendChild(copyButton);
+li.appendChild(deleteButton);
+snippetsList.appendChild(li);
+});
+}
+
+// 頁面加載時初始化
+document.addEventListener('DOMContentLoaded', async () => {
+// 先載入本地數據
+loadSnippets();
+
+try {
+// 從Google Sheets獲取數據
+const response = await fetch('https://spreadsheets.google.com/feeds/cells/2PACX-1vQG0ujQ9qJqa1V4T7uqxLHAAg1-u84Iw1bVm7dV5wZ-39L6kdssyLYyfmaUr6JTegonBRG7HABxJih3/1/public/values?alt=json');
+const data = await response.json();
+
+// 提取A列數據並過濾空值
+const aColumnData = data.feed.entry
+.filter(entry => entry.gs$cell.col === '1')
+.map(entry => entry.content.$t)
+.filter(text => text.trim() !== '');
+
+// 合併數據邏輯：保留本地數據，只補充Sheet中新增的項目
+const newItems = aColumnData.filter(item => !snippets.includes(item));
+snippets = [...newItems, ...snippets];
+
+// 如果完全要用Sheet數據覆蓋本地數據，改用下面這行
+// snippets = aColumnData;
+
+saveSnippetsToStorage();
+} catch (error) {
+console.error('Google Sheets數據加載失敗，使用本地數據:', error);
+}
+
+// 移除預設內容
+snippets = snippets.filter(item => item !== '天天都是快樂的一天');
+displaySnippets();
+});
+</script>
 </body>
 </html>
