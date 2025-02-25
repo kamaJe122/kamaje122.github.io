@@ -17,11 +17,13 @@
             font-family: 'Microsoft JhengHei', Arial, sans-serif;
             font-size: var(--base-font-size);
             background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
         }
 
         .container {
             max-width: 800px;
-            margin: 20px auto;
+            margin: 0 auto;
             padding: 20px;
             background: white;
             border-radius: 12px;
@@ -49,6 +51,7 @@
             background-color: white;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
             border-left: 4px solid var(--main-color);
+            position: relative;
         }
 
         .event-content {
@@ -61,6 +64,7 @@
             font-size: calc(var(--base-font-size) + 2pt);
             color: var(--main-color);
             margin-bottom: 8px;
+            cursor: pointer;
         }
 
         .event-field {
@@ -78,6 +82,9 @@
         .event-time {
             color: #666;
             font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-primary {
@@ -86,7 +93,10 @@
             padding: 8px 20px;
             border-radius: 20px;
             min-width: 120px;
+            border: none;
+            cursor: pointer;
             transition: all 0.3s;
+            align-self: center;
         }
 
         .btn-primary:hover {
@@ -94,11 +104,22 @@
             transform: translateY(-1px);
         }
 
+        .edit-input {
+            width: 100%;
+            padding: 6px;
+            font-size: inherit;
+            font-family: inherit;
+            border: 1px solid var(--main-color);
+            border-radius: 4px;
+        }
+
         @media screen and (max-width: 430px) {
             .container {
                 padding: 15px;
-                margin: 10px;
                 width: calc(100% - 20px);
+                box-shadow: none;
+                border-radius: 0;
+                border: none;
             }
 
             .event-item {
@@ -120,18 +141,7 @@
             <div class="progress-bar" id="progressBar"></div>
         </div>
 
-        <div id="eventList">
-            <!-- 範例事件結構 -->
-            <div class="event-item">
-                <div class="event-content">
-                    <div class="event-title" data-field="title">會議範例</div>
-                    <div class="event-field event-time" data-field="time">📅 2023-10-05 🕒 14:00 - 15:30</div>
-                    <div class="event-field" data-field="location">📍 台北101會議室</div>
-                    <div class="event-field" data-field="notes">📝 季度業務檢討會議</div>
-                </div>
-                <button class="btn btn-primary" onclick="exportToCalendar(0)">新增到Google日曆</button>
-            </div>
-        </div>
+        <div id="eventList"></div>
 
         <div class="toolbar">
             <button class="btn btn-primary" onclick="addNewEvent()">+ 新增行程</button>
@@ -139,20 +149,121 @@
     </div>
 
     <script>
-        let events = [{
-            title: "會議範例",
-            date: "2023-10-05",
-            startTime: "14:00",
-            endTime: "15:30",
-            location: "台北101會議室",
-            notes: "季度業務檢討會議"
-        }];
+        let events = [];
 
-        // 渲染事件列表（修改後版本）
+        // 初始化拖放功能
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.backgroundColor = 'rgba(255, 196, 0, 0.1)';
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.backgroundColor = 'rgba(255, 196, 0, 0.05)';
+        });
+
+        dropZone.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            dropZone.style.backgroundColor = 'rgba(255, 196, 0, 0.05)';
+            const file = e.dataTransfer.files[0];
+            if (file) handleImageUpload(file);
+        });
+
+        // 圖片處理函式
+        async function handleImageUpload(file) {
+            try {
+                if (!['image/png', 'image/jpeg'].includes(file.type)) {
+                    throw new Error('僅支援PNG/JPEG格式');
+                }
+
+                // 壓縮圖片功能
+                const compressedFile = await compressImage(file, {
+                    maxWidth: 1024,
+                    quality: 0.7
+                });
+
+                // 轉換為Base64
+                const base64Data = await fileToBase64(compressedFile);
+
+                // 此處應呼叫後端API處理圖片
+                // 以下為模擬資料
+                const mockData = {
+                    events: [{
+                        title: "範例會議",
+                        date: "2025-03-15",
+                        startTime: "14:00",
+                        endTime: "16:00",
+                        location: "台北101會議室",
+                        notes: "新產品發布會議"
+                    }]
+                };
+                
+                events.push(...mockData.events);
+                renderEvents();
+
+            } catch (error) {
+                showError(`處理失敗: ${error.message}`);
+            }
+        }
+
+        // 匯出到Google日曆
+        function exportToCalendar(index) {
+            const event = events[index];
+            const start = new Date(`${event.date}T${event.startTime}`).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            const end = new Date(`${event.date}T${event.endTime}`).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+            const params = new URLSearchParams({
+                action: "TEMPLATE",
+                text: event.title,
+                dates: `${start}/${end}`,
+                location: event.location,
+                details: event.notes
+            });
+
+            window.open(`https://calendar.google.com/calendar/render?${params}`);
+        }
+
+        // 雙擊編輯功能
+        function enableEditing() {
+            document.querySelectorAll('.event-title, .event-field').forEach(element => {
+                element.ondblclick = function() {
+                    const index = this.closest('.event-item').dataset.index;
+                    const field = this.dataset.field;
+                    const isTitle = this.classList.contains('event-title');
+                    
+                    const input = document.createElement('input');
+                    input.className = 'edit-input';
+                    input.value = this.textContent;
+                    if (field === 'time') input.placeholder = 'YYYY-MM-DD HH:mm - HH:mm';
+
+                    input.onblur = () => {
+                        if (field === 'time') {
+                            const [date, start, end] = input.value.split(/[\s-]+/);
+                            events[index].date = date;
+                            events[index].startTime = start;
+                            events[index].endTime = end;
+                        } else {
+                            events[index][field] = input.value;
+                        }
+                        renderEvents();
+                    };
+
+                    this.innerHTML = '';
+                    this.appendChild(input);
+                    input.focus();
+                };
+            });
+        }
+
+        // 渲染事件列表
         function renderEvents() {
             const container = document.getElementById('eventList');
             container.innerHTML = events.map((event, index) => `
-                <div class="event-item">
+                <div class="event-item" data-index="${index}">
                     <div class="event-content">
                         <div class="event-title" data-field="title">${event.title}</div>
                         <div class="event-field event-time" data-field="time">
@@ -167,15 +278,68 @@
                 </div>
             `).join('');
 
-            // 綁定雙擊編輯功能（保持原有功能不變）
-            // ...
+            enableEditing();
         }
 
-        // 其他功能保持不變（handleImageUpload、exportToCalendar等）
-        // ...
+        // 新增空白行程
+        function addNewEvent() {
+            const defaultDate = new Date().toISOString().split('T')[0];
+            events.push({
+                title: "新行程",
+                date: defaultDate,
+                startTime: "09:00",
+                endTime: "10:00",
+                location: "",
+                notes: ""
+            });
+            renderEvents();
+        }
 
-        // 初始化渲染
-        renderEvents();
+        // 工具函式
+        async function compressImage(file, options) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.src = URL.createObjectURL(file);
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const ratio = Math.min(options.maxWidth / img.width, 1);
+                    canvas.width = img.width * ratio;
+                    canvas.height = img.height * ratio;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob(blob => resolve(blob), 'image/jpeg', options.quality);
+                };
+            });
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result.split(',')[1]);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px;
+                background: var(--error-color);
+                color: white;
+                border-radius: 8px;
+                z-index: 1000;
+                max-width: 300px;
+            `;
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        // 初始化範例資料
+        addNewEvent();
     </script>
 </body>
 </html>
