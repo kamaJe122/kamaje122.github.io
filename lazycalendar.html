@@ -11,7 +11,17 @@
             --error-color: #D32F2F;
         }
 
-        /* 主容器樣式 */
+        /* 新增字體設定 */
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+        }
+
+        * {
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        /* 主容器響應式設計 */
         .container {
             max-width: 800px;
             margin: 20px auto;
@@ -42,11 +52,8 @@
             padding: 15px;
             border-bottom: 1px solid #eee;
         }
-        .event-item.editing {
-            background: var(--secondary-color);
-        }
 
-        /* 按鈕通用樣式 */
+        /* 按鈕樣式 */
         .btn {
             padding: 8px 16px;
             border: none;
@@ -58,34 +65,66 @@
             background: var(--main-color);
             color: white;
         }
+
+        /* 進度條樣式 */
+        .progress-bar {
+            height: 5px;
+            background: var(--main-color);
+            width: 0%;
+            transition: width 0.3s ease;
+            margin-top: 10px;
+        }
+
+        /* 手機版樣式 */
+        @media screen and (max-width: 430px) {
+            .container {
+                padding: 10px;
+                margin: 0;
+                width: 100%;
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .drop-zone {
+                padding: 20px;
+                font-size: 14px;
+            }
+
+            .event-item {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .btn {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 圖片上傳區 -->
         <div class="drop-zone" id="dropZone">
             <p>拖放圖片至此或點擊上傳 (支援PNG/JPG)</p>
             <input type="file" id="fileInput" hidden accept="image/png, image/jpeg">
+            <div class="progress-bar" id="progressBar"></div>
         </div>
 
-        <!-- 行程列表 -->
-        <div id="eventList">
-            <!-- 動態產生行程項目 -->
-        </div>
+        <div id="eventList"></div>
 
-        <!-- 控制按鈕 -->
         <div class="toolbar">
             <button class="btn btn-primary" onclick="addNewEvent()">+ 新增行程</button>
         </div>
     </div>
 
     <script>
-        // 全域狀態管理
         let events = [];
 
         // 初始化拖放功能
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
+        const progressBar = document.getElementById('progressBar');
 
         dropZone.addEventListener('click', () => fileInput.click());
         
@@ -105,52 +144,65 @@
             if (file) handleImageUpload(file);
         });
 
-        // 圖片處理主函式
+        // 圖片上傳處理
         async function handleImageUpload(file) {
             try {
+                progressBar.style.width = '0%';
+                
                 if (!['image/png', 'image/jpeg'].includes(file.type)) {
                     throw new Error('僅支援PNG/JPEG格式');
                 }
 
-                // 前端圖片壓縮
                 const compressedFile = await compressImage(file, {
                     maxWidth: 1024,
                     quality: 0.7
                 });
 
-                // 轉換為Base64
                 const base64Data = await fileToBase64(compressedFile);
 
-                // 呼叫後端API
-                const response = await fetch('http://localhost:3001/api/analyze', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        model: "gpt-4o",
-                        messages: [{
-                            role: "user",
-                            content: [
-                                {
-                                    type: "text",
-                                    text: "從圖片中提取行程資訊，使用以下JSON格式：\n" + 
-                                          "{\n  events: [\n    {\n      title: string,\n      date: YYYY-MM-DD,\n      time: HH:mm,\n      location: string,\n      notes: string\n    }\n  ]\n}"
-                                },
-                                {
-                                    type: "image_url",
-                                    image_url: { url: `data:image/jpeg;base64,${base64Data}` }
-                                }
-                            ]
-                        }]
-                    })
-                });
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'http://localhost:3001/api/analyze', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
 
-                if (!response.ok) throw new Error('API請求失敗');
-                const data = await response.json();
-                const eventsData = JSON.parse(data.choices[0].message.content);
-                events.push(...eventsData.events);
-                renderEvents();
+                xhr.upload.onprogress = (e) => {
+                    if (e.lengthComputable) {
+                        const percent = (e.loaded / e.total) * 100;
+                        progressBar.style.width = `${percent}%`;
+                    }
+                };
+
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        const data = JSON.parse(xhr.responseText);
+                        const eventsData = JSON.parse(data.choices[0].message.content);
+                        events.push(...eventsData.events);
+                        renderEvents();
+                    } else {
+                        throw new Error('API請求失敗');
+                    }
+                };
+
+                xhr.send(JSON.stringify({
+                    model: "gpt-4o",
+                    messages: [{
+                        role: "user",
+                        content: [
+                            {
+                                type: "text",
+                                text: "從圖片中提取行程資訊，使用以下JSON格式：\n" + 
+                                      "{\n  events: [\n    {\n      title: string,\n      date: YYYY-MM-DD,\n      time: HH:mm,\n      location: string,\n      notes: string\n    }\n  ]\n}"
+                            },
+                            {
+                                type: "image_url",
+                                image_url: { url: `data:image/jpeg;base64,${base64Data}` }
+                            }
+                        ]
+                    }]
+                }));
+
             } catch (error) {
                 showError(`處理失敗: ${error.message}`);
+                progressBar.style.backgroundColor = 'red';
             }
         }
 
@@ -175,7 +227,7 @@
             `).join('');
         }
 
-        // 新增空白行程
+        // 新增行程功能
         function addNewEvent() {
             events.push({
                 title: "新行程",
@@ -187,7 +239,31 @@
             renderEvents();
         }
 
-        // 錯誤處理函式
+        // 匯出到Google日曆
+        function exportToCalendar(index) {
+            const event = events[index];
+            const icsContent = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'BEGIN:VEVENT',
+                `SUMMARY:${event.title}`,
+                `DTSTART:${event.date.replace(/-/g, '')}T${event.time.replace(/:/g, '')}00Z`,
+                `LOCATION:${event.location}`,
+                `DESCRIPTION:${event.notes}`,
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\n');
+
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${event.title}.ics`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 錯誤處理
         function showError(message) {
             const errorDiv = document.createElement('div');
             errorDiv.style.cssText = `
@@ -195,15 +271,44 @@
                 top: 20px;
                 right: 20px;
                 padding: 15px;
-                background: ${getComputedStyle(document.documentElement)
-                    .getPropertyValue('--error-color')};
+                background: var(--error-color);
                 color: white;
                 border-radius: 8px;
                 z-index: 1000;
+                max-width: 300px;
             `;
             errorDiv.textContent = message;
             document.body.appendChild(errorDiv);
             setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        // 工具函式
+        async function compressImage(file, options) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.src = URL.createObjectURL(file);
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const ratio = options.maxWidth / img.width;
+                    canvas.width = options.maxWidth;
+                    canvas.height = img.height * ratio;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob(resolve, 'image/jpeg', options.quality);
+                };
+            });
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result.split(',')[1]);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateEvent(index, field, value) {
+            events[index][field] = value;
         }
     </script>
 </body>
