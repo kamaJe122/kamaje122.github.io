@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智慧行程管理系統</title>
+    <title>智慧行程管理系統1121</title>
     <style>
         :root {
             --main-color: #FFC400;
@@ -30,25 +30,36 @@
             font-weight: bold;
             font-size: calc(var(--base-font-size) + 2pt);
             margin-bottom: 8px;
+            cursor: pointer;
+            padding: 4px;
         }
 
-        .event-detail {
+        .event-field {
             margin: 4px 0;
             padding: 8px;
             border-radius: 4px;
-            cursor: text;
+            cursor: pointer;
+            position: relative;
         }
 
-        .event-detail:hover {
+        .event-field:hover {
             background-color: var(--secondary-color);
         }
 
-        /* 手機版樣式 */
+        .edit-input {
+            width: 100%;
+            padding: 4px;
+            font-size: inherit;
+            font-family: inherit;
+        }
+
         @media screen and (max-width: 430px) {
             .container {
                 padding: 10px;
                 margin: 0;
                 width: 100%;
+                box-shadow: none;
+                border-radius: 0;
             }
         }
     </style>
@@ -70,66 +81,72 @@
 
     <script>
         let events = [];
-
+        
         // 初始化拖放功能 (保持原有不變)...
 
-        // 新增Google Calendar時間格式轉換
-        function toGoogleCalendarTime(dateStr, timeStr) {
-            const date = new Date(`${dateStr}T${timeStr}`);
+        // Google Calendar時間格式轉換
+        function formatGoogleCalendarTime(dateString, timeString) {
+            const date = new Date(`${dateString}T${timeString}`);
             return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
         }
 
-        // 修改後的匯出功能
+        // 直接連結到Google Calendar
         function exportToCalendar(index) {
             const event = events[index];
-            const start = toGoogleCalendarTime(event.date, event.time);
-            const end = toGoogleCalendarTime(event.date, 
-                new Date(`1970-01-01T${event.time}`).getTime() + 3600000 // 預設1小時
-                .toTimeString().slice(0,5));
+            const startTime = formatGoogleCalendarTime(event.date, event.startTime);
+            const endTime = formatGoogleCalendarTime(event.date, event.endTime);
 
             const params = new URLSearchParams({
+                action: "TEMPLATE",
                 text: event.title,
-                dates: `${start}/${end}`,
+                dates: `${startTime}/${endTime}`,
                 location: event.location,
                 details: event.notes
             });
 
-            window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&${params}`);
+            window.open(`https://calendar.google.com/calendar/render?${params}`);
         }
 
-        // 強化版雙擊編輯功能
-        function makeEditable(element, index, field, inputType = 'text') {
+        // 雙擊編輯功能
+        function enableInlineEditing(element, index, field, inputType = 'text') {
             element.ondblclick = () => {
-                const input = document.createElement(inputType === 'textarea' ? 'textarea' : 'input');
+                const originalText = element.textContent.replace(/^[^ ]+ /, '');
+                const input = document.createElement('input');
                 input.type = inputType;
-                input.value = element.innerText;
-                input.style.width = '100%';
-                
+                input.className = 'edit-input';
+                input.value = originalText;
+
                 input.onblur = () => {
                     events[index][field] = input.value;
-                    element.innerText = input.value;
-                    element.style.display = 'block';
+                    updateEventDisplay(element, field, input.value);
                     input.remove();
                 };
 
-                element.style.display = 'none';
-                element.parentNode.insertBefore(input, element);
+                element.innerHTML = '';
+                element.appendChild(input);
                 input.focus();
             };
         }
 
-        // 修改後的渲染功能
+        function updateEventDisplay(element, field, value) {
+            const icons = {
+                time: '🕒',
+                location: '📍',
+                notes: '📝'
+            };
+            element.innerHTML = `${icons[field]} ${value}`;
+        }
+
+        // 渲染事件列表
         function renderEvents() {
             const container = document.getElementById('eventList');
             container.innerHTML = events.map((event, index) => `
-                <div class="event-item" style="margin-bottom:20px;padding:15px;border-bottom:1px solid #eee">
-                    <div class="event-title" data-index="${index}" data-field="title">${event.title}</div>
-                    <div class="event-detail" data-index="${index}" data-field="time">
-                        🕒 ${event.date} ${event.time}
-                    </div>
-                    <div class="event-detail" data-index="${index}" data-field="location">📍 ${event.location}</div>
-                    <div class="event-detail" data-index="${index}" data-field="notes">📝 ${event.notes}</div>
-                    <div style="margin-top:10px;">
+                <div class="event-item" data-index="${index}">
+                    <div class="event-title" data-field="title">${event.title}</div>
+                    <div class="event-field" data-field="time">🕒 ${event.startTime} - ${event.endTime}</div>
+                    <div class="event-field" data-field="location">📍 ${event.location}</div>
+                    <div class="event-field" data-field="notes">📝 ${event.notes}</div>
+                    <div style="margin-top:15px;">
                         <button class="btn btn-primary" onclick="exportToCalendar(${index})">
                             新增到Google日曆
                         </button>
@@ -137,27 +154,49 @@
                 </div>
             `).join('');
 
-            // 綁定雙擊事件
-            document.querySelectorAll('.event-title, .event-detail').forEach(element => {
-                const index = element.dataset.index;
+            // 綁定編輯功能
+            document.querySelectorAll('.event-title').forEach(element => {
+                const index = element.closest('.event-item').dataset.index;
+                element.ondblclick = () => {
+                    const input = document.createElement('input');
+                    input.value = element.textContent;
+                    input.className = 'edit-input';
+                    input.style.fontSize = 'inherit';
+                    input.style.fontWeight = 'bold';
+
+                    input.onblur = () => {
+                        events[index].title = input.value;
+                        element.textContent = input.value;
+                        input.remove();
+                    };
+
+                    element.textContent = '';
+                    element.appendChild(input);
+                    input.focus();
+                };
+            });
+
+            document.querySelectorAll('.event-field').forEach(element => {
+                const index = element.closest('.event-item').dataset.index;
                 const field = element.dataset.field;
-                const inputType = field === 'notes' ? 'textarea' : 'text';
-                
-                makeEditable(element, index, field, inputType);
+                enableInlineEditing(element, index, field);
             });
         }
 
-        // 保持其他功能不變 (handleImageUpload, addNewEvent, compressImage等)...
+        // 新增空白行程
+        function addNewEvent() {
+            events.push({
+                title: "新行程",
+                date: new Date().toISOString().split('T')[0],
+                startTime: "09:00",
+                endTime: "10:00",
+                location: "",
+                notes: ""
+            });
+            renderEvents();
+        }
 
-        // 初始化測試資料
-        events.push({
-            title: "範例會議",
-            date: "2025-02-28",
-            time: "14:30",
-            location: "台北101會議室",
-            notes: "季度營運計畫討論"
-        });
-        renderEvents();
+        // 保持其他功能不變 (handleImageUpload, compressImage等)...
     </script>
 </body>
 </html>
