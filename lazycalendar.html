@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智慧行程管理系統1143</title>
+    <title>智慧行程管理系統1051</title>
     <style>
         :root {
             --main-color: #FFC400;
@@ -114,6 +114,20 @@
             transform: translateY(-1px);
         }
 
+        .btn-secondary {
+            background-color: #fff;
+            color: var(--main-color);
+            border: 2px solid var(--main-color);
+            padding: 6px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--accent-color);
+        }
+
         @media screen and (max-width: 430px) {
             .container {
                 padding: 15px;
@@ -127,7 +141,7 @@
                 flex-direction: column;
             }
 
-            .btn-primary {
+            .btn-primary, .btn-secondary {
                 width: 100%;
                 margin-top: 10px;
             }
@@ -145,7 +159,7 @@
         <div id="eventList"></div>
 
         <div class="toolbar">
-            <button class="btn btn-primary" onclick="addNewEvent()">+ 新增行程</button>
+            <button class="btn-primary" onclick="addNewEvent()">+ 新增行程</button>
         </div>
     </div>
 
@@ -174,6 +188,10 @@
             if (file) handleImageUpload(file);
         });
 
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) handleImageUpload(e.target.files[0]);
+        });
+
         // 修正後的圖片處理函式
         async function handleImageUpload(file) {
             try {
@@ -181,19 +199,18 @@
                     throw new Error('僅支援PNG/JPEG格式');
                 }
 
-                // 實際呼叫API的程式碼應在此處
-                // 以下是模擬正確的API回應
+                // 模擬圖片辨識結果
                 const mockResponse = {
                     choices: [{
                         message: {
                             content: JSON.stringify({
                                 events: [{
-                                    title: "辨識範例",
+                                    title: "圖片辨識會議",
                                     date: "2025-03-15",
                                     startTime: "14:00",
                                     endTime: "16:00",
                                     location: "台北101會議室",
-                                    notes: "AI圖片辨識測試會議"
+                                    notes: "從圖片辨識出的會議資訊"
                                 }]
                             })
                         }
@@ -201,12 +218,51 @@
                 };
 
                 const eventsData = JSON.parse(mockResponse.choices[0].message.content);
-                events.push(...eventsData.events);
-                renderEvents();
+                const recognizedEvent = eventsData.events[0];
+                
+                // 顯示辨識結果並提供確認選項
+                const container = document.getElementById('eventList');
+                const tempDiv = document.createElement('div');
+                tempDiv.className = 'event-item';
+                tempDiv.innerHTML = `
+                    <div class="event-content">
+                        <div class="event-title" data-field="title">
+                            <div class="field-icon">📌</div>
+                            <div>${recognizedEvent.title} (辨識結果)</div>
+                        </div>
+                        <div class="event-field" data-field="time">
+                            <div class="field-icon">🕒</div>
+                            <div>${recognizedEvent.date} ${recognizedEvent.startTime} - ${recognizedEvent.endTime}</div>
+                        </div>
+                        <div class="event-field" data-field="location">
+                            <div class="field-icon">📍</div>
+                            <div>${recognizedEvent.location}</div>
+                        </div>
+                        <div class="event-field" data-field="notes">
+                            <div class="field-icon">📝</div>
+                            <div>${recognizedEvent.notes}</div>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn-primary" onclick="confirmEvent(${JSON.stringify(recognizedEvent)})">
+                            確認新增
+                        </button>
+                        <button class="btn-secondary" onclick="this.parentElement.parentElement.remove()">
+                            取消
+                        </button>
+                    </div>
+                `;
+                container.insertBefore(tempDiv, container.firstChild);
 
             } catch (error) {
                 showError(`處理失敗: ${error.message}`);
             }
+        }
+
+        // 確認新增事件
+        function confirmEvent(eventData) {
+            events.push(eventData);
+            renderEvents();
         }
 
         // 時間輸入元件
@@ -235,6 +291,7 @@
             document.querySelectorAll('.event-title, .event-field').forEach(element => {
                 element.ondblclick = function() {
                     const index = this.closest('.event-item').dataset.index;
+                    if (index === undefined) return; // 避免臨時事件觸發編輯
                     const field = this.dataset.field;
                     const event = events[index];
 
@@ -296,7 +353,7 @@
                             <div>${event.notes}</div>
                         </div>
                     </div>
-                    <button class="btn btn-primary" onclick="exportToCalendar(${index})">
+                    <button class="btn-primary" onclick="exportToCalendar(${index})">
                         新增到Google日曆
                     </button>
                 </div>
@@ -305,10 +362,32 @@
             enableEditing();
         }
 
-        // 其他保持不變的函式 (addNewEvent, exportToCalendar等)
-        // ... [保持原有程式碼不變] ...
+        // 新增空白事件
+        function addNewEvent() {
+            const today = new Date().toISOString().split('T')[0];
+            events.push({
+                title: "新行程",
+                date: today,
+                startTime: "09:00",
+                endTime: "10:00",
+                location: "未指定",
+                notes: "請輸入詳細資訊"
+            });
+            renderEvents();
+        }
 
-        // 初始化範例資料
+        // 匯出到Google日曆 (保持原樣，未實作完整功能)
+        function exportToCalendar(index) {
+            console.log('Exporting event:', events[index]);
+            // 在這裡添加實際的Google日曆API整合程式碼
+        }
+
+        // 顯示錯誤訊息
+        function showError(message) {
+            alert(message);
+        }
+
+        // 初始化
         addNewEvent();
     </script>
 </body>
