@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智慧行程管理系統1125</title>
+    <title>智慧行程管理系統1137</title>
     <style>
         :root {
             --main-color: #FFC400;
@@ -39,6 +39,24 @@
             transition: all 0.3s;
             margin-bottom: 30px;
             background-color: rgba(255, 196, 0, 0.05);
+        }
+
+        .text-input-zone {
+            border: 3px dashed var(--main-color);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            background-color: rgba(255, 196, 0, 0.05);
+        }
+
+        .text-input-zone textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            font-size: var(--base-font-size);
+            border: 1px solid var(--main-color);
+            border-radius: 4px;
+            resize: vertical;
         }
 
         .event-item {
@@ -156,6 +174,12 @@
             <div class="progress-bar" id="progressBar"></div>
         </div>
 
+        <div class="text-input-zone">
+            <p>貼上文字以辨識行程資訊</p>
+            <textarea id="textInput" placeholder="在此貼上文字，例如：會議 2025-03-15 14:00-16:00 台北101 費用500元"></textarea>
+            <button class="btn-primary" onclick="handleTextInput()">辨識文字</button>
+        </div>
+
         <div id="eventList"></div>
 
         <div class="toolbar">
@@ -222,10 +246,8 @@
                     throw new Error('僅支援PNG/JPEG格式');
                 }
 
-                // 轉換圖片為 Base64
                 const base64Image = await fileToBase64(file);
 
-                // Gemini API 請求
                 const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD3McoKeSkz7WovvznaKk9uWf_Q1CDGHVw', {
                     method: 'POST',
                     headers: {
@@ -240,7 +262,7 @@
                                 {
                                     inlineData: {
                                         mimeType: file.type,
-                                        data: base64Image.split(',')[1] // 移除 Base64 前綴
+                                        data: base64Image.split(',')[1]
                                     }
                                 }
                             ]
@@ -254,50 +276,93 @@
 
                 const data = await response.json();
                 const rawText = data.candidates[0].content.parts[0].text;
-                const jsonText = extractJsonFromResponse(rawText); // 提取純 JSON
+                const jsonText = extractJsonFromResponse(rawText);
                 const recognizedEvent = JSON.parse(jsonText);
 
-                // 顯示辨識結果並提供確認選項
-                const container = document.getElementById('eventList');
-                const tempDiv = document.createElement('div');
-                tempDiv.className = 'event-item';
-                tempDiv.innerHTML = `
-                    <div class="event-content">
-                        <div class="event-title" data-field="title">
-                            <div class="field-icon">📌</div>
-                            <div>${recognizedEvent.title} (辨識結果)</div>
-                        </div>
-                        <div class="event-field" data-field="time">
-                            <div class="field-icon">🕒</div>
-                            <div>${recognizedEvent.date} ${recognizedEvent.startTime} - ${recognizedEvent.endTime}</div>
-                        </div>
-                        <div class="event-field" data-field="location">
-                            <div class="field-icon">📍</div>
-                            <div>${recognizedEvent.location}</div>
-                        </div>
-                        <div class="event-field" data-field="cost">
-                            <div class="field-icon">💰</div>
-                            <div>${recognizedEvent.cost}</div>
-                        </div>
-                        <div class="event-field" data-field="notes">
-                            <div class="field-icon">📝</div>
-                            <div>${recognizedEvent.notes}</div>
-                        </div>
-                    </div>
-                    <div>
-                        <button class="btn-primary" onclick='confirmEvent(${JSON.stringify(recognizedEvent)})'>
-                            確認新增
-                        </button>
-                        <button class="btn-secondary" onclick="this.parentElement.parentElement.remove()">
-                            取消
-                        </button>
-                    </div>
-                `;
-                container.insertBefore(tempDiv, container.firstChild);
-
+                displayRecognizedEvent(recognizedEvent, '圖片辨識結果');
             } catch (error) {
-                showError(`處理失敗: ${error.message}`);
+                showError(`圖片處理失敗: ${error.message}`);
             }
+        }
+
+        // 文字處理函式 - 串接 Gemini API
+        async function handleTextInput() {
+            const textInput = document.getElementById('textInput').value.trim();
+            if (!textInput) {
+                showError('請輸入文字');
+                return;
+            }
+
+            try {
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD3McoKeSkz7WovvznaKk9uWf_Q1CDGHVw', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                {
+                                    text: `請從以下文字中提取行程資訊，並以 JSON 格式返回以下字段：title（活動名稱）, date（日期，格式 YYYY-MM-DD）, startTime（開始時間，HH:MM）, endTime（結束時間，HH:MM）, location（地點）, cost（費用）, notes（備註）。如果某字段無法辨識，請設為 "未知"。文字內容：${textInput}`
+                                }
+                            ]
+                        }]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API 請求失敗');
+                }
+
+                const data = await response.json();
+                const rawText = data.candidates[0].content.parts[0].text;
+                const jsonText = extractJsonFromResponse(rawText);
+                const recognizedEvent = JSON.parse(jsonText);
+
+                displayRecognizedEvent(recognizedEvent, '文字辨識結果');
+            } catch (error) {
+                showError(`文字處理失敗: ${error.message}`);
+            }
+        }
+
+        // 顯示辨識結果的通用函數
+        function displayRecognizedEvent(recognizedEvent, sourceLabel) {
+            const container = document.getElementById('eventList');
+            const tempDiv = document.createElement('div');
+            tempDiv.className = 'event-item';
+            tempDiv.innerHTML = `
+                <div class="event-content">
+                    <div class="event-title" data-field="title">
+                        <div class="field-icon">📌</div>
+                        <div>${recognizedEvent.title} (${sourceLabel})</div>
+                    </div>
+                    <div class="event-field" data-field="time">
+                        <div class="field-icon">🕒</div>
+                        <div>${recognizedEvent.date} ${recognizedEvent.startTime} - ${recognizedEvent.endTime}</div>
+                    </div>
+                    <div class="event-field" data-field="location">
+                        <div class="field-icon">📍</div>
+                        <div>${recognizedEvent.location}</div>
+                    </div>
+                    <div class="event-field" data-field="cost">
+                        <div class="field-icon">💰</div>
+                        <div>${recognizedEvent.cost}</div>
+                    </div>
+                    <div class="event-field" data-field="notes">
+                        <div class="field-icon">📝</div>
+                        <div>${recognizedEvent.notes}</div>
+                    </div>
+                </div>
+                <div>
+                    <button class="btn-primary" onclick='confirmEvent(${JSON.stringify(recognizedEvent)})'>
+                        確認新增
+                    </button>
+                    <button class="btn-secondary" onclick="this.parentElement.parentElement.remove()">
+                        取消
+                    </button>
+                </div>
+            `;
+            container.insertBefore(tempDiv, container.firstChild);
         }
 
         // 確認新增事件
@@ -443,7 +508,6 @@
         function exportToCalendar(index) {
             const event = events[index];
             
-            // 將日期和時間轉為 Google 日曆所需的格式 (YYYYMMDDTHHMMSS)
             const [year, month, day] = event.date.split('-');
             const [startHour, startMinute] = event.startTime.split(':');
             const [endHour, endMinute] = event.endTime.split(':');
@@ -451,14 +515,12 @@
             const startDateTime = `${year}${month}${day}T${startHour}${startMinute}00`;
             const endDateTime = `${year}${month}${day}T${endHour}${endMinute}00`;
 
-            // 構建 Google 日曆 URL
             const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE` +
                 `&text=${encodeURIComponent(event.title)}` +
                 `&dates=${startDateTime}/${endDateTime}` +
                 `&location=${encodeURIComponent(event.location)}` +
                 `&details=${encodeURIComponent(`費用: ${event.cost}\n備註: ${event.notes}`)}`;
 
-            // 在新視窗中打開 Google 日曆
             window.open(googleCalendarUrl, '_blank');
         }
 
