@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智慧名片辨識系統 V0227.1641</title>
+    <title>智慧名片辨識系統 V0227.1644</title>
     <style>
         :root {
             --主色調: #FFC400;
@@ -232,7 +232,7 @@
                                 {
                                     inlineData: {
                                         mimeType: 檔案.type,
-                                        data: base64資料
+                                        data: base64資料.split(',')[1] // 移除前綴
                                     }
                                 }
                             ]
@@ -241,7 +241,8 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('Gemini API 請求失敗');
+                    const errorData = await response.json();
+                    throw new Error(`Gemini API 請求失敗: ${response.status} - ${JSON.stringify(errorData)}`);
                 }
 
                 const data = await response.json();
@@ -277,8 +278,9 @@
 
         // 從 Gemini 回應中提取 JSON
         function 提取JSON(rawText) {
-            const jsonMatch = rawText.match(/```json\s*([\s\S]*?)\s*```/);
-            return jsonMatch ? jsonMatch[1] : rawText; // 如果有 ```json``` 包裝，提取內部內容
+            const jsonMatch = rawText.match(/```json\s*([\s\S]*?)\s*```/) || rawText.match(/{[\s\S]*}/);
+            if (jsonMatch) return jsonMatch[1] || jsonMatch[0];
+            throw new Error('無法提取有效的 JSON 回應');
         }
 
         // 匯出到通訊錄
@@ -307,17 +309,17 @@ VERSION:3.0
 N:${聯絡人.姓名};;;
 FN:${聯絡人.姓名}`;
 
-            if (聯絡人.公司 && 聯絡人.公司 !== 欄位提示.公司) 
+            if (聯絡人.公司 && 聯絡人.公司 !== 欄位提示.公司 && 聯絡人.公司 !== "未知") 
                 vCard += `\nORG:${聯絡人.公司}`;
-            if (聯絡人.職稱 && 聯絡人.職稱 !== 欄位提示.職稱) 
+            if (聯絡人.職稱 && 聯絡人.職稱 !== 欄位提示.職稱 && 聯絡人.職稱 !== "未知") 
                 vCard += `\nTITLE:${聯絡人.職稱}`;
-            if (聯絡人.電話 && 聯絡人.電話 !== 欄位提示.電話) 
+            if (聯絡人.電話 && 聯絡人.電話 !== 欄位提示.電話 && 聯絡人.電話 !== "未知") 
                 vCard += `\nTEL;TYPE=CELL:${聯絡人.電話}`;
-            if (聯絡人.信箱 && 聯絡人.信箱 !== 欄位提示.信箱) 
+            if (聯絡人.信箱 && 聯絡人.信箱 !== 欄位提示.信箱 && 聯絡人.信箱 !== "未知") 
                 vCard += `\nEMAIL:${聯絡人.信箱}`;
-            if (聯絡人.地址 && 聯絡人.地址 !== 欄位提示.地址) 
+            if (聯絡人.地址 && 聯絡人.地址 !== 欄位提示.地址 && 聯絡人.地址 !== "未知") 
                 vCard += `\nADR:;;${聯絡人.地址}`;
-            if (聯絡人.網站 && 聯絡人.網站 !== 欄位提示.網站) 
+            if (聯絡人.網站 && 聯絡人.網站 !== 欄位提示.網站 && 聯絡人.網站 !== "未知") 
                 vCard += `\nURL:${聯絡人.網站}`;
 
             vCard += `\nEND:VCARD`;
@@ -332,7 +334,7 @@ FN:${聯絡人.姓名}`;
                     const 欄位名稱 = this.dataset.欄位;
                     const 值容器 = this.querySelector('.值內容');
                     let 當前值 = 聯絡人列表[索引][欄位名稱];
-                    if (Object.values(欄位提示).includes(當前值)) 當前值 = "";
+                    if (Object.values(欄位提示).includes(當前值) || 當前值 === "未知") 當前值 = "";
                     
                     const 輸入框 = 建立編輯輸入框(當前值, 欄位名稱);
                     輸入框.onblur = () => 更新聯絡人欄位(索引, 欄位名稱, 輸入框.value);
@@ -437,7 +439,7 @@ FN:${聯絡人.姓名}`;
         function 轉換為Base64(檔案) {
             return new Promise((resolve) => {
                 const 讀取器 = new FileReader();
-                讀取器.onload = e => resolve(e.target.result);
+                讀取器.onload = e => resolve(e.target.result); // 返回完整 Base64
                 讀取器.readAsDataURL(檔案);
             });
         }
