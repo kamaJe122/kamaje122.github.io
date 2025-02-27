@@ -6,33 +6,33 @@
     <title>智慧名片辨識系統</title>
     <style>
         :root {
-            --main-color: #FFC400;
-            --accent-color: #FFD740;
-            --hover-color: #FFAB00;
-            --error-color: #D32F2F;
-            --base-font-size: 14px;
+            --主色調: #FFC400;
+            --輔助色: #FFD740;
+            --懸浮色: #FFAB00;
+            --錯誤色: #D32F2F;
+            --基礎字體: 14px;
         }
 
         body {
-            font-family: 'Microsoft JhengHei', Arial, sans-serif;
-            font-size: var(--base-font-size);
+            font-family: '微軟正黑體', Arial, sans-serif;
+            font-size: var(--基礎字體);
             background-color: #f8f9fa;
             margin: 0;
             padding: 20px;
         }
 
-        .container {
+        .主容器 {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
             background: white;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border: 2px solid var(--main-color);
+            border: 2px solid var(--主色調);
         }
 
-        .drop-zone {
-            border: 3px dashed var(--main-color);
+        .拖放區 {
+            border: 3px dashed var(--主色調);
             padding: 40px;
             text-align: center;
             cursor: pointer;
@@ -41,7 +41,7 @@
             background-color: rgba(255, 196, 0, 0.05);
         }
 
-        .contact-item {
+        .聯絡人項目 {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -50,19 +50,19 @@
             border-radius: 8px;
             background-color: white;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            border-left: 4px solid var(--main-color);
+            border-left: 4px solid var(--主色調);
             position: relative;
         }
 
-        .contact-content {
+        .聯絡人內容 {
             flex-grow: 1;
             margin-right: 20px;
         }
 
-        .contact-name {
+        .姓名欄位 {
             font-weight: 700;
-            font-size: calc(var(--base-font-size) + 2pt);
-            color: var(--main-color);
+            font-size: calc(var(--基礎字體) + 2pt);
+            color: var(--主色調);
             margin-bottom: 8px;
             cursor: pointer;
             display: flex;
@@ -70,7 +70,7 @@
             gap: 8px;
         }
 
-        .contact-field {
+        .資料欄位 {
             margin: 6px 0;
             padding: 6px;
             border-radius: 4px;
@@ -81,13 +81,13 @@
             gap: 8px;
         }
 
-        .field-icon {
+        .圖示區 {
             min-width: 24px;
             text-align: center;
         }
 
-        .btn-primary {
-            background-color: var(--main-color);
+        .主要按鈕 {
+            background-color: var(--主色調);
             color: white;
             padding: 8px 20px;
             border-radius: 20px;
@@ -98,21 +98,21 @@
             align-self: center;
         }
 
-        .btn-primary:hover {
-            background-color: var(--hover-color);
+        .主要按鈕:hover {
+            background-color: var(--懸浮色);
             transform: translateY(-1px);
         }
 
-        .edit-input {
+        .編輯輸入框 {
             width: 100%;
             padding: 6px;
             font-size: inherit;
             font-family: inherit;
-            border: 1px solid var(--main-color);
+            border: 1px solid var(--主色調);
             border-radius: 4px;
         }
 
-        .progress-container {
+        .進度條容器 {
             width: 100%;
             height: 8px;
             background-color: #f0f0f0;
@@ -122,15 +122,15 @@
             display: none;
         }
 
-        .progress-bar {
+        .進度條 {
             height: 100%;
             width: 0%;
-            background-color: var(--main-color);
+            background-color: var(--主色調);
             transition: width 0.3s;
         }
 
         @media screen and (max-width: 430px) {
-            .container {
+            .主容器 {
                 padding: 15px;
                 width: calc(100% - 20px);
                 box-shadow: none;
@@ -138,11 +138,11 @@
                 border: none;
             }
 
-            .contact-item {
+            .聯絡人項目 {
                 flex-direction: column;
             }
 
-            .btn-primary {
+            .主要按鈕 {
                 width: 100%;
                 margin-top: 10px;
             }
@@ -150,279 +150,280 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="drop-zone" id="dropZone">
-            <p>拖放名片圖片至此或點擊上傳 (支援PNG/JPG)</p>
-            <input type="file" id="fileInput" hidden accept="image/png, image/jpeg">
-            <div class="progress-container" id="progressContainer">
-                <div class="progress-bar" id="progressBar"></div>
+    <div class="主容器">
+        <div class="拖放區" id="拖放區">
+            <p>拖放名片圖檔至此或點擊上傳 (支援 PNG/JPG)</p>
+            <input type="file" id="檔案輸入" hidden accept="image/png, image/jpeg">
+            <div class="進度條容器" id="進度條容器">
+                <div class="進度條" id="進度條"></div>
             </div>
         </div>
 
-        <div id="contactList"></div>
+        <div id="聯絡人清單"></div>
 
-        <div class="toolbar">
-            <button class="btn btn-primary" onclick="addNewContact()">+ 新增聯絡人</button>
+        <div class="工具列">
+            <button class="主要按鈕" onclick="新增聯絡人()">+ 新增聯絡人</button>
         </div>
     </div>
 
     <script>
-        let contacts = [];
+        let 聯絡人列表 = [];
 
         // 初始化拖放功能
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
+        const 拖放區 = document.getElementById('拖放區');
+        const 檔案輸入 = document.getElementById('檔案輸入');
+        const 進度條容器 = document.getElementById('進度條容器');
+        const 進度條 = document.getElementById('進度條');
 
-        dropZone.addEventListener('click', () => fileInput.click());
+        拖放區.addEventListener('click', () => 檔案輸入.click());
         
-        fileInput.addEventListener('change', (e) => {
+        檔案輸入.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
-                handleImageUpload(e.target.files[0]);
+                處理圖片上傳(e.target.files[0]);
             }
         });
         
-        dropZone.addEventListener('dragover', (e) => {
+        拖放區.addEventListener('dragover', (e) => {
             e.preventDefault();
-            dropZone.style.backgroundColor = 'rgba(255, 196, 0, 0.1)';
+            拖放區.style.backgroundColor = 'rgba(255, 196, 0, 0.1)';
         });
 
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.style.backgroundColor = 'rgba(255, 196, 0, 0.05)';
+        拖放區.addEventListener('dragleave', () => {
+            拖放區.style.backgroundColor = 'rgba(255, 196, 0, 0.05)';
         });
 
-        dropZone.addEventListener('drop', async (e) => {
+        拖放區.addEventListener('drop', async (e) => {
             e.preventDefault();
-            dropZone.style.backgroundColor = 'rgba(255, 196, 0, 0.05)';
-            const file = e.dataTransfer.files[0];
-            if (file) handleImageUpload(file);
+            拖放區.style.backgroundColor = 'rgba(255, 196, 0, 0.05)';
+            const 檔案 = e.dataTransfer.files[0];
+            if (檔案) 處理圖片上傳(檔案);
         });
 
-        // 圖片處理函式
-        async function handleImageUpload(file) {
+        // 圖片處理流程
+        async function 處理圖片上傳(檔案) {
             try {
-                if (!['image/png', 'image/jpeg'].includes(file.type)) {
-                    throw new Error('僅支援PNG/JPEG格式');
+                if (!['image/png', 'image/jpeg'].includes(檔案.type)) {
+                    throw new Error('僅支援 PNG/JPEG 格式');
                 }
 
                 // 顯示進度條
-                progressContainer.style.display = 'block';
-                progressBar.style.width = '20%';
+                進度條容器.style.display = 'block';
+                更新進度(20);
 
-                // 壓縮圖片功能
-                const compressedFile = await compressImage(file, {
+                // 壓縮圖片
+                const 壓縮後檔案 = await 壓縮圖片(檔案, { 
                     maxWidth: 1024,
-                    quality: 0.7
+                    quality: 0.7 
                 });
 
-                progressBar.style.width = '50%';
+                更新進度(50);
+                const base64資料 = await 轉換為Base64(壓縮後檔案);
 
-                // 轉換為Base64
-                const base64Data = await fileToBase64(compressedFile);
-
-                progressBar.style.width = '70%';
-
-                // 此處應呼叫後端API處理圖片
-                // 以下為模擬名片辨識資料
-                const mockData = {
-                    contacts: [{
-                        name: "王小明",
-                        title: "資深工程師",
-                        company: "創新科技有限公司",
-                        phone: "0912-345-678",
-                        email: "xiaoming.wang@example.com",
-                        address: "台北市信義區信義路五段7號",
-                        website: "www.example.com"
+                更新進度(70);
+                // 模擬API回傳資料
+                const 模擬資料 = {
+                    聯絡人: [{
+                        姓名: "王小明",
+                        職稱: "資深工程師",
+                        公司: "創新科技有限公司",
+                        電話: "0912-345-678",
+                        信箱: "xiaoming.wang@example.com",
+                        地址: "台北市信義區信義路五段7號",
+                        網站: "www.example.com"
                     }]
                 };
-                
-                progressBar.style.width = '100%';
-                
-                // 延遲一下以顯示完整進度
-                setTimeout(() => {
-                    contacts.push(...mockData.contacts);
-                    renderContacts();
-                    progressContainer.style.display = 'none';
-                }, 500);
 
-            } catch (error) {
-                showError(`處理失敗: ${error.message}`);
-                progressContainer.style.display = 'none';
+                更新進度(100);
+                聯絡人列表 = [...模擬資料.聯絡人, ...聯絡人列表];
+                渲染聯絡人();
+
+                setTimeout(() => 進度條容器.style.display = 'none', 500);
+
+            } catch (錯誤) {
+                顯示錯誤訊息(`處理失敗: ${錯誤.message}`);
+                進度條容器.style.display = 'none';
             }
         }
 
-        // 匯出到iOS通訊錄
-        function exportToContacts(index) {
-            const contact = contacts[index];
+        // 匯出到通訊錄
+        function 匯出聯絡人(索引) {
+            const 聯絡人 = 聯絡人列表[索引];
+            const vCard資料 = 產生vCard(聯絡人);
             
-            // 建立vCard格式
-            const vcard = createVCard(contact);
-            
-            // 建立下載連結
-            const blob = new Blob([vcard], { type: 'text/vcard' });
-            const url = URL.createObjectURL(blob);
-            
-            // 在iOS上，可以直接開啟vCard檔案
-            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-                // iOS設備使用特殊的URL Scheme
-                window.location.href = url;
+            const 檔案 = new Blob([vCard資料], { type: 'text/vcard' });
+            const 檔案網址 = URL.createObjectURL(檔案);
+
+            if (是否為iOS裝置()) {
+                window.location.href = 檔案網址;
             } else {
-                // 其他設備提供下載
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `${contact.name}.vcf`;
-                link.click();
-                URL.revokeObjectURL(url);
+                const 連結 = document.createElement('a');
+                連結.href = 檔案網址;
+                連結.download = `${聯絡人.姓名}.vcf`;
+                連結.click();
+                URL.revokeObjectURL(檔案網址);
             }
         }
-        
-        // 建立vCard格式
-        function createVCard(contact) {
+
+        // 產生vCard格式
+        function 產生vCard(聯絡人) {
             return `BEGIN:VCARD
 VERSION:3.0
-N:${contact.name};;;
-FN:${contact.name}
-ORG:${contact.company}
-TITLE:${contact.title}
-TEL;type=CELL:${contact.phone}
-EMAIL:${contact.email}
-ADR:;;${contact.address};;;
-URL:${contact.website}
+N:${聯絡人.姓名};;;
+FN:${聯絡人.姓名}
+ORG:${聯絡人.公司}
+TITLE:${聯絡人.職稱}
+TEL;TYPE=CELL:${聯絡人.電話}
+EMAIL:${聯絡人.信箱}
+ADR:;;${聯絡人.地址}
+URL:${聯絡人.網站}
 END:VCARD`;
         }
 
         // 雙擊編輯功能
-        function enableEditing() {
-            document.querySelectorAll('.contact-name, .contact-field').forEach(element => {
-                element.ondblclick = function() {
-                    const index = this.closest('.contact-item').dataset.index;
-                    const field = this.dataset.field;
-                    const contact = contacts[index];
+        function 啟用編輯功能() {
+            document.querySelectorAll('.資料欄位').forEach(欄位 => {
+                欄位.ondblclick = function() {
+                    const 索引 = this.closest('.聯絡人項目').dataset.索引;
+                    const 欄位名稱 = this.dataset.欄位;
+                    const 值容器 = this.querySelector('.值內容');
                     
-                    const input = document.createElement('input');
-                    input.className = 'edit-input';
-                    input.value = contact[field];
-
-                    input.onblur = () => {
-                        contact[field] = input.value;
-                        renderContacts();
-                    };
-
-                    // 清空原有內容
-                    const contentElement = this.querySelector('.field-content');
-                    if (contentElement) {
-                        contentElement.innerHTML = '';
-                        contentElement.appendChild(input);
-                        input.focus();
-                    }
+                    const 輸入框 = 建立編輯輸入框(聯絡人列表[索引][欄位名稱], 欄位名稱);
+                    輸入框.onblur = () => 更新聯絡人欄位(索引, 欄位名稱, 輸入框.value);
+                    
+                    值容器.innerHTML = '';
+                    值容器.appendChild(輸入框);
+                    輸入框.focus();
                 };
             });
         }
 
         // 渲染聯絡人列表
-        function renderContacts() {
-            const container = document.getElementById('contactList');
-            container.innerHTML = contacts.map((contact, index) => `
-                <div class="contact-item" data-index="${index}">
-                    <div class="contact-content">
-                        <div class="contact-name" data-field="name">
-                            <div class="field-icon">👤</div>
-                            <div class="field-content">${contact.name}</div>
+        function 渲染聯絡人() {
+            const 容器 = document.getElementById('聯絡人清單');
+            容器.innerHTML = 聯絡人列表.map((聯絡人, 索引) => `
+                <div class="聯絡人項目" data-索引="${索引}">
+                    <div class="聯絡人內容">
+                        <div class="資料欄位" data-欄位="姓名">
+                            <div class="圖示區">👤</div>
+                            <div class="值內容">${聯絡人.姓名}</div>
                         </div>
-                        <div class="contact-field" data-field="title">
-                            <div class="field-icon">🏢</div>
-                            <div class="field-content">${contact.title}</div>
+                        <div class="資料欄位" data-欄位="職稱">
+                            <div class="圖示區">💼</div>
+                            <div class="值內容">${聯絡人.職稱}</div>
                         </div>
-                        <div class="contact-field" data-field="company">
-                            <div class="field-icon">🏢</div>
-                            <div class="field-content">${contact.company}</div>
+                        <div class="資料欄位" data-欄位="公司">
+                            <div class="圖示區">🏢</div>
+                            <div class="值內容">${聯絡人.公司}</div>
                         </div>
-                        <div class="contact-field" data-field="phone">
-                            <div class="field-icon">📱</div>
-                            <div class="field-content">${contact.phone}</div>
+                        <div class="資料欄位" data-欄位="電話">
+                            <div class="圖示區">📱</div>
+                            <div class="值內容">${聯絡人.電話}</div>
                         </div>
-                        <div class="contact-field" data-field="email">
-                            <div class="field-icon">📧</div>
-                            <div class="field-content">${contact.email}</div>
+                        <div class="資料欄位" data-欄位="信箱">
+                            <div class="圖示區">📧</div>
+                            <div class="值內容">${聯絡人.信箱}</div>
                         </div>
-                        <div class="contact-field" data-field="address">
-                            <div class="field-icon">📍</div>
-                            <div class="field-content">${contact.address}</div>
+                        <div class="資料欄位" data-欄位="地址">
+                            <div class="圖示區">📍</div>
+                            <div class="值內容">${聯絡人.地址}</div>
                         </div>
-                        <div class="contact-field" data-field="website">
-                            <div class="field-icon">🌐</div>
-                            <div class="field-content">${contact.website}</div>
+                        <div class="資料欄位" data-欄位="網站">
+                            <div class="圖示區">🌐</div>
+                            <div class="值內容">${聯絡人.網站}</div>
                         </div>
                     </div>
-                    <button class="btn btn-primary" onclick="exportToContacts(${index})">
-                        新增到通訊錄
+                    <button class="主要按鈕" onclick="匯出聯絡人(${索引})">
+                        加入通訊錄
                     </button>
                 </div>
             `).join('');
 
-            enableEditing();
-        }
-
-        // 新增空白聯絡人
-        function addNewContact() {
-            contacts.push({
-                name: "新聯絡人",
-                title: "",
-                company: "",
-                phone: "",
-                email: "",
-                address: "",
-                website: ""
-            });
-            renderContacts();
+            啟用編輯功能();
         }
 
         // 工具函式
-        async function compressImage(file, options) {
+        function 更新進度(百分比) {
+            進度條.style.width = `${百分比}%`;
+        }
+
+        function 是否為iOS裝置() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent);
+        }
+
+        function 建立編輯輸入框(值, 欄位) {
+            const 輸入框 = document.createElement('input');
+            輸入框.className = '編輯輸入框';
+            輸入框.value = 值;
+            
+            if (欄位 === '電話') 輸入框.pattern = "[0-9-]{10,}";
+            if (欄位 === '信箱') 輸入框.type = 'email';
+            if (欄位 === '網站') 輸入框.placeholder = "https://";
+
+            return 輸入框;
+        }
+
+        function 更新聯絡人欄位(索引, 欄位, 值) {
+            聯絡人列表[索引][欄位] = 值;
+            渲染聯絡人();
+        }
+
+        function 新增聯絡人() {
+            聯絡人列表.unshift({
+                姓名: "新聯絡人",
+                職稱: "",
+                公司: "",
+                電話: "",
+                信箱: "",
+                地址: "",
+                網站: ""
+            });
+            渲染聯絡人();
+        }
+
+        async function 壓縮圖片(檔案, 選項) {
             return new Promise((resolve) => {
-                const img = new Image();
-                img.src = URL.createObjectURL(file);
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const ratio = Math.min(options.maxWidth / img.width, 1);
-                    canvas.width = img.width * ratio;
-                    canvas.height = img.height * ratio;
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    canvas.toBlob(blob => resolve(blob), 'image/jpeg', options.quality);
+                const 圖片 = new Image();
+                圖片.src = URL.createObjectURL(檔案);
+                圖片.onload = () => {
+                    const 畫布 = document.createElement('canvas');
+                    const 畫筆 = 畫布.getContext('2d');
+                    const 比例 = Math.min(選項.maxWidth / 圖片.width, 1);
+                    畫布.width = 圖片.width * 比例;
+                    畫布.height = 圖片.height * 比例;
+                    畫筆.drawImage(圖片, 0, 0, 畫布.width, 畫布.height);
+                    畫布.toBlob(blob => resolve(blob), 'image/jpeg', 選項.quality);
                 };
             });
         }
 
-        function fileToBase64(file) {
+        function 轉換為Base64(檔案) {
             return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result.split(',')[1]);
-                reader.readAsDataURL(file);
+                const 讀取器 = new FileReader();
+                讀取器.onload = e => resolve(e.target.result.split(',')[1]);
+                讀取器.readAsDataURL(檔案);
             });
         }
 
-        function showError(message) {
-            const errorDiv = document.createElement('div');
-            errorDiv.style.cssText = `
+        function 顯示錯誤訊息(訊息) {
+            const 錯誤區塊 = document.createElement('div');
+            錯誤區塊.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
                 padding: 15px;
-                background: var(--error-color);
+                background: var(--錯誤色);
                 color: white;
                 border-radius: 8px;
                 z-index: 1000;
                 max-width: 300px;
             `;
-            errorDiv.textContent = message;
-            document.body.appendChild(errorDiv);
-            setTimeout(() => errorDiv.remove(), 5000);
+            錯誤區塊.textContent = 訊息;
+            document.body.appendChild(錯誤區塊);
+            setTimeout(() => 錯誤區塊.remove(), 5000);
         }
 
         // 初始化範例資料
-        addNewContact();
+        新增聯絡人();
     </script>
 </body>
 </html>
