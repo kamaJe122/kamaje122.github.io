@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智慧名片辨識系統</title>
+    <title>智慧名片辨識系統 V0227.16.20</title>
     <style>
         :root {
             --主色調: #FFC400;
@@ -81,6 +81,11 @@
             gap: 8px;
         }
 
+        .提示文字 {
+            color: #888;
+            font-style: italic;
+        }
+
         .圖示區 {
             min-width: 24px;
             text-align: center;
@@ -119,14 +124,13 @@
             border-radius: 4px;
             margin-top: 10px;
             overflow: hidden;
-            display: none;
         }
 
         .進度條 {
             height: 100%;
             width: 0%;
             background-color: var(--主色調);
-            transition: width 0.3s;
+            transition: width 0.3s ease-in-out;
         }
 
         @media screen and (max-width: 430px) {
@@ -169,6 +173,16 @@
     <script>
         let 聯絡人列表 = [];
 
+        const 欄位提示 = {
+            姓名: "請輸入姓名",
+            職稱: "請輸入職稱",
+            公司: "請輸入公司名稱",
+            電話: "請輸入電話號碼",
+            信箱: "請輸入電子郵件",
+            地址: "請輸入地址",
+            網站: "請輸入網站網址"
+        };
+
         // 初始化拖放功能
         const 拖放區 = document.getElementById('拖放區');
         const 檔案輸入 = document.getElementById('檔案輸入');
@@ -206,7 +220,8 @@
                     throw new Error('僅支援 PNG/JPEG 格式');
                 }
 
-                // 顯示進度條
+                // 重置並顯示進度條
+                更新進度(0);
                 進度條容器.style.display = 'block';
                 更新進度(20);
 
@@ -220,28 +235,32 @@
                 const base64資料 = await 轉換為Base64(壓縮後檔案);
 
                 更新進度(70);
-                // 模擬API回傳資料
-                const 模擬資料 = {
+                // 模擬AI識別結果
+                const AI識別資料 = {
                     聯絡人: [{
-                        姓名: "王小明",
-                        職稱: "資深工程師",
-                        公司: "創新科技有限公司",
-                        電話: "0912-345-678",
-                        信箱: "xiaoming.wang@example.com",
-                        地址: "台北市信義區信義路五段7號",
-                        網站: "www.example.com"
+                        姓名: "陳大文",
+                        職稱: "產品經理",
+                        公司: "未來科技有限公司",
+                        電話: "0988-123-456",
+                        信箱: "dawen.chen@futuretech.com",
+                        地址: "新北市中和區中正路100號",
+                        網站: "www.futuretech.com"
                     }]
                 };
 
                 更新進度(100);
-                聯絡人列表 = [...模擬資料.聯絡人, ...聯絡人列表];
+                聯絡人列表 = [...AI識別資料.聯絡人, ...聯絡人列表];
                 渲染聯絡人();
 
-                setTimeout(() => 進度條容器.style.display = 'none', 500);
+                setTimeout(() => {
+                    進度條容器.style.display = 'none';
+                    更新進度(0);
+                }, 500);
 
             } catch (錯誤) {
                 顯示錯誤訊息(`處理失敗: ${錯誤.message}`);
                 進度條容器.style.display = 'none';
+                更新進度(0);
             }
         }
 
@@ -266,17 +285,27 @@
 
         // 產生vCard格式
         function 產生vCard(聯絡人) {
-            return `BEGIN:VCARD
+            let vCard = `BEGIN:VCARD
 VERSION:3.0
 N:${聯絡人.姓名};;;
-FN:${聯絡人.姓名}
-ORG:${聯絡人.公司}
-TITLE:${聯絡人.職稱}
-TEL;TYPE=CELL:${聯絡人.電話}
-EMAIL:${聯絡人.信箱}
-ADR:;;${聯絡人.地址}
-URL:${聯絡人.網站}
-END:VCARD`;
+FN:${聯絡人.姓名}`;
+
+            // 只加入非提示文字的欄位
+            if (聯絡人.公司 && 聯絡人.公司 !== 欄位提示.公司) 
+                vCard += `\nORG:${聯絡人.公司}`;
+            if (聯絡人.職稱 && 聯絡人.職稱 !== 欄位提示.職稱) 
+                vCard += `\nTITLE:${聯絡人.職稱}`;
+            if (聯絡人.電話 && 聯絡人.電話 !== 欄位提示.電話) 
+                vCard += `\nTEL;TYPE=CELL:${聯絡人.電話}`;
+            if (聯絡人.信箱 && 聯絡人.信箱 !== 欄位提示.信箱) 
+                vCard += `\nEMAIL:${聯絡人.信箱}`;
+            if (聯絡人.地址 && 聯絡人.地址 !== 欄位提示.地址) 
+                vCard += `\nADR:;;${聯絡人.地址}`;
+            if (聯絡人.網站 && 聯絡人.網站 !== 欄位提示.網站) 
+                vCard += `\nURL:${聯絡人.網站}`;
+
+            vCard += `\nEND:VCARD`;
+            return vCard;
         }
 
         // 雙擊編輯功能
@@ -286,8 +315,10 @@ END:VCARD`;
                     const 索引 = this.closest('.聯絡人項目').dataset.索引;
                     const 欄位名稱 = this.dataset.欄位;
                     const 值容器 = this.querySelector('.值內容');
+                    let 當前值 = 聯絡人列表[索引][欄位名稱];
+                    if (Object.values(欄位提示).includes(當前值)) 當前值 = "";
                     
-                    const 輸入框 = 建立編輯輸入框(聯絡人列表[索引][欄位名稱], 欄位名稱);
+                    const 輸入框 = 建立編輯輸入框(當前值, 欄位名稱);
                     輸入框.onblur = () => 更新聯絡人欄位(索引, 欄位名稱, 輸入框.value);
                     
                     值容器.innerHTML = '';
@@ -303,34 +334,13 @@ END:VCARD`;
             容器.innerHTML = 聯絡人列表.map((聯絡人, 索引) => `
                 <div class="聯絡人項目" data-索引="${索引}">
                     <div class="聯絡人內容">
-                        <div class="資料欄位" data-欄位="姓名">
-                            <div class="圖示區">👤</div>
-                            <div class="值內容">${聯絡人.姓名}</div>
-                        </div>
-                        <div class="資料欄位" data-欄位="職稱">
-                            <div class="圖示區">💼</div>
-                            <div class="值內容">${聯絡人.職稱}</div>
-                        </div>
-                        <div class="資料欄位" data-欄位="公司">
-                            <div class="圖示區">🏢</div>
-                            <div class="值內容">${聯絡人.公司}</div>
-                        </div>
-                        <div class="資料欄位" data-欄位="電話">
-                            <div class="圖示區">📱</div>
-                            <div class="值內容">${聯絡人.電話}</div>
-                        </div>
-                        <div class="資料欄位" data-欄位="信箱">
-                            <div class="圖示區">📧</div>
-                            <div class="值內容">${聯絡人.信箱}</div>
-                        </div>
-                        <div class="資料欄位" data-欄位="地址">
-                            <div class="圖示區">📍</div>
-                            <div class="值內容">${聯絡人.地址}</div>
-                        </div>
-                        <div class="資料欄位" data-欄位="網站">
-                            <div class="圖示區">🌐</div>
-                            <div class="值內容">${聯絡人.網站}</div>
-                        </div>
+                        ${產生欄位HTML(聯絡人, '姓名', '👤')}
+                        ${產生欄位HTML(聯絡人, '職稱', '💼')}
+                        ${產生欄位HTML(聯絡人, '公司', '🏢')}
+                        ${產生欄位HTML(聯絡人, '電話', '📱')}
+                        ${產生欄位HTML(聯絡人, '信箱', '📧')}
+                        ${產生欄位HTML(聯絡人, '地址', '📍')}
+                        ${產生欄位HTML(聯絡人, '網站', '🌐')}
                     </div>
                     <button class="主要按鈕" onclick="匯出聯絡人(${索引})">
                         加入通訊錄
@@ -339,6 +349,18 @@ END:VCARD`;
             `).join('');
 
             啟用編輯功能();
+        }
+
+        // 產生欄位HTML
+        function 產生欄位HTML(聯絡人, 欄位, 圖示) {
+            const 值 = 聯絡人[欄位] || 欄位提示[欄位];
+            const 是提示 = !聯絡人[欄位];
+            return `
+                <div class="資料欄位" data-欄位="${欄位}">
+                    <div class="圖示區">${圖示}</div>
+                    <div class="值內容${是提示 ? ' 提示文字' : ''}">${值}</div>
+                </div>
+            `;
         }
 
         // 工具函式
@@ -363,19 +385,19 @@ END:VCARD`;
         }
 
         function 更新聯絡人欄位(索引, 欄位, 值) {
-            聯絡人列表[索引][欄位] = 值;
+            聯絡人列表[索引][欄位] = 值 || 欄位提示[欄位];
             渲染聯絡人();
         }
 
         function 新增聯絡人() {
             聯絡人列表.unshift({
-                姓名: "新聯絡人",
-                職稱: "",
-                公司: "",
-                電話: "",
-                信箱: "",
-                地址: "",
-                網站: ""
+                姓名: 欄位提示.姓名,
+                職稱: 欄位提示.職稱,
+                公司: 欄位提示.公司,
+                電話: 欄位提示.電話,
+                信箱: 欄位提示.信箱,
+                地址: 欄位提示.地址,
+                網站: 欄位提示.網站
             });
             渲染聯絡人();
         }
