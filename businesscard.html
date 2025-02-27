@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智慧名片辨識系統 V0227.16.20</title>
+    <title>智慧名片辨識系統 V0227.1633</title>
     <style>
         :root {
             --主色調: #FFC400;
@@ -57,17 +57,6 @@
         .聯絡人內容 {
             flex-grow: 1;
             margin-right: 20px;
-        }
-
-        .姓名欄位 {
-            font-weight: 700;
-            font-size: calc(var(--基礎字體) + 2pt);
-            color: var(--主色調);
-            margin-bottom: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .資料欄位 {
@@ -172,6 +161,7 @@
 
     <script>
         let 聯絡人列表 = [];
+        const API_KEY = 'AIzaSyD3McoKeSkz7WovvznaKk9uWf_Q1CDGHVw'; // Google Cloud Vision API 金鑰
 
         const 欄位提示 = {
             姓名: "請輸入姓名",
@@ -213,55 +203,89 @@
             if (檔案) 處理圖片上傳(檔案);
         });
 
-        // 圖片處理流程
+        // 圖片處理流程並使用 Google Vision API
         async function 處理圖片上傳(檔案) {
             try {
                 if (!['image/png', 'image/jpeg'].includes(檔案.type)) {
                     throw new Error('僅支援 PNG/JPEG 格式');
                 }
 
-                // 重置並顯示進度條
                 更新進度(0);
                 進度條容器.style.display = 'block';
                 更新進度(20);
 
-                // 壓縮圖片
-                const 壓縮後檔案 = await 壓縮圖片(檔案, { 
-                    maxWidth: 1024,
-                    quality: 0.7 
-                });
-
+                const 壓縮後檔案 = await 壓縮圖片(檔案, { maxWidth: 1024, quality: 0.7 });
                 更新進度(50);
                 const base64資料 = await 轉換為Base64(壓縮後檔案);
-
                 更新進度(70);
-                // 模擬AI識別結果
-                const AI識別資料 = {
-                    聯絡人: [{
-                        姓名: "陳大文",
-                        職稱: "產品經理",
-                        公司: "未來科技有限公司",
-                        電話: "0988-123-456",
-                        信箱: "dawen.chen@futuretech.com",
-                        地址: "新北市中和區中正路100號",
-                        網站: "www.futuretech.com"
-                    }]
-                };
+
+                // 使用 Google Vision API 辨識圖片
+                const visionResponse = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        requests: [{
+                            image: { content: base64資料 },
+                            features: [{ type: 'TEXT_DETECTION' }]
+                        }]
+                    })
+                });
+
+                const visionData = await visionResponse.json();
+                if (!visionResponse.ok || visionData.error) {
+                    throw new Error(visionData.error?.message || 'Vision API 請求失敗');
+                }
+
+                // 提取文字並解析為聯絡人資訊
+                const 提取文字 = visionData.responses[0]?.textAnnotations?.[0]?.description || '';
+                const 聯絡人資料 = 解析名片文字(提取文字);
 
                 更新進度(100);
-                聯絡人列表 = [...AI識別資料.聯絡人, ...聯絡人列表];
+                聯絡人列表 = [聯絡人資料, ...聯絡人列表];
                 渲染聯絡人();
 
                 setTimeout(() => {
                     進度條容器.style.display = 'none';
                     更新進度(0);
                 }, 500);
-
             } catch (錯誤) {
                 顯示錯誤訊息(`處理失敗: ${錯誤.message}`);
                 進度條容器.style.display = 'none';
                 更新進度(0);
             }
+        }
+
+        // 簡單的名片文字解析邏輯
+        function 解析名片文字(文字) {
+            const 聯絡人 = {
+                姓名: 欄位提示.姓名,
+                職稱: 欄位提示.職稱,
+                公司: 欄位提示.公司,
+                電話: 欄位提示.電話,
+                信箱: 欄位提示.信箱,
+                地址: 欄位提示.地址,
+                網站: 欄位提示.網站
+            };
+
+            const 行 = 文字.split('\n');
+            for (const 內容 of 行) {
+                if (/[\u4e00-\u9fa5]{2,}/.test(內容) && !聯絡人.姓名.includes('請輸入')) {
+                    聯絡人.姓名 = 內容.trim(); // 假設第一個中文姓名為姓名
+                } else if (/(公司|科技|有限)/.test(內容)) {
+                    聯絡人.公司 = 內容.trim();
+                } else if (/(經理|工程師|總監)/.test(內容)) {
+                    聯絡人.職稱 = 內容.trim();
+                } else if (/\d{4}-\d{3}-\d{3}/.test(內容)) {
+                    聯絡人.電話 = 內容.trim();
+                } else if (/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(內容)) {
+                    聯絡人.信箱 = 內容.trim();
+                } else if (/(路|街|號)/.test(內容)) {
+                    聯絡人.地址 = 內容.trim();
+                } else if (/(www\.|http)/.test(內容)) {
+                    聯絡人.網站 = 內容.trim();
+                }
+            }
+            return 聯絡人;
         }
 
         // 匯出到通訊錄
@@ -290,7 +314,6 @@ VERSION:3.0
 N:${聯絡人.姓名};;;
 FN:${聯絡人.姓名}`;
 
-            // 只加入非提示文字的欄位
             if (聯絡人.公司 && 聯絡人.公司 !== 欄位提示.公司) 
                 vCard += `\nORG:${聯絡人.公司}`;
             if (聯絡人.職稱 && 聯絡人.職稱 !== 欄位提示.職稱) 
