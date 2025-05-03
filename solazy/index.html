@@ -3,1138 +3,693 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智慧辦公助手</title>
+    <title>智慧辦公整合系統</title>
     <style>
         :root {
-            --主色調: #FFC400;
-            --輔助色: #FFD740;
-            --懸浮色: #FFAB00;
-            --錯誤色: #D32F2F;
-            --基礎字體: 14px;
+            --main: #FFC400;
+            --main-light: #FFD740;
+            --main-dark: #FFAB00;
+            --error: #D32F2F;
+            --font-size: 15px;
         }
-
         body {
             font-family: '微軟正黑體', Arial, sans-serif;
-            font-size: var(--基礎字體);
-            background-color: #f8f9fa;
+            font-size: var(--font-size);
+            background: #FFF9E6;
             margin: 0;
             padding: 0;
             display: flex;
+            min-height: 100vh;
         }
-
-        /* 側邊欄樣式 */
-        .側邊欄 {
-            width: 200px;
-            background-color: white;
-            height: 100vh;
+        .sidebar {
+            width: 210px;
+            background: #fff;
+            border-right: 2px solid var(--main);
+            min-height: 100vh;
+            box-shadow: 2px 0 6px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            padding-top: 24px;
             position: fixed;
             left: 0;
             top: 0;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            z-index: 100;
-            padding-top: 20px;
+            z-index: 10;
         }
-
-        .側邊欄按鈕 {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            text-align: left;
+        .sidebar-btn {
             background: none;
             border: none;
-            font-size: 16px;
+            width: 100%;
+            text-align: left;
+            padding: 18px 28px;
+            font-size: 17px;
+            color: #4D3900;
             cursor: pointer;
-            transition: all 0.3s;
-            border-left: 4px solid transparent;
+            border-left: 6px solid transparent;
+            transition: background 0.2s, border-color 0.2s;
+            font-weight: 500;
         }
-
-        .側邊欄按鈕.活躍 {
-            background-color: rgba(255, 196, 0, 0.1);
-            border-left-color: var(--主色調);
-            font-weight: bold;
+        .sidebar-btn.active, .sidebar-btn:hover {
+            background: rgba(255, 196, 0, 0.13);
+            border-left: 6px solid var(--main-dark);
+            color: #000;
         }
-
-        .側邊欄按鈕:hover {
-            background-color: rgba(255, 196, 0, 0.1);
+        .main-content {
+            margin-left: 210px;
+            width: calc(100vw - 210px);
+            min-height: 100vh;
+            background: #FFF9E6;
+            padding: 0;
         }
-
-        /* 主內容區域 */
-        .主內容 {
-            margin-left: 200px;
-            width: calc(100% - 200px);
-            padding: 20px;
-        }
-
-        /* 進度顯示區域 */
-        .進度顯示 {
-            background-color: white;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            border-left: 4px solid var(--主色調);
-        }
-
-        .上傳圖片預覽 {
-            max-width: 100%;
-            max-height: 200px;
-            margin-top: 10px;
-            border-radius: 4px;
-        }
-
-        /* 功能頁面樣式 */
-        .功能頁面 {
-            display: none;
-        }
-
-        .功能頁面.顯示 {
-            display: block;
-        }
-
-        /* 共用元件樣式 */
-        .主容器 {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border: 2px solid var(--主色調);
-        }
-
-        .拖放區 {
-            border: 3px dashed var(--主色調);
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 30px;
-            background-color: rgba(255, 196, 0, 0.05);
-        }
-
-        .進度條容器 {
+        .progress-bar-wrap {
             width: 100%;
             height: 8px;
-            background-color: #f0f0f0;
+            background: #f0f0f0;
             border-radius: 4px;
             margin-top: 10px;
             overflow: hidden;
         }
-
-        .進度條 {
+        .progress-bar {
             height: 100%;
             width: 0%;
-            background-color: var(--主色調);
-            transition: width 0.3s ease-in-out;
+            background: var(--main);
+            transition: width 0.3s;
         }
-
-        .主要按鈕 {
-            background-color: var(--主色調);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            min-width: 120px;
-            border: none;
+        .top-status {
+            background: #fff;
+            padding: 18px 24px;
+            border-bottom: 2px solid var(--main);
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        .top-status img {
+            max-height: 80px;
+            border-radius: 6px;
+            margin-left: 8px;
+            display: none;
+        }
+        .page-wrap {
+            max-width: 900px;
+            margin: 36px auto 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+            border: 2px solid var(--main);
+            padding: 32px 24px 32px 24px;
+        }
+        .drop-zone, .text-input-zone {
+            border: 3px dashed var(--main);
+            background: rgba(255, 196, 0, 0.07);
+            padding: 36px 20px;
+            text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
-            align-self: center;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            transition: background 0.2s;
         }
-
-        .主要按鈕:hover {
-            background-color: var(--懸浮色);
-            transform: translateY(-1px);
+        .drop-zone:hover, .text-input-zone:hover {
+            background: rgba(255, 196, 0, 0.13);
         }
-
-        /* 名片系統樣式 */
-        .聯絡人項目 {
+        .main-btn, .sec-btn {
+            border: none;
+            border-radius: 20px;
+            padding: 9px 24px;
+            font-size: 15px;
+            margin: 4px 8px 4px 0;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .main-btn {
+            background: var(--main);
+            color: #4D3900;
+            font-weight: bold;
+        }
+        .main-btn:hover {
+            background: var(--main-dark);
+            color: #fff;
+        }
+        .sec-btn {
+            background: #fff;
+            color: var(--main);
+            border: 2px solid var(--main);
+        }
+        .sec-btn:hover {
+            background: var(--main-light);
+        }
+        .contact-card, .event-item, .snippet-li {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             padding: 15px;
             margin-bottom: 15px;
-            border-radius: 8px;
-            background-color: white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            border-left: 4px solid var(--主色調);
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+            border-left: 5px solid var(--main);
             position: relative;
         }
-
-        .聯絡人內容 {
+        .contact-content, .event-content, .snippet-content {
             flex-grow: 1;
-            margin-right: 20px;
+            margin-right: 18px;
         }
-
-        .資料欄位 {
-            margin: 6px 0;
-            padding: 6px;
+        .field-row, .event-field {
+            margin: 7px 0;
+            padding: 7px;
             border-radius: 4px;
             cursor: pointer;
-            position: relative;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-
-        .提示文字 {
-            color: #888;
-            font-style: italic;
-        }
-
-        .圖示區 {
+        .field-icon {
             min-width: 24px;
             text-align: center;
         }
-
-        .編輯輸入框 {
+        .field-edit {
             width: 100%;
             padding: 6px;
             font-size: inherit;
-            font-family: inherit;
-            border: 1px solid var(--主色調);
+            border: 1px solid var(--main);
             border-radius: 4px;
         }
-
-        /* 行程系統樣式 */
-        .文字輸入區 {
-            border: 3px dashed var(--主色調);
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 30px;
-            background-color: rgba(255, 196, 0, 0.05);
+        .hint {
+            color: #888;
+            font-style: italic;
         }
-
-        .文字輸入區 textarea {
-            width: 100%;
-            height: 100px;
-            padding: 10px;
-            font-size: var(--基礎字體);
-            border: 1px solid var(--主色調);
-            border-radius: 4px;
-            resize: vertical;
-        }
-
-        .事件項目 {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            background-color: white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            border-left: 4px solid var(--主色調);
-            position: relative;
-        }
-
-        .事件內容 {
-            flex-grow: 1;
-            margin-right: 20px;
-        }
-
-        .事件標題 {
-            font-weight: 700;
-            font-size: calc(var(--基礎字體) + 2pt);
-            color: var(--主色調);
-            margin-bottom: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .事件欄位 {
-            margin: 6px 0;
-            padding: 6px;
-            border-radius: 4px;
-            cursor: pointer;
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .欄位圖示 {
-            min-width: 24px;
-            text-align: center;
-        }
-
-        .次要按鈕 {
-            background-color: #fff;
-            color: var(--主色調);
-            border: 2px solid var(--主色調);
-            padding: 6px 18px;
-            border-radius: 20px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        .次要按鈕:hover {
-            background-color: var(--輔助色);
-        }
-
-        .時間輸入組 {
-            display: flex;
-            gap: 5px;
+        .snippet-li {
             align-items: center;
         }
-
-        .時間輸入 {
-            width: 50px;
-            padding: 4px;
+        .snippet-content {
+            word-break: break-all;
+            white-space: pre-wrap;
         }
-
-        @media screen and (max-width: 768px) {
-            .側邊欄 {
-                width: 60px;
-            }
-            
-            .側邊欄按鈕 {
-                padding: 15px 5px;
-                text-align: center;
-                font-size: 12px;
-            }
-            
-            .主內容 {
-                margin-left: 60px;
-                width: calc(100% - 60px);
-            }
+        .snippet-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
-
-        @media screen and (max-width: 430px) {
-            .主容器 {
-                padding: 15px;
-                width: calc(100% - 10px);
-                box-shadow: none;
-                border-radius: 0;
-                border: none;
-            }
-
-            .聯絡人項目, .事件項目 {
-                flex-direction: column;
-            }
-
-            .主要按鈕, .次要按鈕 {
-                width: 100%;
-                margin-top: 10px;
-                margin-left: 0;
-            }
+        @media screen and (max-width: 900px) {
+            .main-content { width: 100vw; margin-left: 0; }
+            .sidebar { position: static; width: 100vw; min-height: 0; flex-direction: row; border-right: none; border-bottom: 2px solid var(--main);}
+            .sidebar-btn { width: 33.3vw; border-left: none; border-bottom: 6px solid transparent; border-radius: 0; text-align: center;}
+            .sidebar-btn.active, .sidebar-btn:hover { border-bottom: 6px solid var(--main-dark); border-left: none; }
+            .top-status { flex-direction: column; align-items: flex-start; gap: 8px;}
+            .page-wrap { border-radius: 0; box-shadow: none; }
+        }
+        @media screen and (max-width: 600px) {
+            .page-wrap { padding: 12px 3vw; }
         }
     </style>
 </head>
 <body>
-    <!-- 側邊欄 -->
-    <div class="側邊欄">
-        <button class="側邊欄按鈕 活躍" data-target="名片辨識系統">智慧名片辨識</button>
-        <button class="側邊欄按鈕" data-target="行程管理系統">智慧行程管理</button>
-        <button class="側邊欄按鈕" data-target="新增功能">新增功能</button>
+    <div class="sidebar">
+        <button class="sidebar-btn active" data-page="card">名片辨識</button>
+        <button class="sidebar-btn" data-page="schedule">行程管理</button>
+        <button class="sidebar-btn" data-page="clipboard">懶人複製貼上</button>
     </div>
-
-    <!-- 主內容區域 -->
-    <div class="主內容">
-        <!-- 進度顯示區域 -->
-        <div class="進度顯示" id="進度顯示區">
-            <div id="進度訊息">準備就緒</div>
-            <img id="上傳圖片預覽" class="上傳圖片預覽" style="display: none;" />
+    <div class="main-content">
+        <!-- 進度/狀態顯示 -->
+        <div class="top-status">
+            <span id="status-msg">歡迎使用智慧辦公整合系統</span>
+            <img id="status-img" />
         </div>
-
-        <!-- 名片辨識系統 -->
-        <div class="功能頁面 顯示" id="名片辨識系統">
-            <div class="主容器">
-                <div class="拖放區" id="名片_拖放區">
-                    <p>拖放名片圖檔至此或點擊上傳 (支援 PNG/JPG)</p>
-                    <input type="file" id="名片_檔案輸入" hidden accept="image/png, image/jpeg">
-                    <div class="進度條容器" id="名片_進度條容器">
-                        <div class="進度條" id="名片_進度條"></div>
-                    </div>
-                </div>
-
-                <div id="名片_聯絡人清單"></div>
-
-                <div class="工具列">
-                    <button class="主要按鈕" onclick="名片_新增聯絡人()">+ 新增聯絡人</button>
+        <!-- 名片辨識 -->
+        <div class="page-wrap" id="page-card">
+            <h2 style="color:var(--main);margin-top:0;">智慧名片辨識</h2>
+            <div class="drop-zone" id="card-drop">
+                <p>拖放名片圖檔至此或點擊上傳 (PNG/JPG)</p>
+                <input type="file" id="card-file" hidden accept="image/png, image/jpeg">
+                <div class="progress-bar-wrap"><div class="progress-bar" id="card-progress"></div></div>
+            </div>
+            <div id="card-list"></div>
+            <button class="main-btn" onclick="cardAddContact()">+ 新增聯絡人</button>
+        </div>
+        <!-- 行程管理 -->
+        <div class="page-wrap" id="page-schedule" style="display:none;">
+            <h2 style="color:var(--main);margin-top:0;">智慧行程管理</h2>
+            <div class="drop-zone" id="schedule-drop">
+                <p>拖放圖片至此或點擊上傳 (PNG/JPG)</p>
+                <input type="file" id="schedule-file" hidden accept="image/png, image/jpeg">
+                <div class="progress-bar-wrap"><div class="progress-bar" id="schedule-progress"></div></div>
+            </div>
+            <div class="text-input-zone">
+                <p>貼上文字以辨識行程資訊</p>
+                <textarea id="schedule-text" placeholder="在此貼上文字，例如：會議 2025-03-15 14:00-16:00 台北101 費用500元" style="width:100%;height:90px;"></textarea>
+                <button class="main-btn" onclick="scheduleHandleText()">辨識文字</button>
+            </div>
+            <div id="schedule-list"></div>
+            <button class="main-btn" onclick="scheduleAddEvent()">+ 新增行程</button>
+        </div>
+        <!-- 懶人複製貼上 -->
+        <div class="page-wrap" id="page-clipboard" style="display:none;">
+            <h2 style="color:var(--main);margin-top:0;">Kama懶人複製貼上</h2>
+            <div class="drop-zone" style="margin-bottom:20px;">
+                <div id="clipboard-input-wrap" style="display:flex;gap:8px;">
+                    <textarea id="clipboard-input" class="field-edit" placeholder="輸入要複製的文字" style="flex:1;min-height:60px;"></textarea>
+                    <button class="main-btn" onclick="clipboardAdd()">新增</button>
                 </div>
             </div>
-        </div>
-
-        <!-- 行程管理系統 -->
-        <div class="功能頁面" id="行程管理系統">
-            <div class="主容器">
-                <div class="拖放區" id="行程_拖放區">
-                    <p>拖放圖片至此或點擊上傳 (支援PNG/JPG)</p>
-                    <input type="file" id="行程_檔案輸入" hidden accept="image/png, image/jpeg">
-                    <div class="進度條容器">
-                        <div class="進度條" id="行程_進度條"></div>
-                    </div>
-                </div>
-
-                <div class="文字輸入區">
-                    <p>貼上文字以辨識行程資訊</p>
-                    <textarea id="行程_文字輸入" placeholder="在此貼上文字，例如：會議 2025-03-15 14:00-16:00 台北101 費用500元"></textarea>
-                    <button class="主要按鈕" onclick="行程_處理文字輸入()">辨識文字</button>
-                </div>
-
-                <div id="行程_事件列表"></div>
-
-                <div class="工具列">
-                    <button class="主要按鈕" onclick="行程_新增事件()">+ 新增行程</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 新增功能 -->
-        <div class="功能頁面" id="新增功能">
-            <div class="主容器">
-                <div style="text-align: center; padding: 40px;">
-                    <h2 style="color: var(--主色調);">新功能即將推出</h2>
-                    <p>此功能正在開發中，敬請期待！</p>
-                    <div style="margin-top: 30px;">
-                        <button class="主要按鈕" onclick="alert('功能開發中，敬請期待！')">了解更多</button>
-                    </div>
-                </div>
+            <ul id="clipboard-list" style="list-style:none;padding:0;margin:0;"></ul>
+            <div style="margin-top:24px;text-align:center;">
+                <a href="https://docs.google.com/spreadsheets/d/1Rb3NJ1nsjCEn6OswNtOrRzuYiI4dN3Er8k5nR3iIrW8/edit?usp=sharing" target="_blank" style="color:var(--main-dark);text-decoration:underline;">Kama懶人版複製貼上Google Sheets</a>
             </div>
         </div>
     </div>
-
     <script>
-        // 通用功能
-        // 側邊欄功能切換
-        document.querySelectorAll('.側邊欄按鈕').forEach(button => {
-            button.addEventListener('click', function() {
-                // 移除所有按鈕的活躍狀態
-                document.querySelectorAll('.側邊欄按鈕').forEach(btn => {
-                    btn.classList.remove('活躍');
-                });
-                
-                // 添加當前按鈕的活躍狀態
-                this.classList.add('活躍');
-                
-                // 隱藏所有功能頁面
-                document.querySelectorAll('.功能頁面').forEach(page => {
-                    page.classList.remove('顯示');
-                });
-                
-                // 顯示目標功能頁面
-                const targetId = this.getAttribute('data-target');
-                document.getElementById(targetId).classList.add('顯示');
-                
-                // 重置進度顯示
-                更新進度顯示('已切換到' + this.textContent);
-                document.getElementById('上傳圖片預覽').style.display = 'none';
-            });
-        });
-
-        // 通用功能：更新進度顯示
-        function 更新進度顯示(訊息, 圖片URL = null) {
-            const 進度顯示區 = document.getElementById('進度顯示區');
-            const 進度訊息 = document.getElementById('進度訊息');
-            const 圖片預覽 = document.getElementById('上傳圖片預覽');
-            
-            進度訊息.textContent = 訊息;
-            
-            if (圖片URL) {
-                圖片預覽.src = 圖片URL;
-                圖片預覽.style.display = 'block';
-            } else {
-                圖片預覽.style.display = 'none';
-            }
+    // ====== 全域狀態/切換 ======
+    function setStatus(msg, img) {
+        document.getElementById('status-msg').textContent = msg;
+        const imgel = document.getElementById('status-img');
+        if (img) {
+            imgel.src = img;
+            imgel.style.display = 'inline-block';
+        } else {
+            imgel.style.display = 'none';
         }
-
-        // 顯示錯誤訊息的通用函數
-        function 顯示錯誤訊息(訊息) {
-            const 錯誤區塊 = document.createElement('div');
-            錯誤區塊.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 15px;
-                background: var(--錯誤色);
-                color: white;
-                border-radius: 8px;
-                z-index: 1000;
-                max-width: 300px;
-            `;
-            錯誤區塊.textContent = 訊息;
-            document.body.appendChild(錯誤區塊);
-            setTimeout(() => 錯誤區塊.remove(), 5000);
-            
-            更新進度顯示('處理失敗: ' + 訊息);
-        }
-
-        // 檔案轉 Base64 的通用函數
-        function 轉換為Base64(檔案) {
-            return new Promise((resolve) => {
-                const 讀取器 = new FileReader();
-                讀取器.onload = e => resolve(e.target.result);
-                讀取器.readAsDataURL(檔案);
-            });
-        }
-
-        // 壓縮圖片的通用函數
-        async function 壓縮圖片(檔案, 選項) {
-            return new Promise((resolve) => {
-                const 圖片 = new Image();
-                圖片.src = URL.createObjectURL(檔案);
-                圖片.onload = () => {
-                    const 畫布 = document.createElement('canvas');
-                    const 畫筆 = 畫布.getContext('2d');
-                    const 比例 = Math.min(選項.maxWidth / 圖片.width, 1);
-                    畫布.width = 圖片.width * 比例;
-                    畫布.height = 圖片.height * 比例;
-                    畫筆.drawImage(圖片, 0, 0, 畫布.width, 畫布.height);
-                    畫布.toBlob(blob => resolve(blob), 'image/jpeg', 選項.quality);
-                };
-            });
-        }
-
-        // 從 Gemini 回應中提取 JSON 的通用函數
-        function 提取JSON(rawText) {
-            const jsonMatch = rawText.match(/``````/) || rawText.match(/{[\s\S]*}/);
-            if (jsonMatch) return jsonMatch[1] || jsonMatch[0];
-            throw new Error('無法提取有效的 JSON 回應');
-        }
-
-        // 是否為iOS裝置的通用函數
-        function 是否為iOS裝置() {
-            return /iPad|iPhone|iPod/.test(navigator.userAgent);
-        }
-
-        // 公用的 API KEY
-        const API_KEY = 'AIzaSyD3McoKeSkz7WovvznaKk9uWf_Q1CDGHVw';
-
-        //========== 名片辨識系統 ==========
-        let 名片_聯絡人列表 = [];
-
-        const 名片_欄位提示 = {
-            姓名: "請輸入姓名",
-            職稱: "請輸入職稱",
-            公司: "請輸入公司名稱",
-            電話: "請輸入電話號碼",
-            信箱: "請輸入電子郵件",
-            地址: "請輸入地址",
-            網站: "請輸入網站網址"
+    }
+    document.querySelectorAll('.sidebar-btn').forEach(btn => {
+        btn.onclick = function() {
+            document.querySelectorAll('.sidebar-btn').forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.page-wrap').forEach(p=>p.style.display='none');
+            document.getElementById('page-'+btn.dataset.page).style.display = '';
+            setStatus('目前進度：' + btn.textContent);
         };
+    });
 
-        // 初始化拖放功能
-        const 名片_拖放區 = document.getElementById('名片_拖放區');
-        const 名片_檔案輸入 = document.getElementById('名片_檔案輸入');
-        const 名片_進度條容器 = document.getElementById('名片_進度條容器');
-        const 名片_進度條 = document.getElementById('名片_進度條');
-
-        名片_拖放區.addEventListener('click', () => 名片_檔案輸入.click());
-        
-        名片_檔案輸入.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                名片_處理圖片上傳(e.target.files[0]);
-            }
-        });
-        
-        名片_拖放區.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            名片_拖放區.style.backgroundColor = 'rgba(255, 196, 0, 0.1)';
-        });
-
-        名片_拖放區.addEventListener('dragleave', () => {
-            名片_拖放區.style.backgroundColor = 'rgba(255, 196, 0, 0.05)';
-        });
-
-        名片_拖放區.addEventListener('drop', async (e) => {
-            e.preventDefault();
-            名片_拖放區.style.backgroundColor = 'rgba(255, 196, 0, 0.05)';
-            const 檔案 = e.dataTransfer.files[0];
-            if (檔案) 名片_處理圖片上傳(檔案);
-        });
-
-        // 圖片處理流程並使用 Gemini API
-        async function 名片_處理圖片上傳(檔案) {
-            try {
-                if (!['image/png', 'image/jpeg'].includes(檔案.type)) {
-                    throw new Error('僅支援 PNG/JPEG 格式');
-                }
-
-                更新進度顯示('正在處理名片圖片...');
-                名片_更新進度(0);
-                名片_進度條容器.style.display = 'block';
-                名片_更新進度(20);
-
-                const 壓縮後檔案 = await 壓縮圖片(檔案, { maxWidth: 1024, quality: 0.7 });
-                名片_更新進度(50);
-                const base64資料 = await 轉換為Base64(壓縮後檔案);
-                名片_更新進度(70);
-
-                // 顯示上傳的圖片預覽
-                更新進度顯示('正在辨識名片...', base64資料);
-
-                // 使用 Gemini API 辨識名片
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [
-                                {
-                                    text: '請辨識這張圖片中的名片資訊，並以 JSON 格式返回以下字段：name（姓名）, title（職稱）, company（公司）, phone（電話）, email（信箱）, address（地址）, website（網站）。如果某字段無法辨識，請設為 "未知"。'
-                                },
-                                {
-                                    inlineData: {
-                                        mimeType: 檔案.type,
-                                        data: base64資料.split(',')[1] // 移除前綴
-                                    }
-                                }
-                            ]
-                        }]
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`Gemini API 請求失敗: ${response.status} - ${JSON.stringify(errorData)}`);
-                }
-
-                const data = await response.json();
-                const rawText = data.candidates[0].content.parts[0].text;
-                const jsonText = 提取JSON(rawText);
-                const 聯絡人資料 = JSON.parse(jsonText);
-
-                // 轉換字段名稱以匹配現有結構
-                const 轉換後資料 = {
-                    姓名: 聯絡人資料.name || 名片_欄位提示.姓名,
-                    職稱: 聯絡人資料.title || 名片_欄位提示.職稱,
-                    公司: 聯絡人資料.company || 名片_欄位提示.公司,
-                    電話: 聯絡人資料.phone || 名片_欄位提示.電話,
-                    信箱: 聯絡人資料.email || 名片_欄位提示.信箱,
-                    地址: 聯絡人資料.address || 名片_欄位提示.地址,
-                    網站: 聯絡人資料.website || 名片_欄位提示.網站
-                };
-
-                名片_更新進度(100);
-                名片_聯絡人列表 = [轉換後資料, ...名片_聯絡人列表];
-                名片_渲染聯絡人();
-
-                // 更新進度顯示
-                更新進度顯示('名片辨識完成！', base64資料);
-
-                setTimeout(() => {
-                    名片_進度條容器.style.display = 'none';
-                    名片_更新進度(0);
-                }, 500);
-            } catch (錯誤) {
-                顯示錯誤訊息(`處理失敗: ${錯誤.message}`);
-                名片_進度條容器.style.display = 'none';
-                名片_更新進度(0);
-            }
-        }
-
-        // 匯出到通訊錄
-        function 名片_匯出聯絡人(索引) {
-            const 聯絡人 = 名片_聯絡人列表[索引];
-            const vCard資料 = 名片_產生vCard(聯絡人);
-            
-            const 檔案 = new Blob([vCard資料], { type: 'text/vcard' });
-            const 檔案網址 = URL.createObjectURL(檔案);
-
-            更新進度顯示(`正在匯出 ${聯絡人.姓名} 的聯絡資訊...`);
-
-            if (是否為iOS裝置()) {
-                window.location.href = 檔案網址;
-            } else {
-                const 連結 = document.createElement('a');
-                連結.href = 檔案網址;
-                連結.download = `${聯絡人.姓名}.vcf`;
-                連結.click();
-                URL.revokeObjectURL(檔案網址);
-            }
-
-            setTimeout(() => {
-                更新進度顯示(`已匯出 ${聯絡人.姓名} 的聯絡資訊`);
-            }, 1000);
-        }
-
-        // 產生vCard格式
-        function 名片_產生vCard(聯絡人) {
-            let vCard = `BEGIN:VCARD
-VERSION:3.0
-N:${聯絡人.姓名};;;
-FN:${聯絡人.姓名}`;
-
-            if (聯絡人.公司 && 聯絡人.公司 !== 名片_欄位提示.公司 && 聯絡人.公司 !== "未知") 
-                vCard += `\nORG:${聯絡人.公司}`;
-            if (聯絡人.職稱 && 聯絡人.職稱 !== 名片_欄位提示.職稱 && 聯絡人.職稱 !== "未知") 
-                vCard += `\nTITLE:${聯絡人.職稱}`;
-            if (聯絡人.電話 && 聯絡人.電話 !== 名片_欄位提示.電話 && 聯絡人.電話 !== "未知") 
-                vCard += `\nTEL;TYPE=CELL:${聯絡人.電話}`;
-            if (聯絡人.信箱 && 聯絡人.信箱 !== 名片_欄位提示.信箱 && 聯絡人.信箱 !== "未知") 
-                vCard += `\nEMAIL:${聯絡人.信箱}`;
-            if (聯絡人.地址 && 聯絡人.地址 !== 名片_欄位提示.地址 && 聯絡人.地址 !== "未知") 
-                vCard += `\nADR:;;${聯絡人.地址}`;
-            if (聯絡人.網站 && 聯絡人.網站 !== 名片_欄位提示.網站 && 聯絡人.網站 !== "未知") 
-                vCard += `\nURL:${聯絡人.網站}`;
-
-            vCard += `\nEND:VCARD`;
-            return vCard;
-        }
-
-        // 雙擊編輯功能
-        function 名片_啟用編輯功能() {
-            document.querySelectorAll('#名片_聯絡人清單 .資料欄位').forEach(欄位 => {
-                欄位.ondblclick = function() {
-                    const 索引 = this.closest('.聯絡人項目').dataset.索引;
-                    const 欄位名稱 = this.dataset.欄位;
-                    const 值容器 = this.querySelector('.值內容');
-                    let 當前值 = 名片_聯絡人列表[索引][欄位名稱];
-                    if (Object.values(名片_欄位提示).includes(當前值) || 當前值 === "未知") 當前值 = "";
-                    
-                    const 輸入框 = 名片_建立編輯輸入框(當前值, 欄位名稱);
-                    輸入框.onblur = () => 名片_更新聯絡人欄位(索引, 欄位名稱, 輸入框.value);
-                    
-                    值容器.innerHTML = '';
-                    值容器.appendChild(輸入框);
-                    輸入框.focus();
-
-                    更新進度顯示(`正在編輯 ${名片_聯絡人列表[索引].姓名} 的 ${欄位名稱}`);
-                };
+    // ====== 名片辨識 ======
+    let cardContacts = [];
+    const cardFieldHint = { 姓名:"請輸入姓名", 職稱:"請輸入職稱", 公司:"請輸入公司名稱", 電話:"請輸入電話號碼", 信箱:"請輸入電子郵件", 地址:"請輸入地址", 網站:"請輸入網站網址" };
+    const cardDrop = document.getElementById('card-drop');
+    const cardFile = document.getElementById('card-file');
+    const cardProgress = document.getElementById('card-progress');
+    cardDrop.onclick = ()=>cardFile.click();
+    cardDrop.ondragover = e=>{e.preventDefault();cardDrop.style.background="rgba(255,196,0,0.13)";};
+    cardDrop.ondragleave = ()=>cardDrop.style.background="rgba(255,196,0,0.07)";
+    cardDrop.ondrop = e=>{
+        e.preventDefault();cardDrop.style.background="rgba(255,196,0,0.07)";
+        if(e.dataTransfer.files[0]) cardHandleUpload(e.dataTransfer.files[0]);
+    };
+    cardFile.onchange = e=>{
+        if(e.target.files[0]) cardHandleUpload(e.target.files[0]);
+    };
+    async function cardHandleUpload(file) {
+        try {
+            setStatus('名片圖片上傳中...');
+            cardProgress.style.width='15%';
+            if(!['image/png','image/jpeg'].includes(file.type)) throw new Error('僅支援 PNG/JPG');
+            const base64 = await fileToBase64(file);
+            cardProgress.style.width='50%';
+            setStatus('名片辨識中...', base64);
+            const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD3McoKeSkz7WovvznaKk9uWf_Q1CDGHVw',{
+                method:'POST',headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({contents:[{parts:[
+                    {text:'請辨識這張圖片中的名片資訊，並以 JSON 格式返回以下字段：name（姓名）, title（職稱）, company（公司）, phone（電話）, email（信箱）, address（地址）, website（網站）。如果某字段無法辨識，請設為 "未知"。'},
+                    {inlineData:{mimeType:file.type,data:base64.split(',')[1]}}
+                ]}]})
             });
+            cardProgress.style.width='85%';
+            if(!resp.ok) throw new Error('API失敗');
+            const data = await resp.json();
+            const raw = data.candidates[0].content.parts[0].text;
+            const json = extractJson(raw);
+            const c = JSON.parse(json);
+            const obj = {
+                姓名: c.name||cardFieldHint.姓名,
+                職稱: c.title||cardFieldHint.職稱,
+                公司: c.company||cardFieldHint.公司,
+                電話: c.phone||cardFieldHint.電話,
+                信箱: c.email||cardFieldHint.信箱,
+                地址: c.address||cardFieldHint.地址,
+                網站: c.website||cardFieldHint.網站
+            };
+            cardContacts.unshift(obj);
+            cardRender();
+            setStatus('名片辨識完成', base64);
+            cardProgress.style.width='100%';
+            setTimeout(()=>cardProgress.style.width='0%', 800);
+        } catch(e) {
+            showError('名片辨識失敗：'+e.message);
+            cardProgress.style.width='0%';
         }
-
-        // 渲染聯絡人列表
-        function 名片_渲染聯絡人() {
-            const 容器 = document.getElementById('名片_聯絡人清單');
-            容器.innerHTML = 名片_聯絡人列表.map((聯絡人, 索引) => `
-                <div class="聯絡人項目" data-索引="${索引}">
-                    <div class="聯絡人內容">
-                        ${名片_產生欄位HTML(聯絡人, '姓名', '👤')}
-                        ${名片_產生欄位HTML(聯絡人, '職稱', '💼')}
-                        ${名片_產生欄位HTML(聯絡人, '公司', '🏢')}
-                        ${名片_產生欄位HTML(聯絡人, '電話', '📱')}
-                        ${名片_產生欄位HTML(聯絡人, '信箱', '📧')}
-                        ${名片_產生欄位HTML(聯絡人, '地址', '📍')}
-                        ${名片_產生欄位HTML(聯絡人, '網站', '🌐')}
-                    </div>
-                    <button class="主要按鈕" onclick="名片_匯出聯絡人(${索引})">
-                        加入通訊錄
-                    </button>
+    }
+    function cardRender() {
+        const wrap = document.getElementById('card-list');
+        wrap.innerHTML = cardContacts.map((c,i)=>`
+            <div class="contact-card" data-i="${i}">
+                <div class="contact-content">
+                    ${cardFieldHtml(c,'姓名','👤')}
+                    ${cardFieldHtml(c,'職稱','💼')}
+                    ${cardFieldHtml(c,'公司','🏢')}
+                    ${cardFieldHtml(c,'電話','📱')}
+                    ${cardFieldHtml(c,'信箱','📧')}
+                    ${cardFieldHtml(c,'地址','📍')}
+                    ${cardFieldHtml(c,'網站','🌐')}
                 </div>
-            `).join('');
-
-            名片_啟用編輯功能();
-        }
-
-        // 產生欄位HTML
-        function 名片_產生欄位HTML(聯絡人, 欄位, 圖示) {
-            const 值 = 聯絡人[欄位] || 名片_欄位提示[欄位];
-            const 是提示 = !聯絡人[欄位] || 值 === '未知' || 值 === 名片_欄位提示[欄位];
-            return `
-                <div class="資料欄位" data-欄位="${欄位}">
-                    <div class="圖示區">${圖示}</div>
-                    <div class="值內容${是提示 ? ' 提示文字' : ''}">${值}</div>
-                </div>
-            `;
-        }
-
-        // 名片系統工具函式
-        function 名片_更新進度(百分比) {
-            名片_進度條.style.width = `${百分比}%`;
-        }
-
-        function 名片_建立編輯輸入框(值, 欄位) {
-            const 輸入框 = document.createElement('input');
-            輸入框.className = '編輯輸入框';
-            輸入框.value = 值;
-            
-            if (欄位 === '電話') 輸入框.pattern = "[0-9-]{10,}";
-            if (欄位 === '信箱') 輸入框.type = 'email';
-            if (欄位 === '網站') 輸入框.placeholder = "https://";
-
-            return 輸入框;
-        }
-
-        function 名片_更新聯絡人欄位(索引, 欄位, 值) {
-            名片_聯絡人列表[索引][欄位] = 值 || 名片_欄位提示[欄位];
-            名片_渲染聯絡人();
-
-            更新進度顯示(`已更新 ${名片_聯絡人列表[索引].姓名} 的 ${欄位}`);
-        }
-
-        function 名片_新增聯絡人() {
-            名片_聯絡人列表.unshift({
-                姓名: 名片_欄位提示.姓名,
-                職稱: 名片_欄位提示.職稱,
-                公司: 名片_欄位提示.公司,
-                電話: 名片_欄位提示.電話,
-                信箱: 名片_欄位提示.信箱,
-                地址: 名片_欄位提示.地址,
-                網站: 名片_欄位提示.網站
+                <button class="main-btn" onclick="cardExportContact(${i})">加入通訊錄</button>
+            </div>
+        `).join('');
+        cardEnableEdit();
+    }
+    function cardFieldHtml(obj, k, icon) {
+        const v = obj[k]||cardFieldHint[k];
+        const isHint = !obj[k]||v==='未知';
+        return `<div class="field-row${isHint?' hint':''}" data-field="${k}"><span class="field-icon">${icon}</span><span class="field-val">${v}</span></div>`;
+    }
+    function cardEnableEdit() {
+        document.querySelectorAll('#card-list .field-row').forEach(row=>{
+            row.ondblclick = function() {
+                const idx = this.closest('.contact-card').dataset.i;
+                const field = this.dataset.field;
+                const valSpan = this.querySelector('.field-val');
+                const nowVal = cardContacts[idx][field]==='未知'||Object.values(cardFieldHint).includes(cardContacts[idx][field])?'':cardContacts[idx][field];
+                const input = document.createElement('input');
+                input.className = 'field-edit';
+                input.value = nowVal;
+                input.onblur = ()=>{cardContacts[idx][field]=input.value||cardFieldHint[field];cardRender();};
+                valSpan.innerHTML = '';
+                valSpan.appendChild(input);
+                input.focus();
+            };
+        });
+    }
+    function cardExportContact(i) {
+        const c = cardContacts[i];
+        let vCard = `BEGIN:VCARD\nVERSION:3.0\nN:${c.姓名};;;\nFN:${c.姓名}`;
+        if(c.公司&&c.公司!==cardFieldHint.公司&&c.公司!=='未知')vCard+=`\nORG:${c.公司}`;
+        if(c.職稱&&c.職稱!==cardFieldHint.職稱&&c.職稱!=='未知')vCard+=`\nTITLE:${c.職稱}`;
+        if(c.電話&&c.電話!==cardFieldHint.電話&&c.電話!=='未知')vCard+=`\nTEL;TYPE=CELL:${c.電話}`;
+        if(c.信箱&&c.信箱!==cardFieldHint.信箱&&c.信箱!=='未知')vCard+=`\nEMAIL:${c.信箱}`;
+        if(c.地址&&c.地址!==cardFieldHint.地址&&c.地址!=='未知')vCard+=`\nADR:;;${c.地址}`;
+        if(c.網站&&c.網站!==cardFieldHint.網站&&c.網站!=='未知')vCard+=`\nURL:${c.網站}`;
+        vCard+=`\nEND:VCARD`;
+        const blob = new Blob([vCard],{type:'text/vcard'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${c.姓名}.vcf`;
+        a.click();
+        URL.revokeObjectURL(url);
+        setStatus('已匯出 '+c.姓名+' 的聯絡資訊');
+    }
+    function cardAddContact() {
+        cardContacts.unshift({...cardFieldHint});
+        cardRender();
+        setStatus('已新增空白聯絡人');
+    }
+    // ====== 行程管理 ======
+    let scheduleEvents = [];
+    const scheduleDrop = document.getElementById('schedule-drop');
+    const scheduleFile = document.getElementById('schedule-file');
+    const scheduleProgress = document.getElementById('schedule-progress');
+    scheduleDrop.onclick = ()=>scheduleFile.click();
+    scheduleDrop.ondragover = e=>{e.preventDefault();scheduleDrop.style.background="rgba(255,196,0,0.13)";};
+    scheduleDrop.ondragleave = ()=>scheduleDrop.style.background="rgba(255,196,0,0.07)";
+    scheduleDrop.ondrop = e=>{
+        e.preventDefault();scheduleDrop.style.background="rgba(255,196,0,0.07)";
+        if(e.dataTransfer.files[0]) scheduleHandleImage(e.dataTransfer.files[0]);
+    };
+    scheduleFile.onchange = e=>{
+        if(e.target.files[0]) scheduleHandleImage(e.target.files[0]);
+    };
+    async function scheduleHandleImage(file) {
+        try {
+            setStatus('行程圖片上傳中...');
+            scheduleProgress.style.width='15%';
+            if(!['image/png','image/jpeg'].includes(file.type)) throw new Error('僅支援 PNG/JPG');
+            const base64 = await fileToBase64(file);
+            scheduleProgress.style.width='50%';
+            setStatus('行程辨識中...', base64);
+            const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD3McoKeSkz7WovvznaKk9uWf_Q1CDGHVw',{
+                method:'POST',headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({contents:[{parts:[
+                    {text:'請辨識這張圖片中的行程資訊，並以 JSON 格式返回以下字段：title（活動名稱）, date（日期，格式 YYYY-MM-DD）, startTime（開始時間，HH:MM）, endTime（結束時間，HH:MM）, location（地點）, cost（費用）, notes（備註）。如果某字段無法辨識，請設為 "未知"。'},
+                    {inlineData:{mimeType:file.type,data:base64.split(',')[1]}}
+                ]}]})
             });
-            名片_渲染聯絡人();
-
-            更新進度顯示('已新增空白聯絡人');
+            scheduleProgress.style.width='85%';
+            if(!resp.ok) throw new Error('API失敗');
+            const data = await resp.json();
+            const raw = data.candidates[0].content.parts[0].text;
+            const json = extractJson(raw);
+            const e = JSON.parse(json);
+            scheduleShowRecognized(e, '圖片辨識結果');
+            setStatus('行程辨識完成', base64);
+            scheduleProgress.style.width='100%';
+            setTimeout(()=>scheduleProgress.style.width='0%', 800);
+        } catch(e) {
+            showError('行程辨識失敗：'+e.message);
+            scheduleProgress.style.width='0%';
         }
-
-        //========== 行程管理系統 ==========
-        let 行程_事件列表 = [];
-        let 行程_是否編輯中 = false;
-
-        // 初始化拖放功能
-        const 行程_拖放區 = document.getElementById('行程_拖放區');
-        const 行程_檔案輸入 = document.getElementById('行程_檔案輸入');
-        const 行程_進度條 = document.getElementById('行程_進度條');
-
-        行程_拖放區.addEventListener('click', () => 行程_檔案輸入.click());
-        
-        行程_拖放區.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            行程_拖放區.style.backgroundColor = 'rgba(255, 196, 0, 0.1)';
-        });
-
-        行程_拖放區.addEventListener('dragleave', () => {
-            行程_拖放區.style.backgroundColor = 'rgba(255, 196, 0, 0.05)';
-        });
-
-        行程_拖放區.addEventListener('drop', async (e) => {
-            e.preventDefault();
-            行程_拖放區.style.backgroundColor = 'rgba(255, 196, 0, 0.05)';
-            const 檔案 = e.dataTransfer.files[0];
-            if (檔案) 行程_處理圖片上傳(檔案);
-        });
-
-        行程_檔案輸入.addEventListener('change', (e) => {
-            if (e.target.files[0]) {
-                行程_處理圖片上傳(e.target.files[0]);
-                e.target.value = ''; // 重置檔案輸入
-            }
-        });
-
-        // 行程圖片處理函式 - 串接 Gemini API
-        async function 行程_處理圖片上傳(檔案) {
-            try {
-                if (!['image/png', 'image/jpeg'].includes(檔案.type)) {
-                    throw new Error('僅支援PNG/JPEG格式');
-                }
-
-                更新進度顯示('正在處理行程圖片...');
-                行程_更新進度(20);
-
-                const base64Image = await 轉換為Base64(檔案);
-                行程_更新進度(40);
-
-                // 顯示上傳的圖片預覽
-                更新進度顯示('正在辨識行程資訊...', base64Image);
-                行程_更新進度(60);
-
-                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + API_KEY, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [
-                                {
-                                    text: '請辨識這張圖片中的行程資訊，並以 JSON 格式返回以下字段：title（活動名稱）, date（日期，格式 YYYY-MM-DD）, startTime（開始時間，HH:MM）, endTime（結束時間，HH:MM）, location（地點）, cost（費用）, notes（備註）。如果某字段無法辨識，請設為 "未知"。'
-                                },
-                                {
-                                    inlineData: {
-                                        mimeType: 檔案.type,
-                                        data: base64Image.split(',')[1]
-                                    }
-                                }
-                            ]
-                        }]
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error('API 請求失敗');
-                }
-
-                行程_更新進度(80);
-
-                const data = await response.json();
-                const rawText = data.candidates[0].content.parts[0].text;
-                const jsonText = 提取JSON(rawText);
-                const recognizedEvent = JSON.parse(jsonText);
-
-                行程_更新進度(100);
-                行程_顯示辨識結果(recognizedEvent, '圖片辨識結果');
-                更新進度顯示('行程資訊辨識完成！', base64Image);
-
-                setTimeout(() => {
-                    行程_更新進度(0);
-                }, 1000);
-            } catch (error) {
-                顯示錯誤訊息(`圖片處理失敗: ${error.message}`);
-                行程_更新進度(0);
-            }
-        }
-
-        // 行程文字處理函式 - 串接 Gemini API
-        async function 行程_處理文字輸入() {
-            const textInput = document.getElementById('行程_文字輸入').value.trim();
-            if (!textInput) {
-                顯示錯誤訊息('請輸入文字');
-                return;
-            }
-
-            try {
-                更新進度顯示('正在處理文字輸入...');
-                行程_更新進度(20);
-
-                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + API_KEY, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [
-                                {
-                                    text: `請從以下文字中提取行程資訊，並以 JSON 格式返回以下字段：title（活動名稱）, date（日期，格式 YYYY-MM-DD）, startTime（開始時間，HH:MM）, endTime（結束時間，HH:MM）, location（地點）, cost（費用）, notes（備註）。如果某字段無法辨識，請設為 "未知"。文字內容：${textInput}`
-                                }
-                            ]
-                        }]
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error('API 請求失敗');
-                }
-
-                行程_更新進度(60);
-
-                const data = await response.json();
-                const rawText = data.candidates[0].content.parts[0].text;
-                const jsonText = 提取JSON(rawText);
-                const recognizedEvent = JSON.parse(jsonText);
-
-                行程_更新進度(100);
-                行程_顯示辨識結果(recognizedEvent, '文字辨識結果');
-                更新進度顯示('文字輸入辨識完成！');
-
-                setTimeout(() => {
-                    行程_更新進度(0);
-                }, 1000);
-            } catch (error) {
-                顯示錯誤訊息(`文字處理失敗: ${error.message}`);
-                行程_更新進度(0);
-            }
-        }
-
-        // 顯示辨識結果的函數
-        function 行程_顯示辨識結果(recognizedEvent, sourceLabel) {
-            const container = document.getElementById('行程_事件列表');
-            const tempDiv = document.createElement('div');
-            tempDiv.className = '事件項目';
-            tempDiv.innerHTML = `
-                <div class="事件內容">
-                    <div class="事件標題" data-field="title">
-                        <div class="欄位圖示">📌</div>
-                        <div>${recognizedEvent.title} (${sourceLabel})</div>
-                    </div>
-                    <div class="事件欄位" data-field="time">
-                        <div class="欄位圖示">🕒</div>
-                        <div>${recognizedEvent.date} ${recognizedEvent.startTime} - ${recognizedEvent.endTime}</div>
-                    </div>
-                    <div class="事件欄位" data-field="location">
-                        <div class="欄位圖示">📍</div>
-                        <div>${recognizedEvent.location}</div>
-                    </div>
-                    <div class="事件欄位" data-field="cost">
-                        <div class="欄位圖示">💰</div>
-                        <div>${recognizedEvent.cost}</div>
-                    </div>
-                    <div class="事件欄位" data-field="notes">
-                        <div class="欄位圖示">📝</div>
-                        <div>${recognizedEvent.notes}</div>
-                    </div>
+    }
+    function scheduleShowRecognized(e, label) {
+        const wrap = document.getElementById('schedule-list');
+        const tempDiv = document.createElement('div');
+        tempDiv.className = 'event-item';
+        tempDiv.innerHTML = `
+            <div class="event-content">
+                <div class="event-title" data-field="title"><span class="field-icon">📌</span><span>${e.title} (${label})</span></div>
+                <div class="event-field" data-field="time"><span class="field-icon">🕒</span><span>${e.date} ${e.startTime} - ${e.endTime}</span></div>
+                <div class="event-field" data-field="location"><span class="field-icon">📍</span><span>${e.location}</span></div>
+                <div class="event-field" data-field="cost"><span class="field-icon">💰</span><span>${e.cost}</span></div>
+                <div class="event-field" data-field="notes"><span class="field-icon">📝</span><span>${e.notes}</span></div>
+            </div>
+            <div>
+                <button class="main-btn" onclick='scheduleConfirmEvent(${JSON.stringify(e)})'>確認新增</button>
+                <button class="sec-btn" onclick="this.parentElement.parentElement.remove()">取消</button>
+            </div>
+        `;
+        wrap.insertBefore(tempDiv, wrap.firstChild);
+    }
+    function scheduleConfirmEvent(e) {
+        scheduleEvents.push(e);
+        scheduleRender();
+        setStatus('已確認新增 '+e.title+' 行程');
+    }
+    function scheduleRender() {
+        const wrap = document.getElementById('schedule-list');
+        wrap.innerHTML = scheduleEvents.map((e,i)=>`
+            <div class="event-item" data-i="${i}">
+                <div class="event-content">
+                    <div class="event-title" data-field="title"><span class="field-icon">📌</span><span>${e.title}</span></div>
+                    <div class="event-field" data-field="time"><span class="field-icon">🕒</span><span>${e.date} ${e.startTime} - ${e.endTime}</span></div>
+                    <div class="event-field" data-field="location"><span class="field-icon">📍</span><span>${e.location}</span></div>
+                    <div class="event-field" data-field="cost"><span class="field-icon">💰</span><span>${e.cost}</span></div>
+                    <div class="event-field" data-field="notes"><span class="field-icon">📝</span><span>${e.notes}</span></div>
                 </div>
-                <div>
-                    <button class="主要按鈕" onclick='行程_確認事件(${JSON.stringify(recognizedEvent)})'>
-                        確認新增
-                    </button>
-                    <button class="次要按鈕" onclick="this.parentElement.parentElement.remove()">
-                        取消
-                    </button>
-                </div>
-            `;
-            container.insertBefore(tempDiv, container.firstChild);
-        }
-
-        // 確認新增事件
-        function 行程_確認事件(eventData) {
-            行程_事件列表.push(eventData);
-            行程_渲染事件();
-            更新進度顯示(`已確認新增 ${eventData.title} 行程`);
-        }
-
-        // 時間輸入元件
-        function 行程_創建時間編輯器(dateStr, startTime, endTime) {
-            const [year, month, day] = dateStr.split('-');
-            const [startHour, startMinute] = startTime.split(':');
-            const [endHour, endMinute] = endTime.split(':');
-
-            return `
-                <div class="時間輸入組">
-                    <input class="時間輸入" type="number" value="${year}" placeholder="年" min="2000" max="2100">
-                    <input class="時間輸入" type="number" value="${month}" placeholder="月" min="1" max="12">
-                    <input class="時間輸入" type="number" value="${day}" placeholder="日" min="1" max="31">
-                    <span>|</span>
-                    <input class="時間輸入" type="number" value="${startHour}" placeholder="時" min="0" max="23">
-                    <input class="時間輸入" type="number" value="${startMinute}" placeholder="分" min="0" max="59">
-                    <span>-</span>
-                    <input class="時間輸入" type="number" value="${endHour}" placeholder="時" min="0" max="23">
-                    <input class="時間輸入" type="number" value="${endMinute}" placeholder="分" min="0" max="59">
-                </div>
-            `;
-        }
-
-        // 驗證日期時間
-        function 行程_驗證日期時間(year, month, day, startHour, startMinute, endHour, endMinute) {
-            const date = new Date(year, month - 1, day, startHour, startMinute);
-            const end = new Date(year, month - 1, day, endHour, endMinute);
-            return date.getDate() === parseInt(day) && end > date;
-        }
-
-        // 強化行程編輯功能
-        function 行程_啟用編輯功能() {
-            document.querySelectorAll('#行程_事件列表 .事件標題, #行程_事件列表 .事件欄位').forEach(element => {
-                element.ondblclick = function() {
-                    if (行程_是否編輯中) return; // 避免多重編輯
-                    const index = this.closest('.事件項目').dataset.index;
-                    if (index === undefined) return; // 避免臨時事件觸發編輯
-                    const field = this.dataset.field;
-                    const event = 行程_事件列表[index];
-
-                    行程_是否編輯中 = true;
-                    const editorContainer = document.createElement('div');
-                    
-                    if (field === 'time') {
-                        editorContainer.innerHTML = 行程_創建時間編輯器(
-                            event.date, 
-                            event.startTime, 
-                            event.endTime
-                        );
-
-                        const inputs = editorContainer.querySelectorAll('input');
-                        inputs.forEach(input => input.addEventListener('blur', () => {
-                            const values = Array.from(inputs).map(i => i.value.padStart(2, '0'));
-                            const [year, month, day, startHour, startMinute, endHour, endMinute] = values;
-                            if (行程_驗證日期時間(year, month, day, startHour, startMinute, endHour, endMinute)) {
-                                event.date = `${year}-${month}-${day}`;
-                                event.startTime = `${startHour}:${startMinute}`;
-                                event.endTime = `${endHour}:${endMinute}`;
-                                行程_渲染事件();
-                                更新進度顯示(`已更新 ${event.title} 的時間資訊`);
-                            } else {
-                                顯示錯誤訊息('無效的日期或時間');
-                                行程_渲染事件();
-                            }
-                            行程_是否編輯中 = false;
-                        }));
-                    } else {
-                        const input = document.createElement('input');
-                        input.value = event[field];
-                        input.style.width = '100%';
-                        input.addEventListener('blur', () => {
-                            event[field] = input.value;
-                            行程_渲染事件();
-                            行程_是否編輯中 = false;
-                            更新進度顯示(`已更新 ${event.title} 的 ${field}`);
-                        });
-                        editorContainer.appendChild(input);
-                    }
-
-                    this.innerHTML = '';
-                    this.appendChild(editorContainer);
-                    editorContainer.querySelector('input')?.focus();
-                    
-                    更新進度顯示(`正在編輯 ${event.title} 的 ${field}`);
-                };
+                <button class="main-btn" onclick="scheduleExportCalendar(${i})">新增到Google日曆</button>
+            </div>
+        `).join('');
+        scheduleEnableEdit();
+    }
+    function scheduleEnableEdit() {
+        document.querySelectorAll('#schedule-list .event-title, #schedule-list .event-field').forEach(el=>{
+            el.ondblclick = function() {
+                const idx = this.closest('.event-item').dataset.i;
+                if(idx===undefined) return;
+                const field = this.dataset.field;
+                const e = scheduleEvents[idx];
+                if(field==='time') {
+                    const [y,m,d]=e.date.split('-'), [sh,sm]=e.startTime.split(':'), [eh,em]=e.endTime.split(':');
+                    const html = `
+                        <div style="display:flex;gap:5px;align-items:center;">
+                            <input class="field-edit" type="number" value="${y}" min="2000" max="2100" style="width:60px;">
+                            <input class="field-edit" type="number" value="${m}" min="1" max="12" style="width:40px;">
+                            <input class="field-edit" type="number" value="${d}" min="1" max="31" style="width:40px;">
+                            <span>|</span>
+                            <input class="field-edit" type="number" value="${sh}" min="0" max="23" style="width:40px;">
+                            <input class="field-edit" type="number" value="${sm}" min="0" max="59" style="width:40px;">
+                            <span>-</span>
+                            <input class="field-edit" type="number" value="${eh}" min="0" max="23" style="width:40px;">
+                            <input class="field-edit" type="number" value="${em}" min="0" max="59" style="width:40px;">
+                        </div>`;
+                    this.innerHTML = html;
+                    const inputs = this.querySelectorAll('input');
+                    inputs.forEach(input=>input.onblur=()=>{
+                        const [yy,mm,dd,shh,smm,ehh,emm]=Array.from(inputs).map(i=>i.value.padStart(2,'0'));
+                        e.date=`${yy}-${mm}-${dd}`;e.startTime=`${shh}:${smm}`;e.endTime=`${ehh}:${emm}`;
+                        scheduleRender();
+                    });
+                    inputs[0].focus();
+                } else {
+                    const valSpan = this.querySelector('span:last-child');
+                    const input = document.createElement('input');
+                    input.className = 'field-edit';
+                    input.value = e[field];
+                    input.onblur = ()=>{e[field]=input.value;scheduleRender();};
+                    valSpan.innerHTML = '';
+                    valSpan.appendChild(input);
+                    input.focus();
+                }
+            };
+        });
+    }
+    function scheduleAddEvent() {
+        const today = new Date().toISOString().split('T')[0];
+        scheduleEvents.push({
+            title:"新行程", date:today, startTime:"09:00", endTime:"10:00",
+            location:"未指定", cost:"未知", notes:"請輸入詳細資訊"
+        });
+        scheduleRender();
+        setStatus('已新增空白行程');
+    }
+    function scheduleExportCalendar(i) {
+        const e = scheduleEvents[i];
+        const [y,m,d]=e.date.split('-'), [sh,sm]=e.startTime.split(':'), [eh,em]=e.endTime.split(':');
+        const start = `${y}${m}${d}T${sh}${sm}00`, end = `${y}${m}${d}T${eh}${em}00`;
+        const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(e.title)}&dates=${start}/${end}&location=${encodeURIComponent(e.location)}&details=${encodeURIComponent('費用: '+e.cost+'\n備註: '+e.notes)}`;
+        window.open(url,'_blank');
+        setStatus('已匯出 '+e.title+' 到 Google 日曆');
+    }
+    async function scheduleHandleText() {
+        const text = document.getElementById('schedule-text').value.trim();
+        if(!text) return showError('請輸入文字');
+        try {
+            setStatus('文字辨識中...');
+            const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD3McoKeSkz7WovvznaKk9uWf_Q1CDGHVw',{
+                method:'POST',headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({contents:[{parts:[
+                    {text:`請從以下文字中提取行程資訊，並以 JSON 格式返回以下字段：title（活動名稱）, date（日期，格式 YYYY-MM-DD）, startTime（開始時間，HH:MM）, endTime（結束時間，HH:MM）, location（地點）, cost（費用）, notes（備註）。如果某字段無法辨識，請設為 "未知"。文字內容：${text}`}
+                ]}]})
             });
+            if(!resp.ok) throw new Error('API失敗');
+            const data = await resp.json();
+            const raw = data.candidates[0].content.parts[0].text;
+            const json = extractJson(raw);
+            const e = JSON.parse(json);
+            scheduleShowRecognized(e, '文字辨識結果');
+            setStatus('文字辨識完成');
+        } catch(e) {
+            showError('文字辨識失敗：'+e.message);
         }
-
-        // 渲染事件列表
-        function 行程_渲染事件() {
-            const container = document.getElementById('行程_事件列表');
-            container.innerHTML = 行程_事件列表.map((event, index) => `
-                <div class="事件項目" data-index="${index}">
-                    <div class="事件內容">
-                        <div class="事件標題" data-field="title">
-                            <div class="欄位圖示">📌</div>
-                            <div>${event.title}</div>
-                        </div>
-                        <div class="事件欄位" data-field="time">
-                            <div class="欄位圖示">🕒</div>
-                            <div>${event.date} ${event.startTime} - ${event.endTime}</div>
-                        </div>
-                        <div class="事件欄位" data-field="location">
-                            <div class="欄位圖示">📍</div>
-                            <div>${event.location}</div>
-                        </div>
-                        <div class="事件欄位" data-field="cost">
-                            <div class="欄位圖示">💰</div>
-                            <div>${event.cost}</div>
-                        </div>
-                        <div class="事件欄位" data-field="notes">
-                            <div class="欄位圖示">📝</div>
-                            <div>${event.notes}</div>
-                        </div>
-                    </div>
-                    <button class="主要按鈕" onclick="行程_匯出到Google日曆(${index})">
-                        新增到Google日曆
-                    </button>
+    }
+    // ====== 懶人複製貼上 ======
+    let clipboardSnippets = [];
+    function clipboardLoad() {
+        const saved = localStorage.getItem('snippets');
+        if(saved) clipboardSnippets = JSON.parse(saved);
+    }
+    function clipboardSave() {
+        localStorage.setItem('snippets', JSON.stringify(clipboardSnippets));
+    }
+    function clipboardAdd() {
+        const val = document.getElementById('clipboard-input').value.trim();
+        if(!val) return;
+        clipboardSnippets.unshift(val);
+        clipboardSave();
+        clipboardRender();
+        document.getElementById('clipboard-input').value = '';
+        setStatus('已新增片段');
+    }
+    function clipboardRender() {
+        const ul = document.getElementById('clipboard-list');
+        ul.innerHTML = clipboardSnippets.map((s,i)=>`
+            <li class="snippet-li" draggable="true" data-i="${i}">
+                <div class="snippet-content" ondblclick="clipboardEdit(${i},this)">${s}</div>
+                <div class="snippet-btns">
+                    <button class="sec-btn" onclick="clipboardCopy(${i})">複製</button>
+                    <button class="sec-btn" onclick="clipboardDelete(${i})">刪除</button>
                 </div>
-            `).join('');
-
-            行程_啟用編輯功能();
-        }
-
-        // 新增空白事件
-        function 行程_新增事件() {
-            const today = new Date().toISOString().split('T')[0];
-            行程_事件列表.push({
-                title: "新行程",
-                date: today,
-                startTime: "09:00",
-                endTime: "10:00",
-                location: "未指定",
-                cost: "未知",
-                notes: "請輸入詳細資訊"
+            </li>
+        `).join('');
+        clipboardInitDrag();
+    }
+    function clipboardEdit(i, el) {
+        const input = document.createElement('textarea');
+        input.className = 'field-edit';
+        input.value = clipboardSnippets[i];
+        input.style.minHeight = '60px';
+        input.onblur = ()=>{clipboardSnippets[i]=input.value;clipboardSave();clipboardRender();};
+        el.innerHTML = '';
+        el.appendChild(input);
+        input.focus();
+    }
+    function clipboardCopy(i) {
+        navigator.clipboard.writeText(clipboardSnippets[i]);
+        setStatus('已複製內容');
+    }
+    function clipboardDelete(i) {
+        clipboardSnippets.splice(i,1);
+        clipboardSave();
+        clipboardRender();
+        setStatus('已刪除片段');
+    }
+    function clipboardInitDrag() {
+        let draggedIdx = null;
+        document.querySelectorAll('.snippet-li').forEach(li=>{
+            li.ondragstart = e=>{draggedIdx = +li.dataset.i;};
+            li.ondragover = e=>{e.preventDefault();};
+            li.ondrop = e=>{
+                e.preventDefault();
+                const targetIdx = +li.dataset.i;
+                if(draggedIdx===null||draggedIdx===targetIdx) return;
+                const [item] = clipboardSnippets.splice(draggedIdx,1);
+                clipboardSnippets.splice(targetIdx,0,item);
+                clipboardSave();
+                clipboardRender();
+            };
+        });
+    }
+    // Google Sheets同步
+    async function clipboardSyncSheet() {
+        try {
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQG0ujQ9qJqa1V4T7uqxLHAAg1-u84Iw1bVm7dV5wZ-39L6kdssyLYyfmaUr6JTegonBRG7HABxJih3/pub?gid=0&single=true&output=csv';
+            const proxies = [
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(sheetUrl)}`,
+                `https://corsproxy.io/?${encodeURIComponent(sheetUrl)}`,
+                `https://api.codetabs.com/v1/proxy?quest=${sheetUrl}`
+            ];
+            let text = '';
+            for(const url of proxies) {
+                try {
+                    const resp = await fetch(url);
+                    if(resp.ok) { text = await resp.text(); if(text.trim()) break; }
+                } catch {}
+            }
+            if(!text) throw new Error('Google Sheets同步失敗');
+            const rows = text.split('\n').map(r=>r.trim()).filter(r=>r.length>0);
+            const merged = [...clipboardSnippets];
+            rows.reverse().forEach(item=>{
+                if(!merged.includes(item)) merged.unshift(item);
             });
-            行程_渲染事件();
-            更新進度顯示('已新增空白行程');
+            clipboardSnippets = merged.slice(0,50);
+            clipboardSave();
+            clipboardRender();
+        } catch(e) {
+            clipboardRender();
         }
-
-        // 匯出到Google日曆
-        function 行程_匯出到Google日曆(index) {
-            const event = 行程_事件列表[index];
-            
-            const [year, month, day] = event.date.split('-');
-            const [startHour, startMinute] = event.startTime.split(':');
-            const [endHour, endMinute] = event.endTime.split(':');
-            
-            const startDateTime = `${year}${month}${day}T${startHour}${startMinute}00`;
-            const endDateTime = `${year}${month}${day}T${endHour}${endMinute}00`;
-
-            const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE` +
-                `&text=${encodeURIComponent(event.title)}` +
-                `&dates=${startDateTime}/${endDateTime}` +
-                `&location=${encodeURIComponent(event.location)}` +
-                `&details=${encodeURIComponent(`費用: ${event.cost}\n備註: ${event.notes}`)}`;
-
-            window.open(googleCalendarUrl, '_blank');
-            更新進度顯示(`已匯出 ${event.title} 到 Google 日曆`);
-        }
-
-        // 更新行程進度條
-        function 行程_更新進度(百分比) {
-            行程_進度條.style.width = `${百分比}%`;
-        }
-
-        // 初始化兩個系統
-        名片_新增聯絡人();
-        行程_新增事件();
-
-        // 初始更新進度顯示
-        更新進度顯示('系統已準備就緒');
+    }
+    // ====== 工具 ======
+    function fileToBase64(file) {
+        return new Promise((resolve, reject)=>{
+            const reader = new FileReader();
+            reader.onload = ()=>resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+    function extractJson(raw) {
+        const m = raw.match(/``````/);
+        if(m) return m[1].trim();
+        const m2 = raw.match(/{[\s\S]*}/);
+        if(m2) return m2[0];
+        throw new Error('無法提取有效的 JSON 回應');
+    }
+    function showError(msg) {
+        setStatus('錯誤：'+msg);
+        alert(msg);
+    }
+    // ====== 初始化 ======
+    // 名片
+    cardAddContact();
+    // 行程
+    scheduleAddEvent();
+    // 剪貼簿
+    clipboardLoad();
+    clipboardSyncSheet();
+    clipboardRender();
+    setStatus('系統已準備就緒');
     </script>
 </body>
 </html>
