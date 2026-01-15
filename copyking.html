@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CopyKing 雲端管理員 👑</title>
+  <style>
+    :root {
+      --primary: #FFC400;
+      --primary-dark: #ffab00;
+      --bg-gray: #f5f5f5;
+      --danger: #ff5252;
+      --text-dark: #333;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Microsoft JhengHei", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      padding-bottom: 120px;
+      background-color: var(--bg-gray);
+      color: var(--text-dark);
+    }
+
+    /* 頂部導覽列 */
+    header {
+      background: var(--primary);
+      padding: 20px 15px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      color: #000;
+    }
+
+    #statusText {
+      font-size: 13px;
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    /* 搜尋列 */
+    .search-container {
+      display: flex;
+      width: 100%;
+    }
+
+    .search-box {
+      flex: 1;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      font-size: 16px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    /* 主內容區 */
+    main {
+      padding: 15px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* 資料卡片 */
+    .card {
+      background: var(--white);
+      border-left: 6px solid var(--primary);
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-content {
+      margin-right: 45px;
+      min-height: 24px;
+      outline: none;
+      word-break: break-all;
+      white-space: pre-wrap;
+      /* 重要：保留換行格式 */
+      font-size: 16px;
+      line-height: 1.6;
+      padding: 5px;
+      border-radius: 4px;
+    }
+
+    .card-content:focus {
+      background: #fffdf2;
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    .tags-row {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      background: #f0f0f0;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      color: #666;
+      border: 1px solid #ddd;
+    }
+
+    /* 按鈕 */
+    .actions {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      background: var(--white);
+      border: 1px solid #eee;
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      color: #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: var(--primary);
+      color: #000;
+      border-color: var(--primary);
+    }
+
+    .icon-btn.btn-delete:hover {
+      background: var(--danger);
+      color: white;
+      border-color: var(--danger);
+    }
+
+    /* 底部輸入區域 */
+    .footer-wrapper {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--white);
+      padding: 15px;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    .footer-container {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .footer-input-group {
+      flex: 1;
+    }
+
+    .footer-input-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      outline: none;
+      height: 60px;
+      resize: none;
+      font-size: 16px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      display: block;
+    }
+
+    .footer-input-group textarea:focus {
+      border-color: var(--primary);
+    }
+
+    #addBtn {
+      background: var(--primary);
+      border: none;
+      width: 80px;
+      height: 60px;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.2s;
+    }
+
+    #addBtn:hover {
+      background: var(--primary-dark);
+    }
+
+    #addBtn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* 提示訊息 */
+    .loader {
+      text-align: center;
+      padding: 50px 20px;
+      color: #888;
+      font-size: 16px;
+    }
+
+    #noResult {
+      text-align: center;
+      color: #bbb;
+      padding: 60px 20px;
+      display: none;
+    }
+
+    /* 手機版適配 */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 18px;
+      }
+
+      .card-content {
+        font-size: 15px;
+      }
+
+      #addBtn {
+        width: 60px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="header-top">
+        <h1>CopyKing Manager 👑</h1>
+        <div id="statusText">正在同步中...</div>
+      </div>
+      <div class="search-container">
+        <input type="text" id="searchInput" class="search-box" placeholder="搜尋雲端資料內容或標籤...">
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div id="loader" class="loader">
+      <p>正在從 Google Sheets 載入資料...</p>
+    </div>
+    <div id="contentList"></div>
+    <div id="noResult">
+      <div style="font-size: 50px; margin-bottom: 15px;">🔍</div>
+      <p>沒有找到符合的內容</p>
+    </div>
+  </main>
+
+  <div class="footer-wrapper">
+    <div class="footer-container">
+      <div class="footer-input-group">
+        <textarea id="newInput" placeholder="在此輸入新內容 (支援換行)..."></textarea>
+      </div>
+      <button id="addBtn">新增</button>
+    </div>
+  </div>
+
+  <script>
+    // --- API 配置 ---
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwpiO7vT2TWjEEGMXfWlvfmArs9UZQ2EXYahDtQvnsz146ebN_Eu1dHJT2WxDwMY34H-Q/exec";
+    const GEMINI_API_KEY = "AIzaSyD3McoKeSkz7WovvznaKk9uWf_Q1CDGHVw";
+    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+
+    let localData = [];
+
+    // --- 頁面啟動 ---
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchData();
+
+      // 搜尋事件
+      document.getElementById('searchInput').addEventListener('input', (e) => {
+        const keyword = e.target.value.toLowerCase().trim();
+        const filtered = localData.filter(item =>
+          (item.content && item.content.toLowerCase().includes(keyword)) ||
+          (item.tags && item.tags.toLowerCase().includes(keyword))
+        );
+        renderList(filtered);
+      });
+
+      // 按鈕點擊
+      document.getElementById('addBtn').addEventListener('click', addItem);
+    });
+
+    // --- 1. 從雲端抓取資料 ---
+    async function fetchData() {
+      updateStatus("同步中...");
+      try {
+        const response = await fetch(GAS_URL);
+        const text = await response.text();
+        localData = JSON.parse(text);
+        renderList(localData);
+        updateStatus("已更新", false);
+        document.getElementById('loader').style.display = 'none';
+      } catch (e) {
+        updateStatus("連線錯誤", true);
+        console.error("Fetch Error:", e);
+      }
+    }
+
+    // --- 2. 顯示資料列表 ---
+    function renderList(items) {
+      const container = document.getElementById('contentList');
+      const noResult = document.getElementById('noResult');
+      container.innerHTML = "";
+
+      if (!items || items.length === 0) {
+        noResult.style.display = 'block';
+        return;
+      }
+      noResult.style.display = 'none';
+
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="actions">
+            <button class="icon-btn btn-copy" title="複製內容">❐</button>
+            <button class="icon-btn btn-delete" title="刪除內容">🗑️</button>
+          </div>
+          <div class="card-content" contenteditable="true">${item.content || ""}</div>
+          <div class="tags-row">${item.tags ? item.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('') : ''}</div>
+        `;
+
+        const contentDiv = card.querySelector('.card-content');
+
+        // 修改重點：修正貼上格式問題
+        contentDiv.addEventListener('paste', (e) => {
+          e.preventDefault();
+          // 取得純文字內容，忽略 HTML 格式但保留換行 \n
+          const text = e.clipboardData.getData('text/plain');
+          document.execCommand('insertText', false, text);
+        });
+
+        // 內容修改偵測
+        contentDiv.addEventListener('blur', () => {
+          if (contentDiv.innerText !== item.content) {
+            updateItem(item.id, contentDiv.innerText, item.tags);
+            item.content = contentDiv.innerText;
+          }
+        });
+
+        // 按鈕功能綁定
+        card.querySelector('.btn-copy').onclick = () => copyToClipboard(contentDiv.innerText);
+        card.querySelector('.btn-delete').onclick = () => deleteData(item.id, card);
+
+        container.appendChild(card);
+      });
+    }
+
+    // --- 3. 新增資料 ---
+    async function addItem() {
+      const input = document.getElementById('newInput');
+      const addBtn = document.getElementById('addBtn');
+      const content = input.value.trim();
+
+      if (!content) return;
+
+      input.value = "";
+      addBtn.disabled = true;
+      updateStatus("AI 處理標籤...");
+
+      // 嘗試使用 Gemini 產生標籤
+      let aiTags = "一般";
+      try {
+        const prompt = `請為這段文字產生1到3個關鍵字標籤，用半形逗號分隔，繁體中文，只要標籤內容就好：\n"${content}"`;
+        const res = await fetch(GEMINI_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        const data = await res.json();
+        const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (resultText) aiTags = resultText.replace(/\n/g, "").trim();
+      } catch (e) {
+        console.warn("AI 標籤產生失敗，使用預設標籤");
+      }
+
+      updateStatus("上傳到雲端...");
+      try {
+        await fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'create', content: content, tags: aiTags })
+        });
+        fetchData(); // 重新抓取完整列表
+      } catch (e) {
+        updateStatus("儲存失敗", true);
+      } finally {
+        addBtn.disabled = false;
+      }
+    }
+
+    // --- 4. 刪除資料 (新增功能) ---
+    async function deleteData(id, element) {
+      if (!confirm("確定要永久刪除這筆雲端資料嗎？")) return;
+
+      updateStatus("刪除中...");
+      element.style.opacity = "0.3";
+      element.style.pointerEvents = "none";
+
+      try {
+        await fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'delete', id: id })
+        });
+        element.remove();
+        updateStatus("已從雲端刪除");
+
+        // 更新本地快取避免搜尋又出現
+        localData = localData.filter(i => i.id !== id);
+      } catch (e) {
+        updateStatus("刪除失敗", true);
+        element.style.opacity = "1";
+        element.style.pointerEvents = "auto";
+      }
+    }
+
+    // --- 5. 編輯更新資料 ---
+    async function updateItem(id, content, tags) {
+      updateStatus("同步編輯中...");
+      try {
+        await fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'update', id: id, content: content, tags: tags })
+        });
+        updateStatus("編輯已儲存");
+      } catch (e) {
+        updateStatus("同步失敗", true);
+      }
+    }
+
+    // --- 輔助函式 ---
+    function copyToClipboard(text) {
+      const el = document.createElement('textarea');
+      el.value = text;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      updateStatus("內容已複製到剪貼簿！");
+    }
+
+    function updateStatus(msg, isError = false) {
+      const el = document.getElementById('statusText');
+      el.innerText = msg;
+      el.style.color = isError ? "red" : "rgba(0,0,0,0.6)";
+      if (!isError) {
+        setTimeout(() => { if (el.innerText === msg) el.innerText = "閒置中"; }, 3000);
+      }
+    }
+  </script>
+</body>
+
+</html>
