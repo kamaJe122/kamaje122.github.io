@@ -53,6 +53,7 @@
     /* Group Styling */
     .group-section { margin-bottom: 20px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: transform 0.2s; }
     .group-section.dragging { opacity: 0.5; border: 2px dashed #999; }
+    .group-section.over { border: 2px dashed var(--primary); }
 
     .group-header {
         font-size: 16px; font-weight: bold; color: #444;
@@ -242,7 +243,6 @@
       fetchData();
       
       document.getElementById('searchInput').addEventListener('input', (e) => {
-        // 使用 String() 確保安全轉換，避免 undefined 錯誤
         const keyword = String(e.target.value).toLowerCase().trim();
         renderGroups(localData, keyword);
       });
@@ -284,11 +284,9 @@
         
         localData = rawData.map((item, index) => ({
             ...item,
-            // 確保所有搜尋欄位至少是空字串，避免 null
             content: item.content !== undefined && item.content !== null ? String(item.content) : "",
             tags: item.tags !== undefined && item.tags !== null ? String(item.tags) : "",
             group: item.group !== undefined && item.group !== null ? String(item.group) : "一般",
-            
             order_index: item.order_index !== undefined ? Number(item.order_index) : 9999 + index,
             group_order: item.group_order !== undefined ? Number(item.group_order) : 9999
         }));
@@ -312,13 +310,10 @@
       
       let filteredItems = items;
       if (keyword) {
-        // --- 關鍵修正：搜尋邏輯防呆 ---
         filteredItems = items.filter(item => {
-            // 強制轉為字串並轉小寫，防止對數字或 null 呼叫 toLowerCase
             const c = String(item.content || "").toLowerCase();
             const t = String(item.tags || "").toLowerCase();
             const g = String(item.group || "").toLowerCase();
-            
             return c.includes(keyword) || t.includes(keyword) || g.includes(keyword);
         });
       }
@@ -336,9 +331,15 @@
         groups[gName].push(item);
       });
 
+      // --- 關鍵修正：更穩健的排序 ---
+      // 不只看第一筆，而是找出該群組內最小的 order，確保排序穩定
       const sortedGroupNames = Object.keys(groups).sort((a, b) => {
-          const orderA = groups[a][0]?.group_order || 9999;
-          const orderB = groups[b][0]?.group_order || 9999;
+          const getMinOrder = (list) => {
+              if(!list || list.length === 0) return 9999;
+              return Math.min(...list.map(i => i.group_order || 9999));
+          };
+          const orderA = getMinOrder(groups[a]);
+          const orderB = getMinOrder(groups[b]);
           return orderA - orderB;
       });
 
@@ -431,6 +432,7 @@
              dragSrcEl = groupSection;
              dragType = 'group';
              e.dataTransfer.effectAllowed = 'move';
+             e.dataTransfer.dropEffect = 'move';
              groupSection.classList.add('dragging');
         });
 
@@ -442,9 +444,11 @@
 
         groupSection.addEventListener('dragover', (e) => {
              if (dragType !== 'group') return;
-             e.preventDefault();
+             e.preventDefault(); // allow drop
              e.stopPropagation();
              
+             e.dataTransfer.dropEffect = 'move';
+
              const targetSection = e.target.closest('.group-section');
              if (targetSection && targetSection !== groupSection) {
                  const rect = targetSection.getBoundingClientRect();
@@ -459,6 +463,7 @@
         
         groupSection.addEventListener('drop', (e) => {
              if (dragType !== 'group') return;
+             e.preventDefault();
              e.stopPropagation();
              saveGroupReorder();
         });
@@ -523,6 +528,7 @@
             dragSrcEl = card;
             dragType = 'card';
             e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.dropEffect = 'move';
             e.dataTransfer.setData('text/html', card.outerHTML);
             card.classList.add('dragging');
         });
@@ -585,7 +591,7 @@
         }
     }
 
-    function handleDragOver(e) { if(e.preventDefault) e.preventDefault(); return false; }
+    function handleDragOver(e) { if(e.preventDefault) e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
 
     function handleDrop(e, targetGroupName, targetCard = null) {
         if (dragSrcEl && dragType === 'card') {
@@ -687,7 +693,15 @@
         const maxOrder = groupItems.reduce((max, i) => Math.max(max, i.order_index || 0), 0);
         
         const existingGroupItem = localData.find(i => i.group === group);
-        const gOrder = existingGroupItem ? existingGroupItem.group_order : 9999;
+        // 如果該群組不存在，給一個安全的預設值，例如最後一個群組的 order + 1，或直接 9999
+        let gOrder = 9999;
+        if (existingGroupItem) {
+            gOrder = existingGroupItem.group_order;
+        } else {
+             // 嘗試找目前最大 group_order
+             const maxG = localData.reduce((max, i) => Math.max(max, i.group_order || 0), 0);
+             if (maxG > 0) gOrder = maxG + 1;
+        }
 
         await fetch(GAS_URL, {
           method: 'POST',
