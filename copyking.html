@@ -12,7 +12,6 @@
       --danger: #ff5252;
       --text-dark: #333;
       --white: #ffffff;
-      --group-header-bg: #e0e0e0;
     }
     
     * { box-sizing: border-box; }
@@ -52,30 +51,40 @@
     main { padding: 15px; max-width: 800px; margin: 0 auto; }
     
     /* Group Styling */
-    .group-section { margin-bottom: 20px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    
+    .group-section { margin-bottom: 20px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: transform 0.2s; }
+    .group-section.dragging { opacity: 0.5; border: 2px dashed #999; }
+
     .group-header {
         font-size: 16px; font-weight: bold; color: #444;
         padding: 12px 15px;
         background: #f8f9fa;
         border-bottom: 1px solid #eee;
         display: flex; justify-content: space-between; align-items: center;
-        cursor: pointer; /* 讓整行可點擊 */
         user-select: none;
-        transition: background 0.2s;
     }
     .group-header:hover { background: #f0f0f0; }
+
+    /* Group Drag Handle */
+    .group-drag-handle {
+        cursor: grab; color: #bbb; margin-right: 10px; font-size: 18px;
+        padding: 2px 6px;
+    }
+    .group-drag-handle:hover { color: #555; background: #e0e0e0; border-radius: 4px; }
     
+    .group-title-area { flex: 1; display: flex; align-items: center; cursor: pointer; }
+
     .group-title-text {
-        cursor: text; /* 文字部分顯示輸入游標 */
+        cursor: text;
         padding: 2px 5px; border-radius: 4px;
         transition: background 0.2s;
+        min-width: 50px;
+        display: inline-block;
     }
     .group-title-text:hover { background: #e9ecef; }
     .group-title-text:focus { background: white; outline: 2px solid var(--primary); cursor: text; }
 
     .group-toggle-icon {
-        font-size: 12px; color: #999; margin-left: 10px; transition: transform 0.3s;
+        font-size: 12px; color: #999; margin-left: 10px; transition: transform 0.3s; cursor: pointer; padding: 5px;
     }
     .group-section.collapsed .group-toggle-icon { transform: rotate(-90deg); }
     .group-section.collapsed .group-items-container { display: none; }
@@ -98,7 +107,7 @@
     .card:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     .card.dragging { opacity: 0.4; border: 2px dashed #999; transform: scale(0.98); }
 
-    /* Drag Handle */
+    /* Card Drag Handle */
     .drag-handle {
       position: absolute; left: 0; top: 0; bottom: 0; width: 35px;
       cursor: grab; display: flex; align-items: center; justify-content: center;
@@ -201,10 +210,10 @@
   <div class="footer-wrapper">
     <div class="footer-container">
         <div class="footer-input-group">
-            <textarea id="newInput" placeholder="在此輸入新內容..."></textarea>
+            <textarea id="newInput" placeholder="在此輸入新內容 (Cmd/Ctrl + Enter 送出)..."></textarea>
             <div class="footer-options">
                 <select id="newGroupInput" class="group-select">
-                    <option value="一般">一般</option>
+                    <option value="一般" selected>一般</option>
                     <option value="工作">工作</option>
                     <option value="個人">個人</option>
                     <option value="其他">其他</option>
@@ -216,29 +225,35 @@
   </div>
 
   <script>
-    // --- Config ---
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwpiO7vT2TWjEEGMXfWlvfmArs9UZQ2EXYahDtQvnsz146ebN_Eu1dHJT2WxDwMY34H-Q/exec";
     const GEMINI_API_KEY = "AIzaSyD3McoKeSkz7WovvznaKk9uWf_Q1CDGHVw";
     const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
 
     let localData = [];
     let dragSrcEl = null;
+    let dragType = null; // 'card' or 'group'
 
-    // --- Init ---
     document.addEventListener('DOMContentLoaded', () => {
       fetchData();
       
-      // Search
       document.getElementById('searchInput').addEventListener('input', (e) => {
         const keyword = e.target.value.toLowerCase().trim();
         renderGroups(localData, keyword);
       });
 
-      // Add Button
-      document.getElementById('addBtn').addEventListener('click', addItem);
+      const addBtn = document.getElementById('addBtn');
+      addBtn.addEventListener('click', addItem);
+
+      // Cmd/Ctrl + Enter
+      const inputArea = document.getElementById('newInput');
+      inputArea.addEventListener('keydown', (e) => {
+          if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+              e.preventDefault();
+              addItem();
+          }
+      });
     });
 
-    // --- Fetch Data ---
     async function fetchData() {
       updateStatus("同步中...");
       try {
@@ -246,10 +261,10 @@
         const text = await response.text();
         let rawData = JSON.parse(text);
         
-        // 正規化資料：確保必要欄位存在
         localData = rawData.map((item, index) => ({
             ...item,
             order_index: item.order_index !== undefined ? Number(item.order_index) : 9999 + index,
+            group_order: item.group_order !== undefined ? Number(item.group_order) : 9999,
             group: item.group || "一般"
         }));
 
@@ -263,13 +278,11 @@
       }
     }
 
-    // --- Render Groups ---
     function renderGroups(items, keyword = "") {
       const container = document.getElementById('contentList');
       const noResult = document.getElementById('noResult');
       container.innerHTML = "";
       
-      // 1. Filter
       let filteredItems = items;
       if (keyword) {
         filteredItems = items.filter(item => 
@@ -285,7 +298,6 @@
       }
       noResult.style.display = 'none';
 
-      // 2. Grouping
       const groups = {};
       filteredItems.forEach(item => {
         const gName = item.group || "未分類";
@@ -293,44 +305,59 @@
         groups[gName].push(item);
       });
 
-      // 3. Sort Group Names (簡單排序)
-      const sortedGroupNames = Object.keys(groups).sort();
+      // 依照 group_order 排序群組
+      const sortedGroupNames = Object.keys(groups).sort((a, b) => {
+          // 嘗試取得該群組內任意一筆資料的 group_order
+          const orderA = groups[a][0]?.group_order || 9999;
+          const orderB = groups[b][0]?.group_order || 9999;
+          return orderA - orderB;
+      });
 
-      // 4. Render Sections
       sortedGroupNames.forEach(groupName => {
         const groupItems = groups[groupName];
         groupItems.sort((a, b) => a.order_index - b.order_index);
 
-        // Group Container
+        // Group Section
         const groupSection = document.createElement('div');
         groupSection.className = 'group-section';
         groupSection.dataset.groupName = groupName;
+        // Make Group Draggable
+        groupSection.draggable = true;
 
-        // Group Header (標題列)
         const header = document.createElement('div');
         header.className = 'group-header';
         
-        // 標題左側：名稱 (可編輯) + 數量
+        // --- 拖曳手把 (Group Handle) ---
+        const groupHandle = document.createElement('span');
+        groupHandle.className = 'group-drag-handle';
+        groupHandle.innerHTML = '⠿';
+        groupHandle.title = '長按拖曳群組排序';
+
         const titleArea = document.createElement('div');
-        titleArea.style.display = "flex";
-        titleArea.style.alignItems = "center";
+        titleArea.className = 'group-title-area';
         
-        // 可編輯的群組名稱
         const titleText = document.createElement('span');
         titleText.className = 'group-title-text';
         titleText.innerText = groupName;
-        titleText.contentEditable = "true"; // 允許直接編輯
+        titleText.contentEditable = "true";
         titleText.title = "雙擊編輯群組名稱";
         
-        // 綁定編輯事件
-        titleText.addEventListener('click', (e) => e.stopPropagation()); // 防止觸發折疊
+        titleText.addEventListener('click', (e) => e.stopPropagation());
+        titleText.addEventListener('mousedown', (e) => e.stopPropagation()); // 防止觸發拖曳
+        titleText.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                titleText.blur();
+            }
+        });
         titleText.addEventListener('blur', () => {
             const newName = titleText.innerText.trim();
             if (newName && newName !== groupName) {
                 updateGroupName(groupName, newName);
+            } else {
+                titleText.innerText = groupName;
             }
         });
-        // 雙擊全選文字方便編輯
         titleText.addEventListener('dblclick', (e) => {
              document.execCommand('selectAll',false,null);
         });
@@ -342,28 +369,28 @@
         titleArea.appendChild(titleText);
         titleArea.appendChild(countBadge);
 
-        // 標題右側：折疊圖示
         const toggleIcon = document.createElement('span');
         toggleIcon.className = 'group-toggle-icon';
-        toggleIcon.innerHTML = '▼'; // 使用文字符號或 SVG
+        toggleIcon.innerHTML = '▼';
+        toggleIcon.addEventListener('click', (e) => {
+             e.stopPropagation();
+             groupSection.classList.toggle('collapsed');
+        });
 
+        // 點擊標題區域也可以折疊
+        titleArea.addEventListener('click', () => {
+             groupSection.classList.toggle('collapsed');
+        });
+
+        header.appendChild(groupHandle);
         header.appendChild(titleArea);
         header.appendChild(toggleIcon);
 
-        // 折疊/展開事件：點擊 Header 任意空白處
-        header.addEventListener('click', (e) => {
-            // 如果點擊的是 titleText (已經在上面 stopPropagation)，這裡不會觸發
-            // 如果點擊的是 header 其他地方 -> 切換折疊
-            groupSection.classList.toggle('collapsed');
-        });
-
         groupSection.appendChild(header);
 
-        // Items Container
         const itemsContainer = document.createElement('div');
         itemsContainer.className = 'group-items-container';
-        
-        // Drag events for container
+        // 卡片拖曳相關監聽
         itemsContainer.addEventListener('dragover', handleDragOver);
         itemsContainer.addEventListener('drop', (e) => handleDrop(e, groupName));
 
@@ -373,6 +400,49 @@
 
         groupSection.appendChild(itemsContainer);
         container.appendChild(groupSection);
+
+        // --- 群組拖曳事件 ---
+        groupSection.addEventListener('dragstart', (e) => {
+             // 只有點擊手把或 header 空白處才能拖曳群組，避免拖曳卡片時觸發
+             if (e.target.classList.contains('group-title-text')) return;
+             
+             e.stopPropagation(); // 防止冒泡
+             dragSrcEl = groupSection;
+             dragType = 'group';
+             e.dataTransfer.effectAllowed = 'move';
+             groupSection.classList.add('dragging');
+        });
+
+        groupSection.addEventListener('dragend', () => {
+             groupSection.classList.remove('dragging');
+             dragSrcEl = null;
+             dragType = null;
+        });
+
+        groupSection.addEventListener('dragover', (e) => {
+             if (dragType !== 'group') return; // 如果正在拖卡片，不要觸發群組交換
+             e.preventDefault();
+             e.stopPropagation();
+             
+             // 找出最近的 group-section
+             const targetSection = e.target.closest('.group-section');
+             if (targetSection && targetSection !== groupSection) {
+                 const rect = targetSection.getBoundingClientRect();
+                 const offset = e.clientY - rect.top - (rect.height / 2);
+                 if (offset < 0) {
+                     targetSection.before(groupSection);
+                 } else {
+                     targetSection.after(groupSection);
+                 }
+             }
+        });
+        
+        // 群組放置後，觸發儲存
+        groupSection.addEventListener('drop', (e) => {
+             if (dragType !== 'group') return;
+             e.stopPropagation();
+             saveGroupReorder();
+        });
       });
     }
 
@@ -384,7 +454,7 @@
         card.dataset.group = item.group;
 
         card.innerHTML = `
-          <div class="drag-handle" title="按住拖曳排序">⠿</div>
+          <div class="drag-handle" title="拖曳排序">⠿</div>
           <div class="actions">
             <button class="icon-btn btn-copy" title="複製">❐</button>
             <button class="icon-btn btn-delete" title="刪除">🗑️</button>
@@ -392,7 +462,7 @@
           <div class="card-content" contenteditable="true">${item.content || ""}</div>
           <div class="meta-row">
             <span class="group-label">群組:</span>
-            <div class="group-editor" contenteditable="true" title="雙擊編輯群組">${item.group}</div>
+            <div class="group-editor" contenteditable="true" title="編輯群組">${item.group}</div>
             ${item.tags ? item.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('') : ''}
           </div>
         `;
@@ -400,14 +470,12 @@
         const contentDiv = card.querySelector('.card-content');
         const groupDiv = card.querySelector('.group-editor');
 
-        // Paste Logic
         contentDiv.addEventListener('paste', (e) => {
           e.preventDefault();
           const text = e.clipboardData.getData('text/plain');
           document.execCommand('insertText', false, text);
         });
 
-        // Content Save
         contentDiv.addEventListener('blur', () => {
           if (contentDiv.innerText !== item.content) {
             item.content = contentDiv.innerText;
@@ -415,7 +483,10 @@
           }
         });
 
-        // Group Edit (單卡片修改)
+        groupDiv.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); groupDiv.blur(); }
+        });
+
         groupDiv.addEventListener('blur', () => {
             const newGroup = groupDiv.innerText.trim();
             if (newGroup && newGroup !== item.group) {
@@ -425,124 +496,125 @@
             }
         });
 
-        // Buttons
         card.querySelector('.btn-copy').onclick = () => copyToClipboard(contentDiv.innerText);
         card.querySelector('.btn-delete').onclick = () => deleteData(item.id, card);
 
-        // Drag
-        addDragEvents(card);
-
+        // 卡片拖曳邏輯
+        card.addEventListener('dragstart', (e) => {
+            e.stopPropagation();
+            dragSrcEl = card;
+            dragType = 'card';
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', card.outerHTML);
+            card.classList.add('dragging');
+        });
+        
+        card.addEventListener('dragend', () => {
+            card.classList.remove('dragging');
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('over'));
+            dragSrcEl = null;
+            dragType = null;
+        });
+        
         return card;
     }
 
-    // --- Logic: 批次修改群組名稱 ---
-    async function updateGroupName(oldName, newName) {
-        if(!confirm(`確定要將群組「${oldName}」重新命名為「${newName}」嗎？`)) {
-            renderGroups(localData); // 恢復原狀
-            return;
-        }
-
-        updateStatus("正在更新群組名稱...");
+    // --- Logic: 儲存群組排序 ---
+    async function saveGroupReorder() {
+        updateStatus("儲存群組順序...");
         
-        // 1. 更新本地資料
-        const idsToUpdate = [];
-        localData.forEach(item => {
-            if(item.group === oldName) {
-                item.group = newName;
-                idsToUpdate.push(item.id);
-            }
+        const groupSections = document.querySelectorAll('.group-section');
+        const groupOrders = {};
+        
+        groupSections.forEach((section, index) => {
+            const groupName = section.dataset.groupName;
+            const newOrder = index + 1;
+            groupOrders[groupName] = newOrder;
+            
+            // 同時更新本地快取，避免下次渲染跳回
+            localData.forEach(item => {
+                if (item.group === groupName) item.group_order = newOrder;
+            });
         });
 
-        // 2. 重新渲染
-        renderGroups(localData, document.getElementById('searchInput').value);
-
-        // 3. 發送後端請求 (Batch Update)
         try {
             await fetch(GAS_URL, {
                 method: 'POST',
-                body: JSON.stringify({ 
-                    action: 'batchUpdateGroup', 
-                    oldGroup: oldName, 
-                    newGroup: newName 
-                })
+                body: JSON.stringify({ action: 'reorderGroups', orders: groupOrders })
             });
-            updateStatus("群組名稱已更新");
+            updateStatus("群組順序已更新");
         } catch(e) {
             console.error(e);
             updateStatus("更新失敗", true);
         }
     }
 
-    // --- Drag & Drop ---
-    function addDragEvents(card) {
-        card.addEventListener('dragstart', (e) => {
-            dragSrcEl = card;
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/html', card.outerHTML);
-            card.classList.add('dragging');
+    async function updateGroupName(oldName, newName) {
+        localData.forEach(item => {
+            if(item.group === oldName) item.group = newName;
         });
-        card.addEventListener('dragend', () => {
-            card.classList.remove('dragging');
-            document.querySelectorAll('.card').forEach(c => c.classList.remove('over'));
-        });
-        card.addEventListener('dragover', (e) => { e.preventDefault(); return false; });
-        card.addEventListener('dragenter', function() { this.classList.add('over'); });
-        card.addEventListener('dragleave', function() { this.classList.remove('over'); });
-        card.addEventListener('drop', (e) => {
-            e.stopPropagation();
-            const groupName = card.closest('.group-section').dataset.groupName;
-            handleDrop(e, groupName, card);
-            return false;
-        });
+
+        renderGroups(localData, document.getElementById('searchInput').value);
+        updateStatus("更新群組名稱...");
+
+        try {
+            await fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'batchUpdateGroup', oldGroup: oldName, newGroup: newName })
+            });
+            updateStatus("群組名稱已儲存");
+        } catch(e) {
+            console.error(e);
+            updateStatus("更新失敗", true);
+        }
     }
 
+    // --- 卡片 Drag Drop ---
     function handleDragOver(e) { if(e.preventDefault) e.preventDefault(); return false; }
 
     function handleDrop(e, targetGroupName, targetCard = null) {
-        if (dragSrcEl) {
+        if (dragSrcEl && dragType === 'card') {
             const srcId = dragSrcEl.dataset.id;
             const srcItem = localData.find(i => i.id === srcId);
             const container = document.querySelector(`.group-section[data-group-name="${targetGroupName}"] .group-items-container`);
             
-            // DOM Move
-            if (targetCard && targetCard !== dragSrcEl) {
-                const rect = targetCard.getBoundingClientRect();
+            // DOM 移動
+            if (e.target.closest('.card') && e.target.closest('.card') !== dragSrcEl) {
+                const targetEl = e.target.closest('.card');
+                const rect = targetEl.getBoundingClientRect();
                 const offset = e.clientY - rect.top - (rect.height / 2);
-                (offset < 0) ? targetCard.before(dragSrcEl) : targetCard.after(dragSrcEl);
-            } else if (!targetCard) {
+                (offset < 0) ? targetEl.before(dragSrcEl) : targetEl.after(dragSrcEl);
+            } else {
                 container.appendChild(dragSrcEl);
             }
             
-            // Data Update
+            // 資料更新
             if (srcItem.group !== targetGroupName) {
                 srcItem.group = targetGroupName;
                 dragSrcEl.querySelector('.group-editor').innerText = targetGroupName;
             }
 
-            // Re-index
+            // 更新排序索引
             const allCardsInGroup = [...container.querySelectorAll('.card')];
             allCardsInGroup.forEach((card, idx) => {
                 const item = localData.find(i => i.id === card.dataset.id);
                 if (item) item.order_index = idx + 1;
             });
 
-            saveReorder();
+            saveCardReorder();
         }
     }
 
-    async function saveReorder() {
+    async function saveCardReorder() {
         updateStatus("儲存排序...");
         const orderMap = {};
         localData.forEach(item => { orderMap[item.id] = item.order_index; });
         
-        // 這裡我們需要同時更新 order 和 group
-        // 但為了簡化 GAS，我們讓 reorder 只更新順序，拖曳造成的群組變更用 updateItem 觸發
-        // 改良：直接送出拖曳項目的完整更新，加上全體重排
         const srcId = dragSrcEl.dataset.id;
         const srcItem = localData.find(i => i.id === srcId);
 
         try {
-            // 1. 強制更新該項目的群組與順序
+            // 強制更新該卡片的群組屬性
             await fetch(GAS_URL, {
                 method: 'POST',
                 body: JSON.stringify({ 
@@ -551,10 +623,11 @@
                     content: srcItem.content, 
                     tags: srcItem.tags, 
                     group: srcItem.group, 
+                    group_order: srcItem.group_order,
                     order_index: srcItem.order_index 
                 })
             });
-            // 2. 更新其他人的順序
+            // 更新所有卡片順序
             await fetch(GAS_URL, {
                 method: 'POST',
                 body: JSON.stringify({ action: 'reorder', orders: orderMap })
@@ -594,6 +667,10 @@
         const groupItems = localData.filter(i => i.group === group);
         const maxOrder = groupItems.reduce((max, i) => Math.max(max, i.order_index || 0), 0);
         
+        // 查找該群組的 group_order
+        const existingGroupItem = localData.find(i => i.group === group);
+        const gOrder = existingGroupItem ? existingGroupItem.group_order : 999;
+
         await fetch(GAS_URL, {
           method: 'POST',
           body: JSON.stringify({ 
@@ -601,9 +678,12 @@
               content: content, 
               tags: aiTags,
               group: group,
+              group_order: gOrder,
               order_index: maxOrder + 1
           })
         });
+        
+        groupInput.value = "一般"; 
         fetchData(); 
       } catch (e) {
         updateStatus("新增失敗", true);
@@ -633,18 +713,17 @@
             content: item.content, 
             tags: item.tags,
             group: item.group,
-            order_index: item.order_index
+            order_index: item.order_index,
+            group_order: item.group_order
         })
       }).then(() => updateStatus("已儲存"));
     }
 
-    // --- Helpers ---
     function updateGroupSelectOptions() {
         const groups = [...new Set(localData.map(i => i.group || "一般"))].sort();
         const select = document.getElementById('newGroupInput');
-        // Clear old custom options (keep defaults if you want, or just rebuild all)
+        const currentVal = select.value;
         select.innerHTML = `<option value="一般">一般</option><option value="工作">工作</option><option value="個人">個人</option>`;
-        
         groups.forEach(g => {
             if (![...select.options].some(o => o.value === g)) {
                 const opt = document.createElement('option');
@@ -652,6 +731,8 @@
                 select.appendChild(opt);
             }
         });
+        if([...select.options].some(o => o.value === currentVal)) select.value = currentVal;
+        else select.value = "一般";
     }
 
     function copyToClipboard(text) {
