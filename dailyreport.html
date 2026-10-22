@@ -129,7 +129,7 @@
       <button class="primary" id="ocrBtn" disabled>辨識手寫文字</button>
     </div>
     <div id="status"></div>
-    <details style="margin-top:12px;">
+    <details id="ocrSettings" style="margin-top:12px;">
       <summary>⚙️ 辨識設定（Claude API 金鑰）</summary>
       <label for="apiKey">Anthropic API Key（只存在這台裝置的瀏覽器）</label>
       <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
@@ -179,6 +179,16 @@
       <div><label for="reviewNew">今日新增</label><input id="reviewNew" inputmode="numeric"></div>
     </div>
     <p class="hint" id="reviewHint"></p>
+    <div style="margin-top:10px;"><button id="fetchReviews">🔄 線上抓取評論數</button></div>
+    <div id="reviewStatus" class="hint"></div>
+    <details id="googleSettings" style="margin-top:12px;">
+      <summary>⚙️ 抓取設定（Google Maps API 金鑰）</summary>
+      <label for="gKey">Google Maps API Key（需啟用 Maps JavaScript API 與 Places API (New)）</label>
+      <input type="password" id="gKey" placeholder="AIza..." autocomplete="off">
+      <label for="gQuery" style="margin-top:10px;">店家搜尋名稱</label>
+      <input id="gQuery">
+      <p class="hint">第一次會用店名找到店家並記住，之後直接抓。改店名會重新搜尋。</p>
+    </details>
   </section>
 
   <!-- 6. 快捷鍵設定 -->
@@ -216,6 +226,9 @@
     draft: "dr_draft",
     presets: "dr_presets",
     reviews: "dr_reviews",
+    gKey: "dr_gKey",
+    gQuery: "dr_gQuery",
+    gPlace: "dr_gPlace",
   };
   const DEFAULT_PRESETS = {
     expense: ["瓦斯", "菜錢", "冰塊", "雜支"],
@@ -330,6 +343,77 @@
       : "第一次使用：複製後會記住今天的總數，下次自動算新增。";
   }
 
+  function autoReviewNew() {
+    const prev = previousReview();
+    if (prev && state.reviewTotal !== "") {
+      state.reviewNew = String(Math.max(0, num(state.reviewTotal) - num(prev.total)));
+      $("reviewNew").value = state.reviewNew;
+    }
+  }
+
+  // ---------- Google 評論：用官方 Places API 抓總數 ----------
+  const DEFAULT_QUERY = "金茂宜 蘆洲旗艦店";
+  $("gKey").value = load(LS.gKey, "");
+  $("gQuery").value = load(LS.gQuery, DEFAULT_QUERY);
+  $("gKey").addEventListener("input", () => save(LS.gKey, $("gKey").value.trim()));
+  $("gQuery").addEventListener("input", () => save(LS.gQuery, $("gQuery").value.trim()));
+
+  let mapsPromise = null;
+  function loadMaps(key) {
+    return (mapsPromise ??= new Promise((resolve, reject) => {
+      window.__mapsReady = () => resolve();
+      const s = document.createElement("script");
+      s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&v=weekly&loading=async&language=zh-TW&callback=__mapsReady`;
+      s.onerror = () => { mapsPromise = null; reject(new Error("Google Maps 載入失敗")); };
+      document.head.appendChild(s);
+    }));
+  }
+
+  function reviewStatus(msg, isErr = false) {
+    $("reviewStatus").textContent = msg;
+    $("reviewStatus").style.color = isErr ? "var(--danger)" : "";
+  }
+
+  $("fetchReviews").onclick = async () => {
+    const key = $("gKey").value.trim();
+    const query = $("gQuery").value.trim() || DEFAULT_QUERY;
+    if (!key) {
+      $("googleSettings").open = true;
+      $("gKey").focus();
+      reviewStatus("請先在「抓取設定」填入 Google Maps API Key", true);
+      return;
+    }
+    $("fetchReviews").disabled = true;
+    reviewStatus("抓取中…");
+    try {
+      await loadMaps(key);
+      const { Place } = await google.maps.importLibrary("places");
+
+      // 店家 ID 只在第一次（或改店名後）搜尋一次
+      let cached = load(LS.gPlace, null);
+      if (!cached || cached.query !== query) {
+        const { places } = await Place.searchByText({ textQuery: query, fields: ["id"], maxResultCount: 1 });
+        if (!places?.length) throw new Error(`找不到「${query}」`);
+        cached = { query, id: places[0].id };
+        save(LS.gPlace, cached);
+      }
+
+      const place = new Place({ id: cached.id });
+      await place.fetchFields({ fields: ["displayName", "userRatingCount", "rating"] });
+      if (place.userRatingCount == null) throw new Error("這家店沒有評論數資料");
+
+      state.reviewTotal = String(place.userRatingCount);
+      $("reviewTotal").value = state.reviewTotal;
+      autoReviewNew();
+      update();
+      reviewStatus(`✅ ${place.displayName}：${place.userRatingCount} 則評論（★${place.rating ?? "-"}）`);
+    } catch (err) {
+      reviewStatus(`抓取失敗：${err?.message || err}（請確認金鑰已啟用 Places API）`, true);
+    } finally {
+      $("fetchReviews").disabled = false;
+    }
+  };
+
   // ---------- 組輸出文字 ----------
   function buildText() {
     const linepay = num(state.linepay), cash = num(state.cash),
@@ -382,13 +466,7 @@
   for (const f of FIELDS) {
     $(f).addEventListener("input", () => {
       state[f] = $(f).value;
-      if (f === "reviewTotal") {
-        const prev = previousReview();
-        if (prev && state.reviewTotal !== "") {
-          state.reviewNew = String(Math.max(0, num(state.reviewTotal) - num(prev.total)));
-          $("reviewNew").value = state.reviewNew;
-        }
-      }
+      if (f === "reviewTotal") autoReviewNew();
       if (f === "date") updateReviewHint();
       update();
     });
@@ -534,7 +612,7 @@
   $("ocrBtn").onclick = async () => {
     const apiKey = $("apiKey").value.trim();
     if (!apiKey) {
-      document.querySelector("details").open = true;
+      $("ocrSettings").open = true;
       $("apiKey").focus();
       setStatus("請先在「辨識設定」填入 API Key", "err");
       return;
