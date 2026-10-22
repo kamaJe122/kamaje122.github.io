@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日營業小結</title>
+<style>
+  :root {
+    --bg: #f5f3ef;
+    --card: #ffffff;
+    --ink: #222;
+    --muted: #777;
+    --line: #e2ddd5;
+    --accent: #b8860b;
+    --accent-ink: #fff;
+    --chip: #f1ebe0;
+    --danger: #c0392b;
+    --ok: #2e7d32;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1a18;
+      --card: #262421;
+      --ink: #eee;
+      --muted: #9a958d;
+      --line: #3a3732;
+      --accent: #d4a437;
+      --accent-ink: #1b1a18;
+      --chip: #34302a;
+      --danger: #e57368;
+      --ok: #7cc47f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    font-size: 16px;
+  }
+  main { max-width: 640px; margin: 0 auto; padding: 16px 16px 120px; }
+  h1 { font-size: 22px; margin: 4px 0 16px; }
+  h2 { font-size: 16px; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  input, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 16px;
+    font-family: inherit;
+  }
+  input:focus, textarea:focus { outline: 2px solid var(--accent); border-color: transparent; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .row input.name { flex: 1.4; }
+  .row input.num { flex: 1; }
+  button {
+    font-family: inherit;
+    font-size: 15px;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    background: var(--chip);
+    color: var(--ink);
+  }
+  button.primary { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  button.ghost { background: transparent; border: 1px dashed var(--line); color: var(--muted); }
+  button.x { padding: 8px 11px; background: transparent; color: var(--danger); font-size: 18px; }
+  button:disabled { opacity: .5; cursor: default; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .chip { border-radius: 999px; padding: 8px 14px; }
+  .chip .badge {
+    display: inline-block; min-width: 20px; margin-left: 6px; padding: 0 6px;
+    border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: 12px;
+  }
+  .sum { display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px dashed var(--line); font-size: 15px; }
+  .sum b { font-size: 18px; }
+  .warn { color: var(--danger); font-size: 13px; margin-top: 6px; }
+  .hint { color: var(--muted); font-size: 13px; margin: 6px 0 0; }
+  #preview { max-width: 100%; max-height: 260px; border-radius: 10px; display: none; margin: 10px auto 0; }
+  #status { font-size: 14px; margin-top: 10px; min-height: 1em; }
+  #status.err { color: var(--danger); }
+  #status.ok { color: var(--ok); }
+  pre#output {
+    white-space: pre-wrap;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0 0 12px;
+  }
+  details summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+  details[open] summary { margin-bottom: 10px; }
+  .bar {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    background: var(--card); border-top: 1px solid var(--line);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  }
+  .bar-inner { max-width: 640px; margin: 0 auto; display: flex; gap: 10px; }
+  .bar button { flex: 1; padding: 14px; font-size: 16px; }
+  .edit-mode .chip { outline: 2px dashed var(--danger); }
+</style>
+</head>
+<body>
+<main>
+  <h1>📒 每日營業小結</h1>
+
+  <!-- 1. 拍照辨識 -->
+  <section class="card">
+    <h2>📷 上傳日報照片</h2>
+    <input type="file" id="photo" accept="image/*">
+    <img id="preview" alt="日報照片預覽">
+    <div style="margin-top:10px; display:flex; gap:8px;">
+      <button class="primary" id="ocrBtn" disabled>辨識手寫文字</button>
+    </div>
+    <div id="status"></div>
+    <details style="margin-top:12px;">
+      <summary>⚙️ 辨識設定（Claude API 金鑰）</summary>
+      <label for="apiKey">Anthropic API Key（只存在這台裝置的瀏覽器）</label>
+      <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
+      <p class="hint">辨識使用 Claude 讀圖。金鑰只會從你的瀏覽器直接送到 Anthropic。</p>
+    </details>
+  </section>
+
+  <!-- 2. 營業額 -->
+  <section class="card">
+    <h2>💰 營業額</h2>
+    <div class="grid2">
+      <div><label for="date">日期</label><input id="date" placeholder="10/22"></div>
+      <div><label for="uber">Uber Eat</label><input id="uber" inputmode="numeric"></div>
+      <div><label for="linepay">Linepay</label><input id="linepay" inputmode="numeric"></div>
+      <div><label for="cash">現金</label><input id="cash" inputmode="numeric"></div>
+      <div><label for="credit">信用卡</label><input id="credit" inputmode="numeric"></div>
+      <div><label for="revenueSheet">單上寫的營業額（對帳用）</label><input id="revenueSheet" inputmode="numeric"></div>
+    </div>
+    <div class="sum" style="margin-top:12px;"><span>總營業額（自動加總）</span><b id="revenueOut">0</b></div>
+    <div class="warn" id="revenueWarn"></div>
+  </section>
+
+  <!-- 3. 支出 -->
+  <section class="card" id="expenseCard">
+    <h2>🧾 當日支出</h2>
+    <div class="chips" id="expenseChips"></div>
+    <div id="expenseRows"></div>
+    <button class="ghost" id="addExpense">＋ 新增一筆</button>
+    <div class="sum" style="margin-top:12px;"><span>總支出</span><b id="expenseOut">0</b></div>
+    <div class="sum"><span>現金餘額（現金 − 總支出）</span><b id="balanceOut">0</b></div>
+    <div class="warn" id="balanceWarn"></div>
+  </section>
+
+  <!-- 4. 招待 -->
+  <section class="card" id="treatCard">
+    <h2>🍗 招待 <span class="hint" style="margin:0">點一下 +1</span></h2>
+    <div class="chips" id="treatChips"></div>
+    <div id="treatRows"></div>
+    <button class="ghost" id="addTreat">＋ 其他品項</button>
+  </section>
+
+  <!-- 5. Google 評論 -->
+  <section class="card">
+    <h2>⭐ Google 評論</h2>
+    <div class="grid2">
+      <div><label for="reviewTotal">目前總數</label><input id="reviewTotal" inputmode="numeric"></div>
+      <div><label for="reviewNew">今日新增</label><input id="reviewNew" inputmode="numeric"></div>
+    </div>
+    <p class="hint" id="reviewHint"></p>
+  </section>
+
+  <!-- 6. 快捷鍵設定 -->
+  <section class="card">
+    <details>
+      <summary>🛠️ 編輯快捷按鈕</summary>
+      <label for="expensePresets">支出快捷（用逗號或換行分隔）</label>
+      <textarea id="expensePresets" rows="2"></textarea>
+      <label for="treatPresets" style="margin-top:10px;">招待快捷（用逗號或換行分隔）</label>
+      <textarea id="treatPresets" rows="2"></textarea>
+      <div style="margin-top:10px;"><button id="savePresets" class="primary">儲存快捷按鈕</button></div>
+    </details>
+  </section>
+
+  <!-- 7. 輸出 -->
+  <section class="card">
+    <h2>📋 輸出結果</h2>
+    <pre id="output"></pre>
+  </section>
+</main>
+
+<div class="bar">
+  <div class="bar-inner">
+    <button id="resetBtn">清空</button>
+    <button class="primary" id="copyBtn">複製文字</button>
+  </div>
+</div>
+
+<script type="module">
+  const $ = (id) => document.getElementById(id);
+  const MODEL = "claude-opus-5-5";
+  const SDK_URL = "https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.131.0/+esm";
+  const LS = {
+    key: "dr_apiKey",
+    draft: "dr_draft",
+    presets: "dr_presets",
+    reviews: "dr_reviews",
+  };
+  const DEFAULT_PRESETS = {
+    expense: ["瓦斯", "菜錢", "冰塊", "雜支"],
+    treat: ["雞柳條", "綠茶"],
+  };
+
+  // ---------- localStorage（隱私模式可能不能用，全部包 try） ----------
+  function load(k, fallback) {
+    try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; }
+    catch { return fallback; }
+  }
+  function save(k, v) {
+    try { localStorage.setItem(k, JSON.stringify(v)); } catch {}
+  }
+
+  // ---------- 狀態 ----------
+  let presets = load(LS.presets, DEFAULT_PRESETS);
+  let state = load(LS.draft, null) || blankState();
+
+  function todayMD() {
+    const d = new Date();
+    return `${d.getMonth() + 1}/${d.getDate()}`;
+  }
+  function blankState() {
+    return {
+      date: todayMD(), linepay: "", cash: "", credit: "", uber: "", revenueSheet: "",
+      expenses: [], treats: [], reviewTotal: "", reviewNew: "",
+    };
+  }
+  const num = (v) => {
+    const n = parseInt(String(v ?? "").replace(/[^\d-]/g, ""), 10);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  // ---------- 畫面 ----------
+  const FIELDS = ["date", "linepay", "cash", "credit", "uber", "revenueSheet", "reviewTotal", "reviewNew"];
+
+  function renderFields() {
+    for (const f of FIELDS) $(f).value = state[f] ?? "";
+  }
+
+  function renderChips() {
+    $("expenseChips").innerHTML = "";
+    for (const name of presets.expense) {
+      const b = document.createElement("button");
+      b.className = "chip";
+      b.textContent = "＋" + name;
+      b.onclick = () => {
+        const existing = state.expenses.find((e) => e.name === name && !e.amount);
+        if (!existing) state.expenses.push({ name, amount: "" });
+        renderExpenses();
+        update();
+        const inputs = $("expenseRows").querySelectorAll("input.num");
+        inputs[inputs.length - 1]?.focus();
+      };
+      $("expenseChips").appendChild(b);
+    }
+
+    $("treatChips").innerHTML = "";
+    for (const name of presets.treat) {
+      const b = document.createElement("button");
+      b.className = "chip";
+      const t = state.treats.find((x) => x.name === name);
+      b.innerHTML = name + (t && num(t.qty) ? `<span class="badge">${num(t.qty)}</span>` : "");
+      b.onclick = () => {
+        const item = state.treats.find((x) => x.name === name);
+        if (item) item.qty = num(item.qty) + 1;
+        else state.treats.push({ name, qty: 1 });
+        renderTreats();
+        update();
+      };
+      $("treatChips").appendChild(b);
+    }
+  }
+
+  function rowEditor(container, list, keyA, keyB, placeholderA, placeholderB, rerender) {
+    container.innerHTML = "";
+    list.forEach((item, i) => {
+      const row = document.createElement("div");
+      row.className = "row";
+      const a = document.createElement("input");
+      a.className = "name"; a.placeholder = placeholderA; a.value = item[keyA] ?? "";
+      a.oninput = () => { item[keyA] = a.value; update(); };
+      const b = document.createElement("input");
+      b.className = "num"; b.placeholder = placeholderB; b.inputMode = "numeric"; b.value = item[keyB] ?? "";
+      b.oninput = () => { item[keyB] = b.value; update(); if (container.id === "treatRows") renderChips(); };
+      const x = document.createElement("button");
+      x.className = "x"; x.textContent = "✕"; x.setAttribute("aria-label", "刪除");
+      x.onclick = () => { list.splice(i, 1); rerender(); update(); };
+      row.append(a, b, x);
+      container.appendChild(row);
+    });
+  }
+  function renderExpenses() {
+    rowEditor($("expenseRows"), state.expenses, "name", "amount", "品項", "金額", renderExpenses);
+  }
+  function renderTreats() {
+    rowEditor($("treatRows"), state.treats, "name", "qty", "品項", "數量", renderTreats);
+    renderChips();
+  }
+
+  // ---------- Google 評論：自動算新增 ----------
+  function previousReview() {
+    const list = load(LS.reviews, []);
+    const others = list.filter((r) => r.date !== state.date);
+    return others.length ? others[others.length - 1] : null;
+  }
+  function updateReviewHint() {
+    const prev = previousReview();
+    $("reviewHint").textContent = prev
+      ? `上次紀錄：${prev.date} 共 ${prev.total} 則（填入總數會自動算新增）`
+      : "第一次使用：複製後會記住今天的總數，下次自動算新增。";
+  }
+
+  // ---------- 組輸出文字 ----------
+  function buildText() {
+    const linepay = num(state.linepay), cash = num(state.cash),
+          credit = num(state.credit), uber = num(state.uber);
+    const revenue = linepay + cash + credit + uber;
+    const expenses = state.expenses.filter((e) => (e.name || "").trim() || num(e.amount));
+    const expenseTotal = expenses.reduce((s, e) => s + num(e.amount), 0);
+    const balance = cash - expenseTotal;
+    const treats = state.treats.filter((t) => (t.name || "").trim() && num(t.qty));
+
+    const lines = [];
+    lines.push(`日期：${state.date || ""}`, "");
+    lines.push(`總營業額：${revenue}`, "");
+    lines.push(`Linepay：$${linepay}`);
+    lines.push(`現金：$${cash}`);
+    lines.push(`信用卡：$${credit}`);
+    if (uber) lines.push(`Uber Eat：$${uber}`);
+    lines.push("");
+    lines.push("當日支出：");
+    if (expenses.length) for (const e of expenses) lines.push(`${(e.name || "").trim()} ${num(e.amount)}`);
+    else lines.push("無");
+    lines.push("");
+    lines.push(`總支出：${expenseTotal}`, "");
+    lines.push(`現金餘額：${balance}`, "");
+    lines.push("招待");
+    for (const t of treats) lines.push(`${t.name.trim()}${num(t.qty)}`);
+    lines.push("", "");
+    lines.push(`Google 評論${num(state.reviewTotal)} 新增${num(state.reviewNew)}`);
+
+    return { text: lines.join("\n"), revenue, expenseTotal, balance };
+  }
+
+  function update() {
+    const { text, revenue, expenseTotal, balance } = buildText();
+    $("output").textContent = text;
+    $("revenueOut").textContent = revenue;
+    $("expenseOut").textContent = expenseTotal;
+    $("balanceOut").textContent = balance;
+
+    const sheet = state.revenueSheet === "" ? null : num(state.revenueSheet);
+    $("revenueWarn").textContent =
+      sheet !== null && sheet !== revenue ? `⚠️ 加總 ${revenue} 和單上寫的 ${sheet} 不一樣，請再確認` : "";
+    const sheetBalance = state.sheetBalance;
+    $("balanceWarn").textContent =
+      sheetBalance != null && sheetBalance !== balance ? `⚠️ 計算 ${balance} 和單上寫的總計現金 ${sheetBalance} 不一樣` : "";
+
+    save(LS.draft, state);
+  }
+
+  for (const f of FIELDS) {
+    $(f).addEventListener("input", () => {
+      state[f] = $(f).value;
+      if (f === "reviewTotal") {
+        const prev = previousReview();
+        if (prev && state.reviewTotal !== "") {
+          state.reviewNew = String(Math.max(0, num(state.reviewTotal) - num(prev.total)));
+          $("reviewNew").value = state.reviewNew;
+        }
+      }
+      if (f === "date") updateReviewHint();
+      update();
+    });
+  }
+
+  $("addExpense").onclick = () => { state.expenses.push({ name: "", amount: "" }); renderExpenses(); update(); };
+  $("addTreat").onclick = () => { state.treats.push({ name: "", qty: "" }); renderTreats(); update(); };
+
+  // ---------- 快捷按鈕設定 ----------
+  const splitList = (s) => s.split(/[,，\n]/).map((x) => x.trim()).filter(Boolean);
+  function fillPresetEditors() {
+    $("expensePresets").value = presets.expense.join(", ");
+    $("treatPresets").value = presets.treat.join(", ");
+  }
+  $("savePresets").onclick = () => {
+    presets = { expense: splitList($("expensePresets").value), treat: splitList($("treatPresets").value) };
+    save(LS.presets, presets);
+    renderChips();
+    setStatus("快捷按鈕已儲存", "ok");
+  };
+
+  // ---------- 複製 / 清空 ----------
+  $("copyBtn").onclick = async () => {
+    const { text } = buildText();
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); ta.remove();
+    }
+    if (state.reviewTotal !== "") {
+      const list = load(LS.reviews, []).filter((r) => r.date !== state.date);
+      list.push({ date: state.date, total: num(state.reviewTotal) });
+      save(LS.reviews, list.slice(-60));
+    }
+    $("copyBtn").textContent = "✅ 已複製";
+    setTimeout(() => ($("copyBtn").textContent = "複製文字"), 1500);
+  };
+
+  let resetArmed = false;
+  $("resetBtn").onclick = () => {
+    if (!resetArmed) {
+      resetArmed = true;
+      $("resetBtn").textContent = "再按一次清空";
+      setTimeout(() => { resetArmed = false; $("resetBtn").textContent = "清空"; }, 2500);
+      return;
+    }
+    resetArmed = false;
+    $("resetBtn").textContent = "清空";
+    state = blankState();
+    $("photo").value = "";
+    $("preview").style.display = "none";
+    $("ocrBtn").disabled = true;
+    setStatus("");
+    renderAll();
+  };
+
+  // ---------- 照片 ----------
+  let imageData = null; // { base64, mediaType }
+
+  function setStatus(msg, cls = "") {
+    $("status").textContent = msg;
+    $("status").className = cls;
+  }
+
+  // 先縮圖再送，省流量也比較快
+  function downscale(file, maxSide = 1600) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width * scale);
+        c.height = Math.round(img.height * scale);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        const url = c.toDataURL("image/jpeg", 0.85);
+        URL.revokeObjectURL(img.src);
+        resolve({ url, base64: url.split(",")[1], mediaType: "image/jpeg" });
+      };
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  $("photo").addEventListener("change", async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      imageData = await downscale(file);
+      $("preview").src = imageData.url;
+      $("preview").style.display = "block";
+      $("ocrBtn").disabled = false;
+      setStatus("照片已載入，按「辨識手寫文字」");
+    } catch {
+      setStatus("照片讀取失敗，請換一張試試", "err");
+    }
+  });
+
+  try { $("apiKey").value = localStorage.getItem(LS.key) || ""; } catch {}
+  $("apiKey").addEventListener("input", () => {
+    try { localStorage.setItem(LS.key, $("apiKey").value.trim()); } catch {}
+  });
+
+  // ---------- Claude 辨識 ----------
+  const SCHEMA = {
+    type: "object",
+    additionalProperties: false,
+    required: ["month", "day", "revenue", "linepay", "cash", "credit", "uber", "expenses", "cashTotal"],
+    properties: {
+      month: { type: ["integer", "null"] },
+      day: { type: ["integer", "null"] },
+      revenue: { type: ["integer", "null"], description: "營業額" },
+      linepay: { type: ["integer", "null"] },
+      cash: { type: ["integer", "null"], description: "現金" },
+      credit: { type: ["integer", "null"], description: "信用卡" },
+      uber: { type: ["integer", "null"], description: "Uber Eat" },
+      expenses: {
+        type: "array",
+        description: "當日支出明細，每一列一筆",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["item", "amount"],
+          properties: { item: { type: "string" }, amount: { type: ["integer", "null"] } },
+        },
+      },
+      cashTotal: { type: ["integer", "null"], description: "總計現金" },
+    },
+  };
+
+  const PROMPT = `這是一張餐廳每日營業日報表的照片，欄位是印刷字，內容是手寫。
+請讀出手寫內容並填入 JSON：
+- 日期欄是民國年/月/日，只要月(month)與日(day)。
+- revenue=營業額，linepay、cash=現金、credit=信用卡、uber=Uber Eat。
+- expenses=「當日支出明細」中每一列有寫的品項與金額；劃掉、空白或只有斜線/波浪線的列不要列入。
+- cashTotal=最下方「總計現金」。
+- 空白欄位填 null。數字只填整數，不要逗號或「元」。`;
+
+  let sdkPromise = null;
+  const loadSdk = () => (sdkPromise ??= import(SDK_URL).then((m) => m.default));
+
+  $("ocrBtn").onclick = async () => {
+    const apiKey = $("apiKey").value.trim();
+    if (!apiKey) {
+      document.querySelector("details").open = true;
+      $("apiKey").focus();
+      setStatus("請先在「辨識設定」填入 API Key", "err");
+      return;
+    }
+    if (!imageData) return;
+
+    $("ocrBtn").disabled = true;
+    setStatus("辨識中…（約 10～30 秒）");
+    try {
+      const Anthropic = await loadSdk();
+      const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
+      const response = await client.beta.messages.create({
+        model: MODEL,
+        max_tokens: 16000,
+        betas: ["server-side-fallback-2026-07-01"],
+        fallbacks: "default",
+        output_config: { format: { type: "json_schema", schema: SCHEMA } },
+        messages: [{
+          role: "user",
+          content: [
+            { type: "image", source: { type: "base64", media_type: imageData.mediaType, data: imageData.base64 } },
+            { type: "text", text: PROMPT },
+          ],
+        }],
+      });
+
+      if (response.stop_reason === "refusal") {
+        setStatus("辨識被拒絕，請換一張照片再試", "err");
+        return;
+      }
+      const textBlock = response.content.find((b) => b.type === "text");
+      if (!textBlock) throw new Error("沒有收到辨識結果");
+      applyResult(JSON.parse(textBlock.text));
+      setStatus("✅ 辨識完成，請核對下方數字", "ok");
+    } catch (err) {
+      if (err?.status === 401) setStatus("API Key 無效，請確認後再試", "err");
+      else if (err?.status === 429) setStatus("請求太頻繁，稍等一下再試", "err");
+      else if (err?.status) setStatus(`API 錯誤 ${err.status}：${err.message}`, "err");
+      else setStatus(`辨識失敗：${err?.message || err}`, "err");
+    } finally {
+      $("ocrBtn").disabled = false;
+    }
+  };
+
+  function applyResult(r) {
+    const s = (v) => (v == null ? "" : String(v));
+    if (r.month && r.day) state.date = `${r.month}/${r.day}`;
+    state.linepay = s(r.linepay);
+    state.cash = s(r.cash);
+    state.credit = s(r.credit);
+    state.uber = s(r.uber);
+    state.revenueSheet = s(r.revenue);
+    state.sheetBalance = r.cashTotal ?? null;
+    state.expenses = (r.expenses || [])
+      .filter((e) => (e.item || "").trim())
+      .map((e) => ({ name: e.item.trim(), amount: s(e.amount) }));
+    renderAll();
+  }
+
+  function renderAll() {
+    renderFields();
+    renderExpenses();
+    renderTreats();
+    updateReviewHint();
+    update();
+  }
+
+  fillPresetEditors();
+  renderAll();
+</script>
+</body>
+</html>
