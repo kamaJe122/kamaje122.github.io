@@ -130,10 +130,12 @@
     </div>
     <div id="status"></div>
     <details id="ocrSettings" style="margin-top:12px;">
-      <summary>⚙️ 辨識設定（Claude API 金鑰）</summary>
-      <label for="apiKey">Anthropic API Key（只存在這台裝置的瀏覽器）</label>
-      <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
-      <p class="hint">辨識使用 Claude 讀圖。金鑰只會從你的瀏覽器直接送到 Anthropic。</p>
+      <summary>⚙️ 辨識設定（Google Gemini 免費金鑰）</summary>
+      <label for="apiKey">Gemini API Key（到 aistudio.google.com 免費申請，只存在這台裝置）</label>
+      <input type="password" id="apiKey" placeholder="AIza..." autocomplete="off">
+      <label for="gemModel" style="margin-top:10px;">型號（留空 = 自動選最新的 Flash）</label>
+      <input id="gemModel" placeholder="自動">
+      <p class="hint">辨識使用 Google Gemini 讀圖，免費額度內不用錢。注意：免費方案的資料可能被 Google 用來改進產品。</p>
     </details>
   </section>
 
@@ -219,10 +221,10 @@
 
 <script type="module">
   const $ = (id) => document.getElementById(id);
-  const MODEL = "claude-opus-5-5";
-  const SDK_URL = "https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.131.0/+esm";
   const LS = {
-    key: "dr_apiKey",
+    key: "dr_gemKey",
+    gemModel: "dr_gemModel",
+    gemModelManual: "dr_gemModelManual",
     draft: "dr_draft",
     presets: "dr_presets",
     reviews: "dr_reviews",
@@ -566,35 +568,37 @@
     }
   });
 
-  try { $("apiKey").value = localStorage.getItem(LS.key) || ""; } catch {}
-  $("apiKey").addEventListener("input", () => {
-    try { localStorage.setItem(LS.key, $("apiKey").value.trim()); } catch {}
-  });
+  $("apiKey").value = load(LS.key, "");
+  $("gemModel").value = load(LS.gemModelManual, "");
+  $("apiKey").addEventListener("input", () => save(LS.key, $("apiKey").value.trim()));
+  $("gemModel").addEventListener("input", () => save(LS.gemModelManual, $("gemModel").value.trim()));
 
-  // ---------- Claude 辨識 ----------
+  // ---------- Gemini 辨識 ----------
+  const GEMINI = "https://generativelanguage.googleapis.com/v1beta";
+
+  // Gemini 的 schema 格式（OpenAPI 子集）
+  const INT = { type: "INTEGER", nullable: true };
   const SCHEMA = {
-    type: "object",
-    additionalProperties: false,
+    type: "OBJECT",
     required: ["month", "day", "revenue", "linepay", "cash", "credit", "uber", "expenses", "cashTotal"],
     properties: {
-      month: { type: ["integer", "null"] },
-      day: { type: ["integer", "null"] },
-      revenue: { type: ["integer", "null"], description: "營業額" },
-      linepay: { type: ["integer", "null"] },
-      cash: { type: ["integer", "null"], description: "現金" },
-      credit: { type: ["integer", "null"], description: "信用卡" },
-      uber: { type: ["integer", "null"], description: "Uber Eat" },
+      month: INT,
+      day: INT,
+      revenue: { ...INT, description: "營業額" },
+      linepay: INT,
+      cash: { ...INT, description: "現金" },
+      credit: { ...INT, description: "信用卡" },
+      uber: { ...INT, description: "Uber Eat" },
       expenses: {
-        type: "array",
+        type: "ARRAY",
         description: "當日支出明細，每一列一筆",
         items: {
-          type: "object",
-          additionalProperties: false,
+          type: "OBJECT",
           required: ["item", "amount"],
-          properties: { item: { type: "string" }, amount: { type: ["integer", "null"] } },
+          properties: { item: { type: "STRING" }, amount: INT },
         },
       },
-      cashTotal: { type: ["integer", "null"], description: "總計現金" },
+      cashTotal: { ...INT, description: "總計現金" },
     },
   };
 
@@ -606,50 +610,87 @@
 - cashTotal=最下方「總計現金」。
 - 空白欄位填 null。數字只填整數，不要逗號或「元」。`;
 
-  let sdkPromise = null;
-  const loadSdk = () => (sdkPromise ??= import(SDK_URL).then((m) => m.default));
+  async function gemFetch(path, key, body) {
+    const res = await fetch(`${GEMINI}/${path}`, {
+      method: body ? "POST" : "GET",
+      headers: { "x-goog-api-key": key, ...(body ? { "Content-Type": "application/json" } : {}) },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const err = new Error(data?.error?.message || res.statusText);
+      err.status = res.status;
+      throw err;
+    }
+    return data;
+  }
+
+  // Google 常換型號名稱，所以向 Google 查目前可用、版本最新的正式版 Flash
+  async function pickModel(key) {
+    const manual = $("gemModel").value.trim();
+    if (manual) return manual.replace(/^models\//, "");
+    const cached = load(LS.gemModel, null);
+    if (cached) return cached;
+
+    const { models = [] } = await gemFetch("models?pageSize=1000", key);
+    const version = (name, re) => { const m = name.match(re); return m ? parseFloat(m[1]) : null; };
+    const usable = models.filter((m) => (m.supportedGenerationMethods || []).includes("generateContent"));
+    const pick = (re) => usable
+      .map((m) => ({ id: m.name.replace(/^models\//, ""), v: version(m.name, re) }))
+      .filter((m) => m.v != null)
+      .sort((a, b) => b.v - a.v)[0];
+    const best = pick(/^models\/gemini-(\d+(?:\.\d+)?)-flash$/) || pick(/^models\/gemini-(\d+(?:\.\d+)?)-flash-lite$/);
+    if (!best) throw new Error("找不到可用的 Gemini Flash 型號，請在設定手動填型號");
+    save(LS.gemModel, best.id);
+    return best.id;
+  }
+
+  async function recognize(key, model) {
+    const data = await gemFetch(`models/${model}:generateContent`, key, {
+      contents: [{
+        parts: [
+          { inline_data: { mime_type: imageData.mediaType, data: imageData.base64 } },
+          { text: PROMPT },
+        ],
+      }],
+      generationConfig: { responseMimeType: "application/json", responseSchema: SCHEMA },
+    });
+    const cand = data.candidates?.[0];
+    const text = (cand?.content?.parts || []).filter((p) => p.text && !p.thought).map((p) => p.text).join("");
+    if (!text) throw new Error(cand?.finishReason ? `沒有結果（${cand.finishReason}）` : "沒有收到辨識結果");
+    return JSON.parse(text);
+  }
 
   $("ocrBtn").onclick = async () => {
-    const apiKey = $("apiKey").value.trim();
-    if (!apiKey) {
+    const key = $("apiKey").value.trim();
+    if (!key) {
       $("ocrSettings").open = true;
       $("apiKey").focus();
-      setStatus("請先在「辨識設定」填入 API Key", "err");
+      setStatus("請先在「辨識設定」填入 Gemini API Key", "err");
       return;
     }
     if (!imageData) return;
 
     $("ocrBtn").disabled = true;
-    setStatus("辨識中…（約 10～30 秒）");
+    setStatus("辨識中…（約 5～20 秒）");
     try {
-      const Anthropic = await loadSdk();
-      const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
-      const response = await client.beta.messages.create({
-        model: MODEL,
-        max_tokens: 16000,
-        betas: ["server-side-fallback-2026-07-01"],
-        fallbacks: "default",
-        output_config: { format: { type: "json_schema", schema: SCHEMA } },
-        messages: [{
-          role: "user",
-          content: [
-            { type: "image", source: { type: "base64", media_type: imageData.mediaType, data: imageData.base64 } },
-            { type: "text", text: PROMPT },
-          ],
-        }],
-      });
-
-      if (response.stop_reason === "refusal") {
-        setStatus("辨識被拒絕，請換一張照片再試", "err");
-        return;
+      let model = await pickModel(key);
+      let result;
+      try {
+        result = await recognize(key, model);
+      } catch (err) {
+        // 自動選的型號被 Google 下架：清掉記憶，重選一次
+        if (err.status !== 404 || $("gemModel").value.trim()) throw err;
+        save(LS.gemModel, null);
+        model = await pickModel(key);
+        result = await recognize(key, model);
       }
-      const textBlock = response.content.find((b) => b.type === "text");
-      if (!textBlock) throw new Error("沒有收到辨識結果");
-      applyResult(JSON.parse(textBlock.text));
-      setStatus("✅ 辨識完成，請核對下方數字", "ok");
+      applyResult(result);
+      setStatus(`✅ 辨識完成（${model}），請核對下方數字`, "ok");
     } catch (err) {
-      if (err?.status === 401) setStatus("API Key 無效，請確認後再試", "err");
-      else if (err?.status === 429) setStatus("請求太頻繁，稍等一下再試", "err");
+      if (err?.status === 400 && /API key/i.test(err.message)) setStatus("API Key 無效，請確認後再試", "err");
+      else if (err?.status === 403) setStatus("API Key 沒有權限，請確認是在 Google AI Studio 建立的金鑰", "err");
+      else if (err?.status === 429) setStatus("超過免費額度或太頻繁，稍等一下再試", "err");
       else if (err?.status) setStatus(`API 錯誤 ${err.status}：${err.message}`, "err");
       else setStatus(`辨識失敗：${err?.message || err}`, "err");
     } finally {
