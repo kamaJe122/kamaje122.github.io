@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1f1a17">
+  <title>咖啡廳門口鈴</title>
+  <style>
+    :root {
+      --bg: #1f1a17;
+      --card: #2b2420;
+      --text: #f4ece4;
+      --muted: #b9a999;
+      --accent: #d9a35b;
+      --ok: #6cc28a;
+      --alert: #ff6b5b;
+      --line: #4a3f38;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      padding: 12px 16px calc(24px + env(safe-area-inset-bottom));
+    }
+
+    h1 { font-size: 20px; margin: 4px 0 12px; }
+    h1 small { color: var(--muted); font-weight: normal; font-size: 13px; }
+
+    .stage {
+      position: relative;
+      width: 100%;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      touch-action: none;
+      aspect-ratio: 4 / 3;
+    }
+
+    video, canvas.overlay {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas.overlay { position: absolute; inset: 0; height: 100%; }
+
+    .flash {
+      position: absolute; inset: 0;
+      background: var(--alert);
+      opacity: 0; pointer-events: none;
+      transition: opacity .6s;
+    }
+    .flash.on { opacity: .45; transition: none; }
+
+    .status {
+      display: flex; align-items: center; gap: 8px;
+      margin: 10px 0; font-size: 15px;
+    }
+    .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--muted); flex: none; }
+    .dot.run { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+    .dot.alert { background: var(--alert); box-shadow: 0 0 10px var(--alert); }
+
+    .row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+
+    button, select {
+      font: inherit; color: var(--text);
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 10px; padding: 10px 14px;
+    }
+    button.primary { background: var(--accent); color: #1f1a17; border: none; font-weight: bold; flex: 1; }
+    button:disabled { opacity: .5; }
+
+    .card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 12px; padding: 12px; margin-bottom: 10px;
+    }
+    .card h2 { font-size: 15px; margin: 0 0 8px; }
+
+    label.set { display: block; margin: 8px 0; font-size: 14px; }
+    label.set input[type=range] { width: 100%; }
+    label.set span { color: var(--accent); }
+    label.chk { display: flex; gap: 8px; align-items: center; margin: 6px 0; font-size: 14px; }
+
+    .hint { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 4px 0; }
+
+    #log { list-style: none; margin: 0; padding: 0; max-height: 320px; overflow-y: auto; }
+    #log li {
+      display: flex; gap: 10px; align-items: center;
+      padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px;
+    }
+    #log img { width: 72px; height: 54px; object-fit: cover; border-radius: 6px; }
+    .count { font-size: 28px; color: var(--accent); font-weight: bold; }
+  </style>
+</head>
+
+<body>
+  <h1>☕ 咖啡廳門口鈴 <small>AI 偵測有人進門 → 響鈴</small></h1>
+
+  <div class="stage" id="stage">
+    <video id="video" playsinline muted></video>
+    <canvas class="overlay" id="overlay"></canvas>
+    <div class="flash" id="flash"></div>
+  </div>
+
+  <div class="status"><span class="dot" id="dot"></span><span id="statusText">尚未啟動</span></div>
+
+  <div class="row">
+    <button class="primary" id="startBtn">▶ 開始監看</button>
+    <button id="stopBtn" disabled>■ 停止</button>
+    <button id="testBtn">🔔 試聽</button>
+  </div>
+
+  <div class="row">
+    <select id="cameraSel" aria-label="鏡頭">
+      <option value="environment">後鏡頭</option>
+      <option value="user">前鏡頭</option>
+    </select>
+    <select id="soundSel" aria-label="鈴聲">
+      <option value="dingdong">叮咚</option>
+      <option value="bell">風鈴</option>
+      <option value="beep">嗶嗶</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <h2>🚪 門口區域</h2>
+    <p class="hint">在畫面上<b>用手指拖曳</b>框出門口（黃色框）。只有人走進這個框才會響鈴，路過窗外的人不會誤觸。</p>
+  </div>
+
+  <div class="card">
+    <h2>⚙️ 設定</h2>
+    <label class="chk"><input type="checkbox" id="usePerson" checked> 👤 偵測「人」進入門口框</label>
+    <label class="chk"><input type="checkbox" id="useMotion"> 🚪 偵測門口框畫面大幅變化（開門動作）</label>
+    <label class="chk"><input type="checkbox" id="onlyApproach" checked> ➡️ 只在人「走近鏡頭」時響（忽略走出去的人）</label>
+    <label class="set">AI 信心門檻：<span id="confVal">55</span>%
+      <input type="range" id="conf" min="30" max="90" value="55"></label>
+    <label class="set">開門變化靈敏度：<span id="motVal">25</span>%
+      <input type="range" id="mot" min="5" max="60" value="25"></label>
+    <label class="set">響鈴冷卻：<span id="cdVal">8</span> 秒（避免同一位客人連續響）
+      <input type="range" id="cd" min="2" max="60" value="8"></label>
+    <label class="set">音量：<span id="volVal">80</span>%
+      <input type="range" id="vol" min="10" max="100" value="80"></label>
+  </div>
+
+  <div class="card">
+    <h2>📋 今日來客紀錄 <span class="count" id="count">0</span></h2>
+    <ul id="log"></ul>
+  </div>
+
+  <p class="hint">
+    💡 手機請<b>接上充電</b>、固定在能看到門口的位置；畫面會保持常亮。<br>
+    🔒 影像只在手機上分析，不會上傳到任何伺服器。<br>
+    ⚠️ 請保持此頁在前景，切到其他 App 或鎖屏時瀏覽器會暫停鏡頭。
+  </p>
+
+  <!-- 在手機上執行的物件偵測模型（COCO-SSD，可辨識「人」） -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const video = $('video'), overlay = $('overlay'), ctx = overlay.getContext('2d');
+    const STORE = 'cafe-doorbell-v1';
+
+    // ---------- 設定（記在本機） ----------
+    let zone = { x: 0.3, y: 0.15, w: 0.4, h: 0.75 }; // 門口框，比例座標
+    function loadSettings() {
+      try {
+        const s = JSON.parse(localStorage.getItem(STORE) || '{}');
+        if (s.zone) zone = s.zone;
+        for (const k of ['conf', 'mot', 'cd', 'vol']) if (s[k]) $(k).value = s[k];
+        for (const k of ['usePerson', 'useMotion', 'onlyApproach']) if (k in s) $(k).checked = s[k];
+        if (s.cameraSel) $('cameraSel').value = s.cameraSel;
+        if (s.soundSel) $('soundSel').value = s.soundSel;
+      } catch (e) { /* 無痕模式等情況忽略 */ }
+    }
+    function saveSettings() {
+      try {
+        const s = { zone };
+        for (const k of ['conf', 'mot', 'cd', 'vol']) s[k] = $(k).value;
+        for (const k of ['usePerson', 'useMotion', 'onlyApproach']) s[k] = $(k).checked;
+        s.cameraSel = $('cameraSel').value; s.soundSel = $('soundSel').value;
+        localStorage.setItem(STORE, JSON.stringify(s));
+      } catch (e) { }
+    }
+    function syncLabels() {
+      $('confVal').textContent = $('conf').value;
+      $('motVal').textContent = $('mot').value;
+      $('cdVal').textContent = $('cd').value;
+      $('volVal').textContent = $('vol').value;
+    }
+    loadSettings(); syncLabels();
+    document.querySelectorAll('input,select').forEach(el =>
+      el.addEventListener('input', () => { syncLabels(); saveSettings(); }));
+
+    // ---------- 鈴聲（WebAudio 合成，不需音檔） ----------
+    let audioCtx;
+    function ensureAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+    function tone(freq, start, dur, vol, type = 'sine') {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = type; o.frequency.value = freq;
+      const t = audioCtx.currentTime + start;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g).connect(audioCtx.destination);
+      o.start(t); o.stop(t + dur + 0.05);
+    }
+    function ring() {
+      ensureAudio();
+      const v = $('vol').value / 100;
+      const s = $('soundSel').value;
+      if (s === 'dingdong') { tone(880, 0, 1.0, v); tone(698, 0.45, 1.4, v); }
+      else if (s === 'bell') { [1319, 1568, 1760, 2093, 1568].forEach((f, i) => tone(f, i * 0.12, 1.2, v * 0.6, 'triangle')); }
+      else { for (let i = 0; i < 3; i++) tone(1200, i * 0.25, 0.15, v, 'square'); }
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      $('flash').classList.add('on');
+      setTimeout(() => $('flash').classList.remove('on'), 80);
+    }
+    $('testBtn').onclick = ring;
+
+    // ---------- 拖曳畫門口框 ----------
+    let dragStart = null;
+    function relPos(e) {
+      const r = overlay.getBoundingClientRect();
+      const p = e.touches ? e.touches[0] : e;
+      return { x: Math.min(1, Math.max(0, (p.clientX - r.left) / r.width)), y: Math.min(1, Math.max(0, (p.clientY - r.top) / r.height)) };
+    }
+    overlay.addEventListener('pointerdown', e => { dragStart = relPos(e); overlay.setPointerCapture(e.pointerId); });
+    overlay.addEventListener('pointermove', e => {
+      if (!dragStart) return;
+      const p = relPos(e);
+      const w = Math.abs(p.x - dragStart.x), h = Math.abs(p.y - dragStart.y);
+      if (w > 0.03 && h > 0.03) zone = { x: Math.min(p.x, dragStart.x), y: Math.min(p.y, dragStart.y), w, h };
+      if (!running) draw([]);
+    });
+    overlay.addEventListener('pointerup', () => { dragStart = null; saveSettings(); });
+
+    // ---------- 主流程 ----------
+    let model, stream, running = false, wakeLock = null;
+    let lastRing = 0, personInZonePrev = false, zoneAreaHistory = [], prevGray = null, visitors = 0;
+    const small = document.createElement('canvas'); small.width = 64; small.height = 48;
+    const sctx = small.getContext('2d', { willReadFrequently: true });
+
+    function setStatus(text, state) {
+      $('statusText').textContent = text;
+      $('dot').className = 'dot' + (state ? ' ' + state : '');
+    }
+
+    async function start() {
+      ensureAudio();
+      $('startBtn').disabled = true;
+      try {
+        setStatus('開啟鏡頭中…');
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: $('cameraSel').value, width: { ideal: 640 }, height: { ideal: 480 } }, audio: false
+        });
+        video.srcObject = stream;
+        await video.play();
+        overlay.width = video.videoWidth; overlay.height = video.videoHeight;
+        $('stage').style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
+        if (!model) {
+          setStatus('載入 AI 模型中…（第一次約 5–15 秒）');
+          model = await cocoSsd.load({ base: 'lite_mobilenet_v2' });
+        }
+        try { wakeLock = await navigator.wakeLock?.request('screen'); } catch (e) { }
+        running = true; personInZonePrev = false; prevGray = null; zoneAreaHistory = [];
+        $('stopBtn').disabled = false;
+        setStatus('監看中 👀', 'run');
+        loop();
+      } catch (err) {
+        setStatus('無法啟動：' + (err.message || err));
+        $('startBtn').disabled = false;
+      }
+    }
+
+    function stop() {
+      running = false;
+      stream?.getTracks().forEach(t => t.stop());
+      wakeLock?.release?.(); wakeLock = null;
+      $('startBtn').disabled = false; $('stopBtn').disabled = true;
+      setStatus('已停止');
+    }
+
+    $('startBtn').onclick = start;
+    $('stopBtn').onclick = stop;
+    document.addEventListener('visibilitychange', async () => {
+      if (running && document.visibilityState === 'visible') {
+        try { wakeLock = await navigator.wakeLock?.request('screen'); } catch (e) { }
+      }
+    });
+
+    function inZone(b) {
+      // b: [x,y,w,h] 像素。以人的「腳底中心」判斷是否在門口框內
+      const W = overlay.width, H = overlay.height;
+      const cx = (b[0] + b[2] / 2) / W, by = Math.min(1, (b[1] + b[3]) / H);
+      const cy = (b[1] + b[3] / 2) / H;
+      const inside = (x, y) => x >= zone.x && x <= zone.x + zone.w && y >= zone.y && y <= zone.y + zone.h;
+      return inside(cx, by) || inside(cx, cy);
+    }
+
+    function motionScore() {
+      // 只比較門口框內的畫面差異
+      sctx.drawImage(video, zone.x * video.videoWidth, zone.y * video.videoHeight,
+        zone.w * video.videoWidth, zone.h * video.videoHeight, 0, 0, 64, 48);
+      const d = sctx.getImageData(0, 0, 64, 48).data;
+      const gray = new Uint8Array(64 * 48);
+      for (let i = 0; i < gray.length; i++) gray[i] = (d[i * 4] * 3 + d[i * 4 + 1] * 6 + d[i * 4 + 2]) / 10;
+      let changed = 0;
+      if (prevGray) for (let i = 0; i < gray.length; i++) if (Math.abs(gray[i] - prevGray[i]) > 30) changed++;
+      const first = !prevGray;
+      prevGray = gray;
+      return first ? 0 : changed / gray.length;
+    }
+
+    function trigger(reason) {
+      const now = Date.now();
+      if (now - lastRing < $('cd').value * 1000) return;
+      lastRing = now;
+      ring();
+      visitors++;
+      $('count').textContent = visitors;
+      setStatus('🔔 有客人！（' + reason + '）', 'alert');
+      setTimeout(() => running && setStatus('監看中 👀', 'run'), 2500);
+      // 存一張小縮圖到紀錄
+      const snap = document.createElement('canvas'); snap.width = 160; snap.height = 120;
+      snap.getContext('2d').drawImage(video, 0, 0, 160, 120);
+      const li = document.createElement('li');
+      const img = new Image(); img.src = snap.toDataURL('image/jpeg', 0.6); img.alt = '';
+      const t = new Date().toLocaleTimeString('zh-TW', { hour12: false });
+      li.append(img, document.createTextNode(`${t}　${reason}`));
+      $('log').prepend(li);
+      while ($('log').children.length > 50) $('log').lastChild.remove();
+    }
+
+    function draw(people) {
+      const W = overlay.width || 640, H = overlay.height || 480;
+      ctx.clearRect(0, 0, W, H);
+      ctx.lineWidth = Math.max(2, W / 200);
+      ctx.strokeStyle = '#ffd34d'; ctx.setLineDash([12, 8]);
+      ctx.strokeRect(zone.x * W, zone.y * H, zone.w * W, zone.h * H);
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#ffd34d'; ctx.font = `${Math.round(W / 28)}px sans-serif`;
+      ctx.fillText('門口', zone.x * W + 6, zone.y * H + W / 24);
+      for (const p of people) {
+        const hit = inZone(p.bbox);
+        ctx.strokeStyle = hit ? '#ff6b5b' : '#6cc28a';
+        ctx.strokeRect(...p.bbox);
+        ctx.fillStyle = ctx.strokeStyle;
+        ctx.fillText(`人 ${Math.round(p.score * 100)}%`, p.bbox[0] + 4, p.bbox[1] + W / 28);
+      }
+    }
+
+    async function loop() {
+      if (!running) return;
+      try {
+        let people = [];
+        if ($('usePerson').checked) {
+          const preds = await model.detect(video, 10, $('conf').value / 100);
+          people = preds.filter(p => p.class === 'person');
+          const inside = people.filter(p => inZone(p.bbox));
+          const nowIn = inside.length > 0;
+
+          // 追蹤框內最大的人的面積，用來判斷是「走近」還是「走遠」
+          const area = nowIn ? Math.max(...inside.map(p => p.bbox[2] * p.bbox[3])) : 0;
+          zoneAreaHistory.push(area); if (zoneAreaHistory.length > 6) zoneAreaHistory.shift();
+
+          if (nowIn && !personInZonePrev) {
+            if (!$('onlyApproach').checked) trigger('有人進入門口');
+            else pendingEnter = Date.now();
+          }
+          if ($('onlyApproach').checked && pendingEnter && nowIn) {
+            const h = zoneAreaHistory.filter(a => a > 0);
+            if (h.length >= 3) {
+              if (h[h.length - 1] > h[0] * 1.08) { trigger('有人走進來'); pendingEnter = 0; }
+              else if (Date.now() - pendingEnter > 2500) pendingEnter = 0; // 不是走近，放棄
+            }
+          }
+          if (!nowIn) pendingEnter = 0;
+          personInZonePrev = nowIn;
+        }
+        if ($('useMotion').checked) {
+          const m = motionScore();
+          if (m > $('mot').value / 100) trigger('門口有動靜');
+        }
+        draw(people);
+      } catch (e) { console.error(e); }
+      setTimeout(() => requestAnimationFrame(loop), 120); // 約每秒 6–8 次，省電
+    }
+    let pendingEnter = 0;
+
+    // 初始化時先畫出門口框
+    overlay.width = 640; overlay.height = 480; draw([]);
+  </script>
+</body>
+
+</html>
