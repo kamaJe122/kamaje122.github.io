@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.text.TextUtils;
 import android.view.View;
@@ -28,7 +29,10 @@ import java.time.temporal.IsoFields;
 import java.time.temporal.JulianFields;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 5×2 桌面小工具：左邊月曆（含週數）、右邊選取日的行程。
@@ -45,6 +49,8 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
     private static final String PREFS = "widget";
     private static final String KEY_SELECTED = "selectedEpochDay";
     private static final String KEY_SELECTED_ON = "selectedOnEpochDay";
+    private static final String KEY_SHOW_ALL_DAY = "showAllDay";
+    private static final String KEY_HIDDEN_CALENDARS = "hiddenCalendars";
 
     private static final String[] WEEKDAYS = {"週一", "週二", "週三", "週四", "週五", "週六", "週日"};
 
@@ -56,10 +62,24 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
             R.id.d21, R.id.d22, R.id.d23, R.id.d24, R.id.d25, R.id.d26, R.id.d27,
             R.id.d28, R.id.d29, R.id.d30, R.id.d31, R.id.d32, R.id.d33, R.id.d34,
             R.id.d35, R.id.d36, R.id.d37, R.id.d38, R.id.d39, R.id.d40, R.id.d41};
-    private static final int[] EVENT_IDS = {R.id.event1, R.id.event2};
-    private static final int[] EVENT_BAR_IDS = {R.id.event1_bar, R.id.event2_bar};
-    private static final int[] EVENT_TITLE_IDS = {R.id.event1_title, R.id.event2_title};
-    private static final int[] EVENT_TIME_IDS = {R.id.event1_time, R.id.event2_time};
+    private static final int[] EVENT_IDS = {
+            R.id.event1, R.id.event2, R.id.event3, R.id.event4,
+            R.id.event5, R.id.event6, R.id.event7, R.id.event8};
+    private static final int[] EVENT_BAR_IDS = {
+            R.id.event1_bar, R.id.event2_bar, R.id.event3_bar, R.id.event4_bar,
+            R.id.event5_bar, R.id.event6_bar, R.id.event7_bar, R.id.event8_bar};
+    private static final int[] EVENT_TITLE_IDS = {
+            R.id.event1_title, R.id.event2_title, R.id.event3_title, R.id.event4_title,
+            R.id.event5_title, R.id.event6_title, R.id.event7_title, R.id.event8_title};
+    private static final int[] EVENT_TIME_IDS = {
+            R.id.event1_time, R.id.event2_time, R.id.event3_time, R.id.event4_time,
+            R.id.event5_time, R.id.event6_time, R.id.event7_time, R.id.event8_time};
+
+    // 右欄的高度估算（dp），用來決定放得下幾筆行程
+    private static final int WIDGET_PADDING_DP = 20;
+    private static final int DAY_HEADER_DP = 27;
+    private static final int EVENT_ROW_DP = 39;
+    private static final int MORE_LINE_DP = 16;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -98,6 +118,13 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
     }
 
     @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager manager,
+            int appWidgetId, Bundle newOptions) {
+        // 使用者拉了小工具大小 → 重新計算可以放幾筆行程
+        updateAll(context);
+    }
+
+    @Override
     public void onDisabled(Context context) {
         AlarmManager alarms = context.getSystemService(AlarmManager.class);
         if (alarms != null) {
@@ -108,16 +135,47 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
     static void updateAll(Context context) {
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
         ComponentName me = new ComponentName(context, CalendarWidgetProvider.class);
-        if (manager.getAppWidgetIds(me).length == 0) {
+        int[] ids = manager.getAppWidgetIds(me);
+        if (ids.length == 0) {
             return;
         }
-        manager.updateAppWidget(me, buildViews(context));
+        for (int id : ids) {
+            int heightDp = manager.getAppWidgetOptions(id)
+                    .getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 0);
+            manager.updateAppWidget(id, buildViews(context, heightDp));
+        }
         scheduleNextTick(context);
+    }
+
+    // ───────────────────────── 設定（給 MainActivity 用） ─────────────────────────
+
+    static boolean showAllDay(Context context) {
+        return prefs(context).getBoolean(KEY_SHOW_ALL_DAY, true);
+    }
+
+    static void setShowAllDay(Context context, boolean show) {
+        prefs(context).edit().putBoolean(KEY_SHOW_ALL_DAY, show).apply();
+    }
+
+    /** 使用者取消勾選的日曆 ID。 */
+    static Set<String> hiddenCalendars(Context context) {
+        return new HashSet<>(prefs(context)
+                .getStringSet(KEY_HIDDEN_CALENDARS, Collections.emptySet()));
+    }
+
+    static void setCalendarHidden(Context context, long calendarId, boolean hidden) {
+        Set<String> set = hiddenCalendars(context);
+        if (hidden) {
+            set.add(String.valueOf(calendarId));
+        } else {
+            set.remove(String.valueOf(calendarId));
+        }
+        prefs(context).edit().putStringSet(KEY_HIDDEN_CALENDARS, set).apply();
     }
 
     // ───────────────────────── 畫面 ─────────────────────────
 
-    private static RemoteViews buildViews(Context context) {
+    private static RemoteViews buildViews(Context context, int heightDp) {
         ZoneId zone = ZoneId.systemDefault();
         LocalDate today = LocalDate.now(zone);
         LocalDate selected = selectedDay(context, today);
@@ -197,8 +255,18 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
         } else {
             boolean isToday = selected.equals(today);
             List<Event> events = loadEvents(context, selected, zone, isToday);
+            // 依小工具高度決定顯示幾筆：全部放得下就全放，否則留一行給「還有 N 個」
+            int room = heightDp - WIDGET_PADDING_DP - DAY_HEADER_DP;
+            int slots = room / EVENT_ROW_DP;
+            if (heightDp <= 0) {
+                slots = 2; // 桌面沒回報尺寸時的保守預設
+            } else if (events.size() > slots) {
+                slots = (room - MORE_LINE_DP) / EVENT_ROW_DP;
+            }
+            slots = Math.max(1, Math.min(EVENT_IDS.length, slots));
+
             for (int i = 0; i < EVENT_IDS.length; i++) {
-                if (i < events.size()) {
+                if (i < events.size() && i < slots) {
                     Event e = events.get(i);
                     views.setViewVisibility(EVENT_IDS[i], View.VISIBLE);
                     views.setInt(EVENT_BAR_IDS[i], "setColorFilter", e.color | 0xFF000000);
@@ -213,7 +281,7 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
                     views.setViewVisibility(EVENT_IDS[i], View.GONE);
                 }
             }
-            int hidden = events.size() - EVENT_IDS.length;
+            int hidden = events.size() - slots;
             if (hidden > 0) {
                 views.setViewVisibility(R.id.more, View.VISIBLE);
                 views.setTextViewText(R.id.more, context.getString(R.string.more_events, hidden));
@@ -286,6 +354,8 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
         long dayEnd = day.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli();
         long julianDay = day.getLong(JulianFields.JULIAN_DAY);
         long now = System.currentTimeMillis();
+        boolean showAllDay = showAllDay(context);
+        Set<String> hiddenCalendars = hiddenCalendars(context);
 
         // 全天行程在資料庫裡是以 UTC 存的，所以前後多抓一天，再用「第幾天」精準過濾
         Uri.Builder uri = CalendarContract.Instances.CONTENT_URI.buildUpon();
@@ -302,7 +372,8 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
                 CalendarContract.Instances.END_DAY,
                 CalendarContract.Instances.EVENT_LOCATION,
                 CalendarContract.Instances.DISPLAY_COLOR,
-                CalendarContract.Instances.SELF_ATTENDEE_STATUS};
+                CalendarContract.Instances.SELF_ATTENDEE_STATUS,
+                CalendarContract.Instances.CALENDAR_ID};
 
         try (Cursor c = context.getContentResolver().query(uri.build(), projection,
                 CalendarContract.Instances.VISIBLE + " = 1", null,
@@ -314,12 +385,18 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
                 if (c.getInt(9) == CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED) {
                     continue; // 已婉拒的邀請不顯示
                 }
+                if (hiddenCalendars.contains(String.valueOf(c.getLong(10)))) {
+                    continue; // 使用者在 App 裡取消勾選的日曆
+                }
                 Event e = new Event();
                 e.eventId = c.getLong(0);
                 e.begin = c.getLong(2);
                 e.end = c.getLong(3);
                 e.allDay = c.getInt(4) != 0;
                 if (e.allDay) {
+                    if (!showAllDay) {
+                        continue;
+                    }
                     if (c.getLong(5) > julianDay || c.getLong(6) < julianDay) {
                         continue;
                     }
