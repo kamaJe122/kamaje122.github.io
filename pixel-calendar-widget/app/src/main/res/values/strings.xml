@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">月曆小工具</string>
+    <string name="app_name">KM 桌面行事曆小工具</string>
     <string name="widget_label">月曆＋今日行程 5×2</string>
     <string name="widget_description">左邊月曆（含週數）、右邊當日行程，自動讀取手機上所有 Google 帳號的行事曆。</string>
     <string name="add_event">新增行程</string>
@@ -14,22 +14,24 @@
     <string name="week_title">第 %d 週</string>
     <string name="day_title">%d日</string>
 
-    <string name="main_title">月曆小工具</string>
-    <string name="main_intro">這個 App 只有一個用途：在桌面放一個 5×2 的月曆小工具。\n\n它直接讀取手機「行事曆同步資料」，所以只要是已登入這支手機、而且在 Google 日曆裡有勾選顯示的帳號與日曆，都會自動出現，顏色也跟 Google 日曆一致。</string>
+    <string name="main_title">KM 桌面行事曆小工具</string>
+    <string name="main_intro">這個 App 只有一個用途：在桌面放一個 5×2 的月曆小工具。\n\n它讀取的是手機的「系統行事曆資料庫」，不是直接連 Google。Google 只會把部分日曆放進這個資料庫，其餘的要在下方「要顯示的日曆」勾選後才會同步進來。顏色與 Google 日曆一致。</string>
     <string name="status_granted">✅ 已授權讀取行事曆</string>
     <string name="status_denied">⚠️ 尚未授權讀取行事曆</string>
-    <string name="btn_grant">① 授權讀取行事曆</string>
+    <string name="btn_grant">① 授權行事曆權限</string>
     <string name="btn_open_settings">到系統設定開啟權限</string>
     <string name="btn_pin">② 把小工具加到桌面</string>
     <string name="main_tips">小工具操作：\n• 點任一日期 → 右邊顯示那一天的行程\n• 點灰色日期 → 跳到上／下個月\n• 點左上角月份 → 回到今天\n• 點行程 → 在行事曆 App 打開\n• 點 ＋ → 新增行程</string>
-    <string name="pin_unsupported">這個桌面不支援直接加入，請長按桌面 → 小工具 → 月曆小工具。</string>
+    <string name="pin_unsupported">這個桌面不支援直接加入，請長按桌面 → 小工具 → KM 桌面行事曆小工具。</string>
 
     <string name="section_display">顯示設定</string>
     <string name="show_all_day">顯示全天行程</string>
     <string name="section_calendars">要顯示的日曆</string>
-    <string name="calendars_hint">以下是這支手機目前同步到的所有日曆。取消勾選的日曆不會出現在小工具上。右邊能顯示幾筆行程，由小工具的高度決定，拉高就會變多。</string>
+    <string name="calendars_hint">勾選的日曆才會出現在小工具上。標示「尚未同步到手機」的日曆，勾選後會請 Google 把它的行程同步進手機，通常要等幾分鐘。右邊能顯示幾筆行程由小工具高度決定，拉高就會變多。</string>
     <string name="calendars_need_permission">授權讀取行事曆後，這裡會列出所有帳號與日曆。</string>
     <string name="calendars_none">手機上沒有找到任何日曆。請確認 Google 日曆 App 已登入並完成同步。</string>
-    <string name="calendar_not_synced">%s（Google 日曆中未開啟同步或顯示）</string>
+    <string name="calendar_not_synced">%s（尚未同步到手機）</string>
+    <string name="sync_requested">已請 Google 同步「%s」，行程可能要等幾分鐘才會出現</string>
+    <string name="sync_failed">無法開啟「%s」的同步，請確認已授權行事曆權限</string>
     <string name="calendar_summary">共 %1$d 個帳號、%2$d 個日曆，小工具顯示其中 %3$d 個</string>
 </resources>

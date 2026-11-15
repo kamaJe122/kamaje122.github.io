@@ -1,9 +1,9 @@
-# 月曆小工具（Android 桌面 5×2）
+# KM 桌面行事曆小工具（Android 桌面 5×2）
 
 左邊月曆（含週數）、右邊當日行程的桌面小工具，版面參考 Notion Calendar 的 iOS 小工具。
 
-- 直接讀取手機的行事曆同步資料（`CalendarContract`），所有已登入的 Google 帳號都會自動出現，顏色與 Google 日曆一致，不需要另外登入。
-- 只要求一個權限：`READ_CALENDAR`（唯讀）。沒有網路權限。
+- 讀取手機的系統行事曆資料庫（`CalendarContract`），不需要另外登入。Google 預設只同步部分日曆進這個資料庫，其餘在 App 內勾選後才會同步。
+- 權限：`READ_CALENDAR` 讀取行程；`WRITE_CALENDAR` 只用來替勾選的日曆打開「同步到手機」開關，不會新增、修改或刪除行程。沒有網路權限。
 - 最低支援 Android 12（API 31）。
 
 ## 操作

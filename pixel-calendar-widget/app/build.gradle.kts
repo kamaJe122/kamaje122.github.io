@@ -10,8 +10,8 @@ android {
         applicationId = "io.github.kamaje122.calwidget"
         minSdk = 31
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.2"
+        versionCode = 4
+        versionName = "1.3"
     }
 
     // 固定的側載用簽章：讓每次（本機 / GitHub Actions）建出來的 APK 都能直接覆蓋更新。

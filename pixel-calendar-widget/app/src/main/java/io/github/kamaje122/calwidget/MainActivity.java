@@ -1,9 +1,13 @@
 package io.github.kamaje122.calwidget;
 
 import android.Manifest;
+import android.accounts.Account;
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -28,6 +32,8 @@ import java.util.Set;
 public class MainActivity extends Activity {
 
     private static final int REQUEST_CALENDAR = 1;
+    private static final String[] CALENDAR_PERMISSIONS = {
+            Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR};
 
     private TextView status;
     private Button grant;
@@ -49,8 +55,7 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                         Uri.fromParts("package", getPackageName(), null)));
             } else {
-                requestPermissions(new String[]{Manifest.permission.READ_CALENDAR},
-                        REQUEST_CALENDAR);
+                requestPermissions(CALENDAR_PERMISSIONS, REQUEST_CALENDAR);
             }
         });
 
@@ -116,7 +121,8 @@ public class MainActivity extends Activity {
                 CalendarContract.Calendars.ACCOUNT_NAME,
                 CalendarContract.Calendars.CALENDAR_COLOR,
                 CalendarContract.Calendars.VISIBLE,
-                CalendarContract.Calendars.SYNC_EVENTS};
+                CalendarContract.Calendars.SYNC_EVENTS,
+                CalendarContract.Calendars.ACCOUNT_TYPE};
         int accounts = 0;
         int total = 0;
         int shown = 0;
@@ -135,10 +141,13 @@ public class MainActivity extends Activity {
                 String name = c.getString(1);
                 String account = c.getString(2);
                 int color = c.getInt(3) | 0xFF000000;
+                // 系統資料庫裡這個日曆是否「有同步行程」且「標記為顯示」
                 boolean available = c.getInt(4) != 0 && c.getInt(5) != 0;
+                String accountType = c.getString(6);
                 if (TextUtils.isEmpty(name)) {
                     name = getString(R.string.untitled);
                 }
+                final String calendarName = name;
                 if (account == null) {
                     account = "";
                 }
@@ -163,10 +172,16 @@ public class MainActivity extends Activity {
                 box.setText(text);
                 box.setTextSize(15);
                 box.setMinHeight(dp(44));
-                box.setEnabled(available);
                 boolean checked = available && !hidden.contains(String.valueOf(id));
                 box.setChecked(checked);
+                final String accountName = account;
                 box.setOnCheckedChangeListener((button, isChecked) -> {
+                    if (isChecked && !available) {
+                        boolean ok = enableSync(id, accountName, accountType);
+                        Toast.makeText(this, getString(
+                                ok ? R.string.sync_requested : R.string.sync_failed,
+                                calendarName), Toast.LENGTH_LONG).show();
+                    }
                     CalendarWidgetProvider.setCalendarHidden(this, id, !isChecked);
                     CalendarWidgetProvider.updateAll(this);
                     // 等這次點擊處理完再重畫清單，更新上方的統計數字
@@ -187,6 +202,38 @@ public class MainActivity extends Activity {
             summary.setText(R.string.calendars_none);
         } else {
             summary.setText(getString(R.string.calendar_summary, accounts, total, shown));
+        }
+    }
+
+    /**
+     * 打開某個日曆在系統資料庫裡的「同步行程」與「顯示」開關，並請該帳號立刻同步一次。
+     * 只改這兩個開關，不碰任何行程內容。
+     */
+    private boolean enableSync(long calendarId, String accountName, String accountType) {
+        if (checkSelfPermission(Manifest.permission.WRITE_CALENDAR)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(CALENDAR_PERMISSIONS, REQUEST_CALENDAR);
+            return false;
+        }
+        try {
+            ContentValues values = new ContentValues();
+            values.put(CalendarContract.Calendars.SYNC_EVENTS, 1);
+            values.put(CalendarContract.Calendars.VISIBLE, 1);
+            int rows = getContentResolver().update(ContentUris.withAppendedId(
+                    CalendarContract.Calendars.CONTENT_URI, calendarId), values, null, null);
+            if (rows == 0) {
+                return false;
+            }
+            if (!TextUtils.isEmpty(accountName) && !TextUtils.isEmpty(accountType)) {
+                Bundle extras = new Bundle();
+                extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+                extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+                ContentResolver.requestSync(new Account(accountName, accountType),
+                        CalendarContract.AUTHORITY, extras);
+            }
+            return true;
+        } catch (RuntimeException e) {
+            return false;
         }
     }
 
