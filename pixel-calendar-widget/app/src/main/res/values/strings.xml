@@ -7,7 +7,6 @@
     <string name="need_permission">點這裡授權\n讀取行事曆</string>
     <string name="no_events">沒有行程</string>
     <string name="no_more_events">今天沒有其他行程</string>
-    <string name="more_events">還有 %d 個</string>
     <string name="all_day">全天</string>
     <string name="untitled">（無標題）</string>
     <string name="month_title">%d月</string>
@@ -21,17 +20,20 @@
     <string name="btn_grant">① 授權行事曆權限</string>
     <string name="btn_open_settings">到系統設定開啟權限</string>
     <string name="btn_pin">② 把小工具加到桌面</string>
-    <string name="main_tips">小工具操作：\n• 點任一日期 → 右邊顯示那一天的行程\n• 點灰色日期 → 跳到上／下個月\n• 點左上角月份 → 回到今天\n• 點行程 → 在行事曆 App 打開\n• 點 ＋ → 新增行程</string>
+    <string name="main_tips">小工具操作：\n• 點任一日期 → 右邊顯示那一天的行程\n• 點灰色日期 → 跳到上／下個月\n• 點左上角月份 → 回到今天\n• 右邊行程可以上下滑動\n• 點行程 → 在行事曆 App 打開\n• 點 ＋ → 新增行程</string>
     <string name="pin_unsupported">這個桌面不支援直接加入，請長按桌面 → 小工具 → KM 桌面行事曆小工具。</string>
 
     <string name="section_display">顯示設定</string>
     <string name="show_all_day">顯示全天行程</string>
     <string name="section_calendars">要顯示的日曆</string>
-    <string name="calendars_hint">勾選的日曆才會出現在小工具上。標示「尚未同步到手機」的日曆，勾選後會請 Google 把它的行程同步進手機，通常要等幾分鐘。右邊能顯示幾筆行程由小工具高度決定，拉高就會變多。</string>
+    <string name="calendars_hint">勾選的日曆才會出現在小工具上。標示「尚未同步到手機」的日曆，勾選後會請 Google 把它的行程同步進手機，通常要等幾分鐘。</string>
     <string name="calendars_need_permission">授權讀取行事曆後，這裡會列出所有帳號與日曆。</string>
     <string name="calendars_none">手機上沒有找到任何日曆。請確認 Google 日曆 App 已登入並完成同步。</string>
     <string name="calendar_not_synced">%s（尚未同步到手機）</string>
     <string name="sync_requested">已請 Google 同步「%s」，行程可能要等幾分鐘才會出現</string>
     <string name="sync_failed">無法開啟「%s」的同步，請確認已授權行事曆權限</string>
     <string name="calendar_summary">共 %1$d 個帳號、%2$d 個日曆，小工具顯示其中 %3$d 個</string>
+    <string name="days_label">右邊顯示幾天的行程</string>
+    <string name="days_value">%d 天</string>
+    <string name="days_hint">從選取的那一天開始往後算。超過 1 天時，在小工具右邊上下滑動就能看到後面幾天。</string>
 </resources>
