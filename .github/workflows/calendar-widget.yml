@@ -42,5 +42,5 @@ jobs:
           gh release delete calendar-widget-latest --yes --cleanup-tag || true
           gh release create calendar-widget-latest calendar-widget.apk \
             --target "$GITHUB_SHA" \
-            --title "月曆小工具 APK（最新版）" \
+            --title "KM 桌面行事曆小工具 APK（最新版）" \
             --notes "Pixel 桌面 5×2 月曆＋行程小工具。下載 calendar-widget.apk 後直接安裝。"

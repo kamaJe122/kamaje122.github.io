@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <!-- 只用來替使用者勾選的日曆打開「同步到手機」開關，不會新增、修改或刪除任何行程 -->
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <application
         android:allowBackup="true"
