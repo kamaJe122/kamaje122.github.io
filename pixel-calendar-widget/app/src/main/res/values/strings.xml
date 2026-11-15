@@ -23,4 +23,13 @@
     <string name="btn_pin">② 把小工具加到桌面</string>
     <string name="main_tips">小工具操作：\n• 點任一日期 → 右邊顯示那一天的行程\n• 點灰色日期 → 跳到上／下個月\n• 點左上角月份 → 回到今天\n• 點行程 → 在行事曆 App 打開\n• 點 ＋ → 新增行程</string>
     <string name="pin_unsupported">這個桌面不支援直接加入，請長按桌面 → 小工具 → 月曆小工具。</string>
+
+    <string name="section_display">顯示設定</string>
+    <string name="show_all_day">顯示全天行程</string>
+    <string name="section_calendars">要顯示的日曆</string>
+    <string name="calendars_hint">以下是這支手機目前同步到的所有日曆。取消勾選的日曆不會出現在小工具上。右邊能顯示幾筆行程，由小工具的高度決定，拉高就會變多。</string>
+    <string name="calendars_need_permission">授權讀取行事曆後，這裡會列出所有帳號與日曆。</string>
+    <string name="calendars_none">手機上沒有找到任何日曆。請確認 Google 日曆 App 已登入並完成同步。</string>
+    <string name="calendar_not_synced">%s（Google 日曆中未開啟同步或顯示）</string>
+    <string name="calendar_summary">共 %1$d 個帳號、%2$d 個日曆，小工具顯示其中 %3$d 個</string>
 </resources>
