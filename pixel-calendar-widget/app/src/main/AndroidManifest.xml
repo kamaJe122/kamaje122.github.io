@@ -21,6 +21,15 @@
             </intent-filter>
         </activity>
 
+        <!-- 點小工具清單裡的行程 / 日期時的中繼站：立刻轉開行事曆 App 後關閉，沒有畫面 -->
+        <activity
+            android:name=".OpenActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.NoDisplay" />
+
         <receiver
             android:name=".CalendarWidgetProvider"
             android:exported="true"

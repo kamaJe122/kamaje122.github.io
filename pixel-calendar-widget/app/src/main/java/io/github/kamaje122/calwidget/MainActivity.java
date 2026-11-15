@@ -19,6 +19,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
@@ -68,6 +69,20 @@ public class MainActivity extends Activity {
                 Toast.makeText(this, R.string.pin_unsupported, Toast.LENGTH_LONG).show();
             }
         });
+
+        TextView daysValue = findViewById(R.id.days_value);
+        daysValue.setText(getString(R.string.days_value,
+                CalendarWidgetProvider.daysToShow(this)));
+        View.OnClickListener changeDays = v -> {
+            int delta = v.getId() == R.id.btn_days_plus ? 1 : -1;
+            CalendarWidgetProvider.setDaysToShow(this,
+                    CalendarWidgetProvider.daysToShow(this) + delta);
+            daysValue.setText(getString(R.string.days_value,
+                    CalendarWidgetProvider.daysToShow(this)));
+            CalendarWidgetProvider.updateAll(this);
+        };
+        findViewById(R.id.btn_days_minus).setOnClickListener(changeDays);
+        findViewById(R.id.btn_days_plus).setOnClickListener(changeDays);
 
         Switch allDay = findViewById(R.id.switch_all_day);
         allDay.setChecked(CalendarWidgetProvider.showAllDay(this));

@@ -13,7 +13,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.text.TextUtils;
 import android.view.View;
@@ -50,6 +49,7 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
     private static final String KEY_SELECTED = "selectedEpochDay";
     private static final String KEY_SELECTED_ON = "selectedOnEpochDay";
     private static final String KEY_SHOW_ALL_DAY = "showAllDay";
+    private static final String KEY_DAYS = "daysToShow";
     private static final String KEY_HIDDEN_CALENDARS = "hiddenCalendars";
 
     private static final String[] WEEKDAYS = {"週一", "週二", "週三", "週四", "週五", "週六", "週日"};
@@ -62,25 +62,6 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
             R.id.d21, R.id.d22, R.id.d23, R.id.d24, R.id.d25, R.id.d26, R.id.d27,
             R.id.d28, R.id.d29, R.id.d30, R.id.d31, R.id.d32, R.id.d33, R.id.d34,
             R.id.d35, R.id.d36, R.id.d37, R.id.d38, R.id.d39, R.id.d40, R.id.d41};
-    private static final int[] EVENT_IDS = {
-            R.id.event1, R.id.event2, R.id.event3, R.id.event4,
-            R.id.event5, R.id.event6, R.id.event7, R.id.event8};
-    private static final int[] EVENT_BAR_IDS = {
-            R.id.event1_bar, R.id.event2_bar, R.id.event3_bar, R.id.event4_bar,
-            R.id.event5_bar, R.id.event6_bar, R.id.event7_bar, R.id.event8_bar};
-    private static final int[] EVENT_TITLE_IDS = {
-            R.id.event1_title, R.id.event2_title, R.id.event3_title, R.id.event4_title,
-            R.id.event5_title, R.id.event6_title, R.id.event7_title, R.id.event8_title};
-    private static final int[] EVENT_TIME_IDS = {
-            R.id.event1_time, R.id.event2_time, R.id.event3_time, R.id.event4_time,
-            R.id.event5_time, R.id.event6_time, R.id.event7_time, R.id.event8_time};
-
-    // 右欄的高度估算（dp），用來決定放得下幾筆行程
-    private static final int WIDGET_PADDING_DP = 20;
-    private static final int DAY_HEADER_DP = 27;
-    private static final int EVENT_ROW_DP = 39;
-    private static final int MORE_LINE_DP = 16;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
@@ -118,13 +99,6 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
     }
 
     @Override
-    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager manager,
-            int appWidgetId, Bundle newOptions) {
-        // 使用者拉了小工具大小 → 重新計算可以放幾筆行程
-        updateAll(context);
-    }
-
-    @Override
     public void onDisabled(Context context) {
         AlarmManager alarms = context.getSystemService(AlarmManager.class);
         if (alarms != null) {
@@ -139,15 +113,22 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
         if (ids.length == 0) {
             return;
         }
-        for (int id : ids) {
-            int heightDp = manager.getAppWidgetOptions(id)
-                    .getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 0);
-            manager.updateAppWidget(id, buildViews(context, heightDp));
-        }
+        manager.updateAppWidget(me, buildViews(context));
         scheduleNextTick(context);
     }
 
     // ───────────────────────── 設定（給 MainActivity 用） ─────────────────────────
+
+    static final int MAX_DAYS = 14;
+
+    /** 右邊清單要顯示幾天（從選取日起算）。 */
+    static int daysToShow(Context context) {
+        return Math.max(1, Math.min(MAX_DAYS, prefs(context).getInt(KEY_DAYS, 1)));
+    }
+
+    static void setDaysToShow(Context context, int days) {
+        prefs(context).edit().putInt(KEY_DAYS, Math.max(1, Math.min(MAX_DAYS, days))).apply();
+    }
 
     static boolean showAllDay(Context context) {
         return prefs(context).getBoolean(KEY_SHOW_ALL_DAY, true);
@@ -175,7 +156,7 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
 
     // ───────────────────────── 畫面 ─────────────────────────
 
-    private static RemoteViews buildViews(Context context, int heightDp) {
+    private static RemoteViews buildViews(Context context) {
         ZoneId zone = ZoneId.systemDefault();
         LocalDate today = LocalDate.now(zone);
         LocalDate selected = selectedDay(context, today);
@@ -241,10 +222,7 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
         boolean granted = context.checkSelfPermission(Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED;
         if (!granted) {
-            for (int id : EVENT_IDS) {
-                views.setViewVisibility(id, View.GONE);
-            }
-            views.setViewVisibility(R.id.more, View.GONE);
+            views.setViewVisibility(R.id.agenda_list, View.GONE);
             views.setViewVisibility(R.id.empty, View.VISIBLE);
             views.setTextViewText(R.id.empty, context.getString(R.string.need_permission));
             PendingIntent openApp = activity(context, 2,
@@ -253,52 +231,18 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
             views.setOnClickPendingIntent(R.id.day_header, openApp);
             views.setOnClickPendingIntent(R.id.empty, openApp);
         } else {
-            boolean isToday = selected.equals(today);
-            List<Event> events = loadEvents(context, selected, zone, isToday);
-            // 依小工具高度決定顯示幾筆：全部放得下就全放，否則留一行給「還有 N 個」
-            int room = heightDp - WIDGET_PADDING_DP - DAY_HEADER_DP;
-            int slots = room / EVENT_ROW_DP;
-            if (heightDp <= 0) {
-                slots = 2; // 桌面沒回報尺寸時的保守預設
-            } else if (events.size() > slots) {
-                slots = (room - MORE_LINE_DP) / EVENT_ROW_DP;
-            }
-            slots = Math.max(1, Math.min(EVENT_IDS.length, slots));
-
-            for (int i = 0; i < EVENT_IDS.length; i++) {
-                if (i < events.size() && i < slots) {
-                    Event e = events.get(i);
-                    views.setViewVisibility(EVENT_IDS[i], View.VISIBLE);
-                    views.setInt(EVENT_BAR_IDS[i], "setColorFilter", e.color | 0xFF000000);
-                    views.setTextViewText(EVENT_TITLE_IDS[i], e.title);
-                    views.setTextViewText(EVENT_TIME_IDS[i], e.subtitle);
-                    Intent view = new Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(
-                            CalendarContract.Events.CONTENT_URI, e.eventId))
-                            .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, e.begin)
-                            .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, e.end);
-                    views.setOnClickPendingIntent(EVENT_IDS[i], activity(context, 10 + i, view));
-                } else {
-                    views.setViewVisibility(EVENT_IDS[i], View.GONE);
-                }
-            }
-            int hidden = events.size() - slots;
-            if (hidden > 0) {
-                views.setViewVisibility(R.id.more, View.VISIBLE);
-                views.setTextViewText(R.id.more, context.getString(R.string.more_events, hidden));
-            } else {
-                views.setViewVisibility(R.id.more, View.GONE);
-            }
-            if (events.isEmpty()) {
-                views.setViewVisibility(R.id.empty, View.VISIBLE);
-                views.setTextViewText(R.id.empty, context.getString(
-                        isToday ? R.string.no_more_events : R.string.no_events));
-            } else {
-                views.setViewVisibility(R.id.empty, View.GONE);
-            }
-            views.setOnClickPendingIntent(R.id.agenda, openDay);
+            views.setViewVisibility(R.id.empty, View.GONE);
+            views.setViewVisibility(R.id.agenda_list, View.VISIBLE);
             views.setOnClickPendingIntent(R.id.day_header, openDay);
-            views.setOnClickPendingIntent(R.id.more, openDay);
-            views.setOnClickPendingIntent(R.id.empty, openDay);
+            views.setRemoteAdapter(R.id.agenda_list,
+                    buildAgenda(context, selected, today, zone));
+
+            // 清單每一列共用這個範本，各列再用 fill-in intent 補上自己的行程資料。
+            // 範本必須可變（FLAG_MUTABLE），所以指向 App 內明確的 OpenActivity。
+            PendingIntent template = PendingIntent.getActivity(context, 20,
+                    new Intent(context, OpenActivity.class),
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+            views.setPendingIntentTemplate(R.id.agenda_list, template);
         }
 
         // 右下「＋」：開啟行事曆 App 的新增畫面，預設帶入選取日的時間
@@ -315,6 +259,57 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.add, activity(context, 3, insert));
 
         return views;
+    }
+
+    /** 組出右邊可滑動的清單：選取日的行程，接著是後面幾天（各有日期標題）。 */
+    private static RemoteViews.RemoteCollectionItems buildAgenda(Context context,
+            LocalDate selected, LocalDate today, ZoneId zone) {
+        String pkg = context.getPackageName();
+        RemoteViews.RemoteCollectionItems.Builder items =
+                new RemoteViews.RemoteCollectionItems.Builder()
+                        .setHasStableIds(false)
+                        .setViewTypeCount(3);
+        long nextId = 0;
+        int days = daysToShow(context);
+
+        for (int d = 0; d < days; d++) {
+            LocalDate day = selected.plusDays(d);
+            long dayMillis = day.atStartOfDay(zone).toInstant().toEpochMilli();
+            Intent openDay = new Intent().putExtra(OpenActivity.EXTRA_DAY_MILLIS, dayMillis);
+
+            if (d > 0) {
+                // 第一天的標題已經固定在清單上方，之後每一天在清單裡各放一列標題
+                RemoteViews header = new RemoteViews(pkg, R.layout.widget_day_item);
+                header.setTextViewText(R.id.item_weekday,
+                        WEEKDAYS[day.getDayOfWeek().getValue() - 1]);
+                header.setTextViewText(R.id.item_day,
+                        context.getString(R.string.day_title, day.getDayOfMonth()));
+                header.setOnClickFillInIntent(R.id.item_root, openDay);
+                items.addItem(nextId++, header);
+            }
+
+            boolean isToday = day.equals(today);
+            List<Event> events = loadEvents(context, day, zone, isToday);
+            if (events.isEmpty()) {
+                RemoteViews empty = new RemoteViews(pkg, R.layout.widget_empty_item);
+                empty.setTextViewText(R.id.item_root, context.getString(
+                        isToday ? R.string.no_more_events : R.string.no_events));
+                empty.setOnClickFillInIntent(R.id.item_root, openDay);
+                items.addItem(nextId++, empty);
+            }
+            for (Event e : events) {
+                RemoteViews row = new RemoteViews(pkg, R.layout.widget_event_item);
+                row.setInt(R.id.item_bar, "setColorFilter", e.color | 0xFF000000);
+                row.setTextViewText(R.id.item_title, e.title);
+                row.setTextViewText(R.id.item_time, e.subtitle);
+                row.setOnClickFillInIntent(R.id.item_root, new Intent()
+                        .putExtra(OpenActivity.EXTRA_EVENT_ID, e.eventId)
+                        .putExtra(OpenActivity.EXTRA_BEGIN, e.begin)
+                        .putExtra(OpenActivity.EXTRA_END, e.end));
+                items.addItem(nextId++, row);
+            }
+        }
+        return items.build();
     }
 
     /**

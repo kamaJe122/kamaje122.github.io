@@ -66,6 +66,50 @@
             android:text="@string/show_all_day"
             android:textSize="15sp" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="48dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/days_label"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/btn_days_minus"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:text="−"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/days_value"
+                android:layout_width="64dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_days_plus"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:text="＋"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="3dp"
+            android:text="@string/days_hint"
+            android:textSize="13sp" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
