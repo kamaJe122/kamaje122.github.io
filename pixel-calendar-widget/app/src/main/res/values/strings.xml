@@ -20,7 +20,7 @@
     <string name="btn_grant">① 授權行事曆權限</string>
     <string name="btn_open_settings">到系統設定開啟權限</string>
     <string name="btn_pin">② 把小工具加到桌面</string>
-    <string name="main_tips">小工具操作：\n• 點任一日期 → 右邊顯示那一天的行程\n• 點灰色日期 → 跳到上／下個月\n• 點左上角月份 → 回到今天\n• 右邊行程可以上下滑動\n• 點行程 → 在行事曆 App 打開\n• 點 ＋ → 新增行程</string>
+    <string name="main_tips">小工具操作：\n• 點任一日期 → 右邊顯示那一天的行程\n• 點灰色日期 → 跳到上／下個月\n• 點左上角月份 → 回到今天\n• 點日期或月份時，會順便請 Google 立刻同步一次\n• 右邊行程可以上下滑動\n• 點行程 → 在行事曆 App 打開\n• 點 ＋ → 新增行程</string>
     <string name="pin_unsupported">這個桌面不支援直接加入，請長按桌面 → 小工具 → KM 桌面行事曆小工具。</string>
 
     <string name="section_display">顯示設定</string>

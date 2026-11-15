@@ -118,6 +118,7 @@ public class MainActivity extends Activity {
             grant.setText(R.string.btn_grant);
         }
         showCalendars(granted);
+        CalendarWidgetProvider.requestSync(this, CalendarWidgetProvider.SYNC_ON_TOUCH_MS);
         CalendarWidgetProvider.updateAll(this);
     }
 
