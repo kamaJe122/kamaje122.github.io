@@ -1,11 +1,13 @@
 package io.github.kamaje122.calwidget;
 
 import android.Manifest;
+import android.accounts.Account;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +15,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.text.TextUtils;
 import android.view.View;
@@ -50,6 +53,12 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
     private static final String KEY_SELECTED_ON = "selectedOnEpochDay";
     private static final String KEY_SHOW_ALL_DAY = "showAllDay";
     private static final String KEY_DAYS = "daysToShow";
+    private static final String KEY_LAST_SYNC = "lastSyncRequest";
+
+    /** 使用者碰小工具或打開 App 時：距離上次催同步超過這段時間才再催一次。 */
+    static final long SYNC_ON_TOUCH_MS = 20_000L;
+    /** 背景定時（每 30 分鐘 / 每整點）催同步的最短間隔。 */
+    static final long SYNC_BACKGROUND_MS = 25 * 60_000L;
     private static final String KEY_HIDDEN_CALENDARS = "hiddenCalendars";
 
     private static final String[] WEEKDAYS = {"週一", "週二", "週三", "週四", "週五", "週六", "週日"};
@@ -75,9 +84,11 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
             } catch (NumberFormatException ignored) {
                 // 格式不對就當作沒點
             }
+            requestSync(context, SYNC_ON_TOUCH_MS);
             updateAll(context);
         } else if (ACTION_TODAY.equals(action)) {
             prefs(context).edit().remove(KEY_SELECTED).remove(KEY_SELECTED_ON).apply();
+            requestSync(context, SYNC_ON_TOUCH_MS);
             updateAll(context);
         } else if (AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(action)
                 || AppWidgetManager.ACTION_APPWIDGET_OPTIONS_CHANGED.equals(action)) {
@@ -87,6 +98,9 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
                 && !AppWidgetManager.ACTION_APPWIDGET_DISABLED.equals(action)
                 && !AppWidgetManager.ACTION_APPWIDGET_ENABLED.equals(action)) {
             // 行事曆變動、時間 / 時區變動、整點或跨日鬧鐘 → 重畫
+            if (ACTION_TICK.equals(action)) {
+                requestSync(context, SYNC_BACKGROUND_MS);
+            }
             updateAll(context);
         } else {
             super.onReceive(context, intent);
@@ -95,6 +109,7 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager manager, int[] appWidgetIds) {
+        requestSync(context, SYNC_BACKGROUND_MS);
         updateAll(context);
     }
 
@@ -115,6 +130,50 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
         }
         manager.updateAppWidget(me, buildViews(context));
         scheduleNextTick(context);
+    }
+
+    /**
+     * 請 Google 把雲端的行程同步進手機。同步完成、資料有變動時系統會發出
+     * PROVIDER_CHANGED，小工具收到後自動重畫，所以這裡只負責「催」。
+     *
+     * 注意：不可以在收到 PROVIDER_CHANGED 時呼叫，否則會變成 同步 → 變動 → 再同步 的迴圈。
+     */
+    static void requestSync(Context context, long minIntervalMs) {
+        if (context.checkSelfPermission(Manifest.permission.READ_CALENDAR)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        long last = prefs(context).getLong(KEY_LAST_SYNC, 0);
+        if (now >= last && now - last < minIntervalMs) {
+            return;
+        }
+        prefs(context).edit().putLong(KEY_LAST_SYNC, now).apply();
+
+        // 找出有開啟同步的日曆屬於哪些帳號，每個帳號催一次
+        Set<String> seen = new HashSet<>();
+        String[] projection = {
+                CalendarContract.Calendars.ACCOUNT_NAME,
+                CalendarContract.Calendars.ACCOUNT_TYPE};
+        try (Cursor c = context.getContentResolver().query(
+                CalendarContract.Calendars.CONTENT_URI, projection,
+                CalendarContract.Calendars.SYNC_EVENTS + " = 1", null, null)) {
+            while (c != null && c.moveToNext()) {
+                String name = c.getString(0);
+                String type = c.getString(1);
+                if (TextUtils.isEmpty(name) || TextUtils.isEmpty(type)
+                        || !seen.add(type + "/" + name)) {
+                    continue;
+                }
+                Bundle extras = new Bundle();
+                extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+                extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+                ContentResolver.requestSync(new Account(name, type),
+                        CalendarContract.AUTHORITY, extras);
+            }
+        } catch (RuntimeException ignored) {
+            // 催不動就算了，下次再試；不影響小工具顯示現有資料
+        }
     }
 
     // ───────────────────────── 設定（給 MainActivity 用） ─────────────────────────
