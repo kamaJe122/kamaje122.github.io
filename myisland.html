@@ -17,7 +17,7 @@
   - look = { skin, hair, style(STYLES), kid, outfit(OUTFITS), shirt, pants, oc, oc2, capC, clipC,
              accs:[ACCS 的 key…], ac:{配件key:顏色} }（所有顏色都是 #hex，可用調色盤自由調）
   - 小島位置：SLOTS（中央主島 + 12 個六角形位置）；顏色主題：THEMES
-  - 島民狀態：STATUS（進行中＝坐桌前打字、待辦＝舉手、穩定運作＝散步、暫停、閒置＝打瞌睡）
+  - 島民狀態：STATUS（進行中＝快步走、待辦＝邊走邊舉手、穩定運作＝散步、暫停、閒置＝打瞌睡）；點島民再點地板，他會走過去（p.home 記住位置）
   - 換日時：已完成任務自動清掉，未完成的自動留到隔天
 =====================================================================
 -->
@@ -323,10 +323,10 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.0.4';
-const APP_NOTES=['修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
+const APP_VERSION='1.0.5';
+const APP_NOTES=['新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
-const STATUS_TIP={'進行中':'正在忙，坐在桌前打字','待辦':'在等你給東西，會舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
+const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
   '進行中':'<path d="M13 3L5 14h6l-1 7 8-11h-6z"/>',
   '待辦':'<path d="M12 5v9"/><path d="M12 19h.01"/>',
@@ -958,9 +958,10 @@ function seedDecor(){if(!S.deco||typeof S.deco!=='object')S.deco={};let added=fa
 function floorPal(f){return [shade(f,0.03),f,shade(f,0.07),shade(f,-0.03)]}
 
 /* =========================================================
-   7. 島民：坐桌前、散步、舉手、打瞌睡
+   7. 島民：散步、舉手、打瞌睡；點島民再點地板就會走過去
    ========================================================= */
 let chars=[],byId={};
+function homeRect(p){if(p.home)return {x0:p.home.x-2.2,x1:p.home.x+2.2,z0:p.home.z-2.2,z1:p.home.z+2.2};return wanderRect(p.isle)}
 function wanderRect(id){const c=isleCenter(id);if(id==='hub'||!isleById(id))return {x0:-6.5,x1:6.5,z0:1.6,z1:7.2};return {x0:c.x-6,x1:c.x+6,z0:c.z+5.2,z1:c.z+7.3}}
 function spawnAll(){chars.forEach(v=>{if(v.badge)v.badge.remove();if(v.tagWrap)v.tagWrap.remove()});chars=[];byId={};S.people.forEach((p,i)=>spawn(p,i))}
 function spawn(p,i){
@@ -969,12 +970,12 @@ function spawn(p,i){
   const uni=!p.look.outfit||p.look.outfit==='uniform';const look=Object.assign({},p.look,uni?{shirt}:{},{capColor:p.look.capC||(uni?shirt:p.look.shirt)});
   const c=makeChar(look);
   let seat=null;
-  if((p.status==='進行中'||p.status==='待辦')&&DESKS[p.isle]){const d=DESKS[p.isle].find(d=>!d.taken);if(d){d.taken=p.id;seat=d;buildDesk(d.x,d.z,shirt)}}
-  const rect=wanderRect(p.isle);
+  if(p.home&&!isleAt(p.home.x,p.home.z))p.home=null;
+  const rect=homeRect(p);
   const x=seat?seat.x:rect.x0+Math.random()*(rect.x1-rect.x0),q=seat?seat.z:rect.z0+Math.random()*(rect.z1-rect.z0);
   c.g.position.set(x,TOP+0.17,q);world.add(c.g);c.hit.userData.id=p.id;
   const v={p,c,rect,x,zz:q,tx:x,tz:q,wait:Math.random()*3,t:Math.random()*10,seat,face:seat?0:(Math.random()-0.5)*1.2,
-    speed:seat?0:({'進行中':1.7,'穩定運作':0.85,'暫停':0.5,'閒置':0.35,'待辦':0}[p.status]||0.6)};
+    speed:seat?0:({'進行中':1.7,'穩定運作':0.85,'暫停':0.5,'閒置':0.35,'待辦':0.6}[p.status]||0.6)};
   c.g.rotation.y=v.face;
   if(p.status==='閒置'){c.eyes.forEach(e=>e.scale.set(1.3,0.22,1));c.head.rotation.z=0.28}
   if(p.rest&&p.rest.id){const it=S.items.find(x=>x.id===p.rest.id);if(it&&REST[it.type]&&REST[it.type][p.rest.i]){v.R={id:p.rest.id,i:p.rest.i,auto:false};v.arrived=true}else p.rest=null}
@@ -1011,6 +1012,12 @@ function animRest(v,dt){const c=v.c,P=S.ui.paused,it=S.items.find(x=>x.id===v.R.
   if(v.R.auto&&v.t>v.R.until)standUp(v);return true}
 function animChar(v,dt){const c=v.c,P=S.ui.paused;v.t+=dt;
   if(v.R&&animRest(v,dt))return;
+  if(v.path&&v.path.length){let wp=v.path[0];if(v.path.length>1&&Math.hypot(wp.x-v.x,wp.z-v.zz)<0.15){v.path.shift();wp=v.path[0]}
+    const dx=wp.x-v.x,dz=wp.z-v.zz,d=Math.hypot(dx,dz);
+    if(d<0.15&&v.path.length<=1){v.path=null;v.rect=homeRect(v.p);v.tx=v.x;v.tz=v.zz;v.wait=2.5}
+    else{if(!P){const st=Math.min(d,2.4*dt);v.x+=dx/d*st;v.zz+=dz/d*st;v.face=Math.atan2(dx,dz)}
+      c.g.position.set(v.x,TOP+0.17+bridgeY(v.x,v.zz)+(P?0:Math.abs(Math.sin(v.t*10))*0.08),v.zz);let dr=v.face-c.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));c.g.rotation.y+=dr*Math.min(1,dt*10);
+      const sw=P?0:Math.sin(v.t*10)*0.6;c.legL.rotation.x=sw;c.legR.rotation.x=-sw;c.armL.rotation.x=-sw*0.8;if(v.p.status==='待辦'){if(!P)c.armR.rotation.z=2.65+Math.sin(v.t*5)*0.25}else c.armR.rotation.x=sw*0.8;c.cup.visible=false;return}}
   if(v.seat){c.g.position.set(v.x,TOP+0.32,v.zz);c.g.rotation.y=0;c.legL.rotation.x=c.legR.rotation.x=-1.45;
     if(!P){const ty=Math.sin(v.t*13);c.armL.rotation.set(-0.85+ty*0.08,0,0);c.head.rotation.x=0.12;
       if(v.p.status==='待辦')c.armR.rotation.set(0,0,2.65+Math.sin(v.t*5)*0.25);else c.armR.rotation.set(-0.85-ty*0.08,0,0)}return}
@@ -1084,7 +1091,7 @@ function isleAt(x,z){const all=[{id:'hub',x:0,z:0,r:HUB_R}].concat(S.isles.map(i
   for(const id in BR_OF){const b=BR_OF[id],vx=b.x1-b.x0,vz=b.z1-b.z0,t=((x-b.x0)*vx+(z-b.z0)*vz)/(b.Lb*b.Lb);if(t>0&&t<1&&Math.hypot(x-(b.x0+vx*t),z-(b.z0+vz*t))<1.2)return t<0.5?parentOf(isleById(id)):id}
   return null}
 function chainUp(id){const out=[];let k=id,n=0;while(k&&k!=='hub'&&n<20){out.push(k);const is=isleById(k);k=is?parentOf(is):'hub';n++}return out}
-function routeTo(tx,tz){const a=isleAt(meState.x,meState.z)||'hub',b=isleAt(tx,tz);if(!b)return null;
+function routeTo(tx,tz,fx,fz){if(fx==null){fx=meState.x;fz=meState.z}const a=isleAt(fx,fz)||'hub',b=isleAt(tx,tz);if(!b)return null;
   const up=chainUp(a),down=chainUp(b);while(up.length&&down.length&&up[up.length-1]===down[down.length-1]){up.pop();down.pop()}
   const pts=[];up.forEach(id=>{const br=BR_OF[id];pts.push({x:br.x1,z:br.z1},{x:br.x0,z:br.z0})});
   down.reverse().forEach(id=>{const br=BR_OF[id];pts.push({x:br.x0,z:br.z0},{x:br.x1,z:br.z1})});pts.push({x:tx,z:tz});return pts}
@@ -1344,7 +1351,12 @@ renderer.domElement.addEventListener('pointerup',e=>{if(editOn()){down=null;retu
   const r=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(mouse,camera);
   const hits=ray.intersectObjects(chars.map(v=>v.c.hit).concat(pets.map(v=>v.m.hit),me?[me.hit]:[]),false);
   if(hits.length){const u=hits[0].object.userData;if(u.me){openSheet('owner');return}if(u.pet){selectPet(u.pet);return}select(u.id);return}
-  const p=new THREE.Vector3();if(ray.ray.intersectPlane(groundPlane,p)){const path=routeTo(p.x,p.z);if(path){meState.path=path;meMark.position.set(p.x,TOP+0.2,p.z);meMark.material.opacity=0.9}}});
+  const p=new THREE.Vector3();if(ray.ray.intersectPlane(groundPlane,p)){
+    if(mode==='detail'&&sel&&byId[sel]){sendWalk(sel,p.x,p.z);return}
+    const path=routeTo(p.x,p.z);if(path){meState.path=path;meMark.position.set(p.x,TOP+0.2,p.z);meMark.material.opacity=0.9}}});
+function sendWalk(id,x,z){const v=byId[id];if(!v)return;const path=routeTo(x,z,v.x,v.zz);if(!path){toast('那裡是海，走不過去 🌊');return}
+  if(v.R){if(!v.R.auto){v.p.rest=null}standUp(v)}v.p.home={x:+x.toFixed(2),z:+z.toFixed(2)};save();v.path=path;
+  meMark.position.set(x,TOP+0.2,z);meMark.material.opacity=0.9;toast('🚶 '+v.p.name+' 走過去囉');if(mode==='detail')render()}
 function select(id){const v=byId[id];if(!v)return;sel=id;flyTo(v.c.g.position.clone(),18);openSheet('detail',id)}
 
 /* =========================================================
@@ -1383,6 +1395,7 @@ function render(){
     h+='<div class="grp">📋 每日任務</div><div class="bar"><i style="width:'+pct+'%"></i></div>';
     h+=p.quests.length?p.quests.map(q=>questLi(p,q)).join(''):'<div class="meta" style="margin:6px 0">還沒有任務，在下面新增一個。</div>';
     h+='<form class="addrow" data-addq="'+p.id+'"><input type="text" maxlength="40" placeholder="新增任務，例如：整理收據" aria-label="新增任務"><button class="btn on" type="submit">＋</button></form>';
+    h+='<div class="hint" style="margin:8px 0 2px">👆 面板開著時點地板，'+esc(p.name)+' 就會走過去，之後在那附近活動。</div>';
     h+='<div class="btnrow"><button class="btn" data-rest="sit">🛋️ 坐沙發</button><button class="btn" data-rest="lie">🛏️ 躺床上</button>'+(p.rest?'<button class="btn on" data-rest="up">🚶 起來走走</button>':'')+'</div>';
     h+='<div class="btnrow"><button class="btn" data-edit="'+p.id+'">✏️ 編輯島民</button><button class="btn red" data-ask="delp">🗑️ 請他搬走</button></div>';
     if(confirmKey==='delp')h+='<div class="confirm"><span>確定請「'+esc(p.name)+'」搬離小島？他的任務也會一起刪掉。</span><button class="btn" data-ask="">取消</button><button class="btn redfill" data-delp="'+p.id+'">確定</button></div>'}
@@ -1524,7 +1537,7 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
   if(d.delp){const p=S.people.find(x=>x.id===d.delp);S.people=S.people.filter(x=>x.id!==d.delp);save();buildWorld();updateHud();closeSheet();toast('👋 '+(p?p.name:'島民')+' 搬走了');return}
   if(d.st){draft.status=d.st;sBody.querySelectorAll('[data-st]').forEach(x=>x.setAttribute('aria-selected',String(x.dataset.st===d.st)));document.getElementById('stTip').textContent=STATUS_TIP[d.st];return}
   if(d.savep){const n=document.getElementById('fName').value.trim();if(!n){toast('島民要有名字喔');document.getElementById('fName').focus();return}
-    draft.name=n;draft.task=document.getElementById('fTask').value.trim();draft.isle=document.getElementById('fIsle').value;
+    draft.name=n;draft.task=document.getElementById('fTask').value.trim();const ni=document.getElementById('fIsle').value;if(ni!==draft.isle)draft.home=null;draft.isle=ni;
     const k=S.people.findIndex(x=>x.id===draft.id);const isNew=k<0;if(isNew)S.people.push(draft);else S.people[k]=draft;const id=draft.id;draft=null;save();buildWorld();updateHud();
     if(isNew)toast('👋 '+n+' 搬進來了！');select(id);guideHook('person');return}
   if(d.th!=null){draft.theme=+d.th;draft.floor=null;const fb=document.getElementById('floorBox');if(fb)fb.innerHTML=floorRow();sBody.querySelectorAll('[data-th]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.th===d.th)));return}
@@ -1537,7 +1550,7 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
     if(isNew){toast('🏝️ '+n+' 浮出海面了！');setView(S.ui.bird,false);setTimeout(()=>openIsle(id),950);guideHook('isle')}else openIsle(id);return}
   if(d.newp){openSheet('vform');draft.isle=d.newp;render();return}
   if(d.editisle){draft=null;openSheet('iform',d.editisle);return}
-  if(d.deli){const dc=isleCenter(d.deli);S.items=S.items.filter(it=>it.isle!==d.deli&&Math.hypot(it.x-dc.x,it.z-dc.z)>HEX_R*0.98);if(S.deco)delete S.deco[d.deli];S.people.forEach(p=>{if(p.isle===d.deli)p.isle='hub'});S.isles=S.isles.filter(i=>i.id!==d.deli);save();buildWorld();updateHud();closeSheet();setView(S.ui.bird,false);toast('小島沉入海底了 🌊');return}
+  if(d.deli){const dc=isleCenter(d.deli);S.people.forEach(p=>{if(p.home&&Math.hypot(p.home.x-dc.x,p.home.z-dc.z)<HEX_R)p.home=null});S.items=S.items.filter(it=>it.isle!==d.deli&&Math.hypot(it.x-dc.x,it.z-dc.z)>HEX_R*0.98);if(S.deco)delete S.deco[d.deli];S.people.forEach(p=>{if(p.isle===d.deli)p.isle='hub'});S.isles=S.isles.filter(i=>i.id!==d.deli);save();buildWorld();updateHud();closeSheet();setView(S.ui.bird,false);toast('小島沉入海底了 🌊');return}
   if(d.tm){S.ui.timeMode=d.tm==='live'?'live':'manual';if(d.tm!=='live')S.ui.hour=simHour;save();render();return}
   if(d.saveowner){const n=document.getElementById('fON').value.trim();S.owner.name=n||S.owner.name;S.owner.look=Object.assign({},draft.look);ownerBackup=null;draft=null;save();buildMe();updateHud();closeSheet();toast('✨ 造型更新完成');return}
   if(d.open){draft=null;if(d.open==='guide'){closeSheet();startGuide();return}openSheet(d.open);return}
