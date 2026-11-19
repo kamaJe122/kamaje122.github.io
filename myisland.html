@@ -23,6 +23,14 @@
 -->
 <html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>我的小島</title>
+<link rel="manifest" href="myisland.webmanifest">
+<meta name="theme-color" content="#e8673a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="我的小島">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/island-192.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
 :root{
@@ -183,6 +191,7 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
 .bkcard b{color:var(--ink);font-size:14.5px}
 .bkcard.ok{border:2px solid #3fa66a;background:#f1faf4}.bkcard.bad{border:2px solid #e5534b;background:#fdf1f0}
 .bkbtns{display:flex;flex-direction:column;gap:0}.bkbtns .go{margin-top:8px}
+.steps2{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:13.5px;margin:0 0 8px}.steps2 ol{margin:6px 0 4px;padding-left:20px}.steps2 li{margin:3px 0}
 .warn2{background:#fff4d6;border:1.5px solid #f2b705;border-radius:12px;padding:8px 10px;font-size:12.5px;margin:0 0 8px}
 /* 擺設：選取框與鎖頭 */
 .selbox{position:absolute;left:0;top:0;border:2.5px dashed var(--orange);border-radius:12px;pointer-events:none;z-index:4;box-shadow:0 0 0 2px #fff8}
@@ -304,6 +313,7 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
         <div class="fld"><label for="inOwner">👑 島主名稱（你本人）</label><input type="text" id="inOwner" maxlength="10" placeholder="例如：小明"></div>
         <label class="chk"><input type="checkbox" id="inSample" checked>幫我先放兩座範例小島、3 位島民、3 隻小動物和一組沙發（之後可刪）</label>
         <button class="go" id="btnStart" type="button">🚀 開始建島</button>
+        <button class="go ghost" id="btnSetupImport" type="button">📥 我有備份，把島搬過來</button>
       </div>
       <div class="face">
         <h3>✨ 島主長相（預覽會轉圈圈）</h3>
@@ -328,8 +338,8 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.0.8';
-const APP_NOTES=['新增物件：冰滴咖啡組（木盤、湯匙、紅糖、牛奶、冰磚山形杯、木腰帶玻璃壺），在「咖啡・裝飾」','匯出島嶼：可以下載備份檔、分享到 LINE／檔案，或一鍵複製（複製不了會自動幫你全選）','匯入島嶼：可以選備份檔或貼上文字，先預覽內容再匯入，匯入後還能還原','新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
+const APP_VERSION='1.0.9';
+const APP_NOTES=['可以安裝成 App 了：設定 →「📲 安裝成 App」，有桌面圖示、全螢幕、沒網路也能開','建島畫面多了「📥 我有備份，把島搬過來」，App 版可以直接匯入瀏覽器的島','新增物件：冰滴咖啡組（木盤、湯匙、紅糖、牛奶、冰磚山形杯、木腰帶玻璃壺），在「咖啡・裝飾」','匯出島嶼：可以下載備份檔、分享到 LINE／檔案，或一鍵複製（複製不了會自動幫你全選）','匯入島嶼：可以選備份檔或貼上文字，先預覽內容再匯入，匯入後還能還原','新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -1430,7 +1440,7 @@ function openSheet(m,a){restoreOwner();mode=m;arg=a;confirmKey=null;draft=null;s
   const rb=(['iform','vform','pform'].includes(m)&&a)?null:RAIL[m];if(rb)document.getElementById(rb).setAttribute('aria-pressed','true');
   render();sBody.scrollTop=0;requestAnimationFrame(fitRail)}
 function fitRail(){const r=document.querySelector('.rail');if(!r)return;const top=r.getBoundingClientRect().top;let bot=window.innerHeight;if(!sheet.hidden)bot=Math.min(bot,sheet.getBoundingClientRect().top);r.style.maxHeight=Math.max(56,bot-top-8)+'px'}
-function closeSheet(){restoreOwner();sheet.hidden=true;mode=null;selItem=null;pendingGo=null;if(lockItem)setLock(null,true);drag=null;controls.enabled=true;sel=null;selPet=null;document.getElementById('chips').style.visibility='visible';Object.values(RAIL).forEach(id=>document.getElementById(id).setAttribute('aria-pressed','false'));requestAnimationFrame(fitRail)}
+function closeSheet(){restoreOwner();sheet.hidden=true;if(!S.islandName){const su=document.getElementById('setup');if(su)su.hidden=false}mode=null;selItem=null;pendingGo=null;if(lockItem)setLock(null,true);drag=null;controls.enabled=true;sel=null;selPet=null;document.getElementById('chips').style.visibility='visible';Object.values(RAIL).forEach(id=>document.getElementById(id).setAttribute('aria-pressed','false'));requestAnimationFrame(fitRail)}
 document.getElementById('sheetClose').addEventListener('click',closeSheet);
 window.addEventListener('resize',()=>requestAnimationFrame(fitRail));
 ['gesturestart','gesturechange'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
@@ -1443,6 +1453,8 @@ function totals(){let all=0,done=0;S.people.forEach(p=>p.quests.forEach(q=>{all+
 function level(){return 1+Math.floor((S.xp||0)/100)}
 
 /* 匯出／匯入 */
+function isStandalone(){return (window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true}
+let deferredInstall=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e});
 function inAppUA(){return /FBAN|FBAV|Instagram|Line\/|MicroMessenger|KAKAOTALK|Threads|; wv\)/i.test(navigator.userAgent||'')}
 function backupText(){return JSON.stringify({app:'my-island',version:APP_VERSION,savedAt:new Date().toISOString(),data:S})}
 function backupFile(txt){const d=new Date(),p=n=>String(n).padStart(2,'0');const name='my-island-backup-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+'.json';
@@ -1535,6 +1547,7 @@ function render(){
   else if(mode==='settings'){sTitle.textContent='⚙️ 設定';
     h+='<button class="row" data-open="owner"><span class="tx"><span class="nm">👑 島主造型與名字</span><span class="ds">換髮型、衣服、配件</span></span></button>';
     h+='<button class="row" data-editisle="hub"><span class="tx"><span class="nm">🏝️ 改島的名字</span><span class="ds">目前：'+esc(S.islandName)+'</span></span></button>';
+    h+='<button class="row" data-open="install"><span class="tx"><span class="nm">📲 '+(isStandalone()?'你正在用 App 版 ✅':'安裝成 App（加到主畫面）')+'</span><span class="ds">桌面圖示、全螢幕、沒網路也能開，存檔比較不容易被清掉</span></span></button>';
     h+='<button class="row" data-open="backup"><span class="tx"><span class="nm">📤 匯出島嶼（備份）</span><span class="ds">下載備份檔、分享或複製，換手機也能搬過去</span></span></button>';
     h+='<button class="row" data-open="import"><span class="tx"><span class="nm">📥 匯入島嶼（還原）</span><span class="ds">選備份檔或貼上備份文字</span></span></button>';
     if(hasUndoImport())h+='<button class="row" data-imp="undo"><span class="tx"><span class="nm">↩️ 還原匯入前的島</span><span class="ds">剛剛匯入的不是你要的？回到匯入前</span></span></button>';
@@ -1562,6 +1575,15 @@ function render(){
     h+='<div class="grp">🎨 顏色</div>'+D.cols.map(([k,l,dv])=>cpRow(k,l,(it.c&&it.c[k])||dv)).join('');
     h+='<div class="btnrow"><button class="btn" type="button" data-backbuild="1">⬅️ 回物件清單</button><button class="btn" type="button" data-dupitem="1">📄 複製一個</button><button class="btn red" type="button" data-ask="delitem">🗑️ 收起來</button></div>';
     if(confirmKey==='delitem')h+='<div class="confirm"><span>確定把「'+D.n+'」收起來嗎？</span><button class="btn" data-ask="">取消</button><button class="btn redfill" data-delitem="1">確定</button></div>'}
+  else if(mode==='install'){sTitle.textContent='📲 安裝成 App';const ua=navigator.userAgent||'',ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isStandalone())h+='<div class="bkcard ok"><b>✅ 你現在就是用 App 版在玩</b><span>從主畫面的小島圖示打開就好。沒網路也能開（新版本需要連網才拿得到）。</span></div>';
+    else{h+='<div class="say">裝成 App 之後：桌面有小島圖示、打開是全螢幕、沒網路也能玩，存檔也比較不會被瀏覽器清掉。</div>';
+      if(inAppUA())h+='<div class="warn2">⚠️ 你在 Instagram／LINE 的內建瀏覽器裡，這裡沒辦法安裝。請先點右上角「⋯」→「用瀏覽器開啟」（iPhone 選 Safari、Android 選 Chrome），再回到這一頁。</div><button class="go ghost" type="button" data-pwa="copy">📋 複製遊戲網址</button>';
+      else if(deferredInstall)h+='<button class="go" type="button" data-pwa="install">📲 一鍵安裝</button>';
+      else if(ios)h+='<div class="steps2"><b>iPhone／iPad（Safari）三步驟：</b><ol><li>按下方或上方的 <b>分享鈕</b>（方框加向上箭頭 ⬆️）</li><li>往下滑，選 <b>「加入主畫面」</b></li><li>右上角按 <b>「新增」</b>，桌面就會出現小島圖示 🏝️</li></ol></div>';
+      else h+='<div class="steps2"><b>Android（Chrome）：</b><ol><li>按右上角 <b>⋮</b></li><li>選 <b>「安裝應用程式」</b>或<b>「加到主畫面」</b></li><li>按 <b>「安裝」</b></li></ol><b>電腦（Chrome／Edge）：</b>網址列右邊的「安裝」小圖示。</div>'}
+    h+='<div class="warn2" style="margin-top:12px">🔁 <b>App 版和瀏覽器版的存檔是分開的。</b>第一次改用 App 時：<br>① 在這裡（瀏覽器）先按「匯出島嶼」，把備份傳到 LINE 或存到檔案；<br>② 打開 App 版，在建島畫面按「📥 我有備份，把島搬過來」匯入。</div>';
+    h+='<div class="btnrow"><button class="btn on" type="button" data-open="backup">📤 先匯出島嶼</button></div>'}
   else if(mode==='backup'){sTitle.textContent='📤 匯出島嶼（備份）';save();const txt=backupText(),sm=summaryOf(S);
     h+='<div class="bkcard"><b>🏝️ '+esc(S.islandName||'我的小島')+'</b><span>'+sm+'</span><span>大小約 '+Math.max(1,Math.round(txt.length/1024))+' KB</span></div>';
     if(inAppUA())h+='<div class="warn2">⚠️ 你現在在 App 內建瀏覽器（Instagram／LINE…），「下載」可能沒反應，建議用「分享」或「複製」；也可以點右上角改用 Safari／Chrome 開啟。</div>';
@@ -1648,6 +1670,8 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
     if(d.bk==='share'){if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'我的小島備份'}).then(()=>toast('📤 已分享備份'),()=>{})}
       else if(navigator.share){navigator.share({title:'我的小島備份',text:txt}).then(()=>toast('📤 已分享備份'),()=>{})}else{toast('這個瀏覽器不支援分享，改用下載或複製')}return}
     if(d.bk==='file'){try{const u=URL.createObjectURL(f),a=document.createElement('a');a.href=u;a.download=f.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);toast('💾 已下載 '+f.name)}catch(e){toast('下載失敗，改用分享或複製')}return}}
+  if(d.pwa==='install'&&deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.then(r=>{if(r&&r.outcome==='accepted')toast('🎉 安裝好了！到桌面找小島圖示');deferredInstall=null;render()}).catch(()=>{});return}
+  if(d.pwa==='copy'){copyText(location.origin+location.pathname).then(ok=>toast(ok?'📋 已複製網址，到 Safari／Chrome 貼上打開':'請長按網址列手動複製'));return}
   if(d.imp==='paste'){const t=document.getElementById('im');if(navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(x=>{t.value=x;previewImport(x)},()=>{t.focus();toast('請在框框裡長按 →「貼上」')})}else{t.focus();toast('請在框框裡長按 →「貼上」')}return}
   if(d.imp==='check'){previewImport(document.getElementById('im').value);return}
   if(d.imp==='go'){doImport();return}
@@ -1795,6 +1819,9 @@ function showUpdated(){let info=null;try{info=JSON.parse(localStorage.getItem('i
     el.hidden=false;document.getElementById('upOk').addEventListener('click',()=>el.hidden=true);setTimeout(()=>{el.hidden=true},15000)}
   if(S.appVer!==APP_VERSION){S.appVer=APP_VERSION;save()}
   if(/[?&]v=/.test(location.search))history.replaceState(null,'',location.pathname+location.hash)}
+document.getElementById('btnSetupImport').addEventListener('click',()=>{document.getElementById('setup').hidden=true;openSheet('import')});
+/* App 版（PWA）：註冊離線用的 Service Worker（只在正式網站上） */
+if('serviceWorker' in navigator&&(location.hostname==='kamaje122.github.io'||location.hostname==='localhost'))window.addEventListener('load',()=>{navigator.serviceWorker.register('myisland-sw.js',{scope:'./myisland'}).catch(()=>{})});
 /* 啟動 */
 if(S.islandName){startGame(false);rollDay();if(!S.guideDone)startGuide()}
 else{buildWorld();buildMe();camera.position.set(9,12,30);controls.target.set(0,2,2);controls.update();showSetup()}
