@@ -333,7 +333,7 @@ const PET_KIND={
   dog:{label:'狗狗',emoji:'🐶',def:'島狗',pats:COAT},
   parrot:{label:'小鳥',emoji:'🐦',def:'阿彩',pats:BIRD_PAT}};
 /* 可以擺設的物件（cols = [顏色鍵, 名稱, 預設色]；small = 小東西，拖曳時會自動放到桌面上） */
-const ITEM_CAT=[['kitchen','廚房'],['bake','烘焙'],['cafe','咖啡・裝飾'],['bed','臥室'],['living','客廳'],['outdoor','戶外']];
+const ITEM_CAT=[['kitchen','廚房'],['bake','烘焙'],['cafe','咖啡・裝飾'],['bed','臥室'],['living','客廳'],['outdoor','戶外'],['garden','庭園・農場']];
 const ITEMS={
   island:{n:'中島櫃',e:'🍳',cat:'kitchen',cols:[['main','櫃體','#f4efe6'],['top','檯面','#c9a27a'],['knob','把手','#c9a27a']]},
   stove:{n:'爐台',e:'🔥',cat:'kitchen',cols:[['main','櫃體','#f4efe6'],['top','檯面','#8f847c']]},
@@ -357,7 +357,11 @@ const ITEMS={
   ctable:{n:'小茶几',e:'🫖',cat:'living',cols:[['top','桌面','#f4efe6'],['legs','桌腳','#c9a27a']]},
   balcony:{n:'陽台',e:'🏡',cat:'outdoor',cols:[['floor','地板','#d9c3a5'],['rail','欄杆','#ffffff'],['plant','盆栽','#5bb85d']]},
   rack:{n:'曬衣架',e:'👕',cat:'outdoor',cols:[['frame','架子','#c9ced6'],['c1','衣服 1','#9cc3e6'],['c2','衣服 2','#ff8fb3'],['c3','衣服 3','#f2c94c']]},
-  washer:{n:'洗衣機',e:'🧺',cat:'outdoor',cols:[['main','機身','#ffffff'],['door','門框','#c9ced6'],['clothes','衣物','#9cc3e6']]}};
+  washer:{n:'洗衣機',e:'🧺',cat:'outdoor',cols:[['main','機身','#ffffff'],['door','門框','#c9ced6'],['clothes','衣物','#9cc3e6']]},
+  tree:{n:'樹木',e:'🌳',cat:'garden',cols:[['leaves','樹葉','#6aa86b'],['trunk','樹幹','#8b5a34'],['fruit','果實','#e5534b']]},
+  coop:{n:'雞舍',e:'🐔',cat:'garden',cols:[['wall','牆壁','#f4e3c1'],['roof','屋頂','#d4482f'],['chicken','雞','#ffffff']]},
+  garden:{n:'菜園',e:'🥕',cat:'garden',cols:[['border','木框','#a26c43'],['leaf','菜葉','#5bb85d'],['carrot','紅蘿蔔','#f08a3c'],['tomato','番茄','#e5534b']]},
+  fence:{n:'圍欄',e:'🪵',cat:'garden',cols:[['wood','圍欄','#f4efe6'],['rail','橫木','#c9a27a']]}};
 const HEIGHTS=[['地面',0],['茶几',0.45],['桌面',0.82],['流理台',0.98]];
 const HEX_R=12,HUB_R=12,TOP=1.0;
 /* 中央主島 + 12 個小島位置（外圈 p = 接到哪一座內圈小島） */
@@ -771,6 +775,36 @@ const BUILD={
     const cg=new THREE.Group();cg.position.set(0,0.38,0.36);g.add(cg);[[0.08,0.04,C.clothes],[-0.07,0.06,shade(C.clothes,0.12)],[0,-0.09,'#ffffff'],[0.06,-0.05,shade(C.clothes,-0.1)]].forEach(([x,y,c])=>{const m=sph(0.06,c,x,y,0,cg,null,8);m.scale.z=0.4});
     const gl=new THREE.Mesh(new THREE.CircleGeometry(0.2,24),glass('#bfe3ef'));gl.position.set(0,0.38,0.385);gl.userData.noShadow=true;g.add(gl);
     [[-0.3,-0.28],[0.3,-0.28],[-0.3,0.28],[0.3,0.28]].forEach(([x,z])=>box(0.08,0.02,0.08,'#8f847c',x,0.0,z,g));A((t,dt)=>{cg.rotation.z+=dt*2.5})}};
+Object.assign(BUILD,{
+  tree(g,C){cyl(0.18,0.26,1.6,8,C.trunk,0,0.8,0,g);const b1=cyl(0.06,0.08,0.6,6,C.trunk,0.25,1.3,0,g);b1.rotation.z=-0.7;
+    const f=new THREE.Group();f.position.y=1.0;g.add(f);
+    [[0,1.15,0,0.95],[0.6,0.85,0.15,0.62],[-0.55,0.9,-0.1,0.68],[0.1,0.75,-0.55,0.6],[-0.1,0.8,0.55,0.58]].forEach(([x,y,z,r],i)=>{const m=new THREE.Mesh(new THREE.IcosahedronGeometry(r,1),mat(i%2?shade(C.leaves,0.05):C.leaves));m.position.set(x,y,z);m.castShadow=true;f.add(m)});
+    [0,1,2,3,4,5,6].map(i=>{const q=i*0.9+0.3;return [Math.sin(q)*1.0,1.0+((i%3)-1)*0.32,Math.cos(q)*1.0]}).forEach(([x,y,z])=>{sph(0.09,C.fruit,x,y,z,f,null,8);box(0.02,0.06,0.02,'#6b4a2f',x,y+0.1,z,f)});
+    const ph=Math.random()*6;A(t=>{f.rotation.z=Math.sin(t*0.9+ph)*0.025;f.rotation.x=Math.sin(t*0.7+ph)*0.02})},
+  coop(g,C){[[-0.5,-0.35],[0.5,-0.35],[-0.5,0.35],[0.5,0.35]].forEach(([x,z])=>box(0.1,0.4,0.1,shade(C.wall,-0.25),x,0.2,z,g));
+    box(1.2,0.8,0.9,C.wall,0,0.8,0,g);for(let x=-0.45;x<0.5;x+=0.3)box(0.02,0.8,0.005,shade(C.wall,-0.08),x,0.8,0.452,g);
+    [-1,1].forEach(s=>{const r=box(0.78,0.06,1.1,C.roof,s*0.33,1.38,0,g);r.rotation.z=-s*0.55});box(0.06,0.06,1.12,shade(C.roof,-0.1),0,1.58,0,g);
+    const tri=new THREE.Mesh(new THREE.CylinderGeometry(0.62,0.62,0.86,3),mat(C.wall));tri.rotation.set(-Math.PI/2,0,0);tri.scale.set(1,1,0.55);tri.position.set(0,1.25,0);g.add(tri);
+    box(0.32,0.42,0.02,'#3a2a20',-0.25,0.65,0.455,g);const rp=box(0.3,0.03,0.8,'#a26c43',-0.25,0.24,0.8,g);rp.rotation.x=0.62;[0.6,0.75,0.9,1.05].forEach(z=>box(0.3,0.03,0.03,'#8b5a34',-0.25,0.44-(z-0.6)*0.72,z,g));
+    const w=new THREE.Mesh(new THREE.CircleGeometry(0.13,16),mat('#3a2a20'));w.position.set(0.3,0.95,0.456);g.add(w);const wr=new THREE.Mesh(new THREE.TorusGeometry(0.13,0.025,6,16),mat(shade(C.wall,-0.2)));wr.position.set(0.3,0.95,0.46);g.add(wr);
+    sph(0.07,'#f2c94c',0.3,0.9,0.43,g,null,6);
+    cyl(0.14,0.11,0.06,12,'#c9ced6',0.55,0.03,0.85,g);sph(0.1,'#f2c94c',0.55,0.05,0.85,g,null,8).scale.y=0.3;
+    [[0.15,0.95,0.6],[0.85,0.5,-0.9]].forEach(([x,z,ry],i)=>{const ck=new THREE.Group();ck.position.set(x,0,z);ck.rotation.y=ry;g.add(ck);
+      const b=sph(0.15,C.chicken,0,0.24,0,ck,null,10);b.scale.set(0.9,0.85,1.15);const tl=sph(0.08,C.chicken,0,0.32,-0.15,ck,null,8);tl.scale.set(0.6,1.2,0.8);
+      const hd=new THREE.Group();hd.position.set(0,0.38,0.12);ck.add(hd);sph(0.085,C.chicken,0,0,0,hd,null,10);box(0.025,0.07,0.08,'#e5534b',0,0.08,0,hd);
+      const bk=new THREE.Mesh(new THREE.ConeGeometry(0.025,0.07,6),mat('#f2a33c'));bk.rotation.x=Math.PI/2;bk.position.set(0,-0.01,0.1);hd.add(bk);sph(0.02,'#e5534b',0,-0.06,0.07,hd,null,6);
+      [-1,1].forEach(s=>sph(0.015,'#1a1513',s*0.05,0.02,0.07,hd,null,6));[-1,1].forEach(s=>{cyl(0.012,0.012,0.12,5,'#f2a33c',s*0.05,0.06,0,ck);box(0.05,0.01,0.06,'#f2a33c',s*0.05,0.005,0.02,ck)});
+      const ph=i*2.1;A(t=>{const k=Math.max(0,Math.sin(t*2.2+ph));hd.rotation.x=k>0.7?(k-0.7)*3:0;hd.position.y=0.38-(k>0.7?(k-0.7)*0.25:0)})})},
+  garden(g,C){const W=2.0,D=1.2;box(W,0.25,0.1,C.border,0,0.125,D/2-0.05,g);box(W,0.25,0.1,C.border,0,0.125,-D/2+0.05,g);[-1,1].forEach(s=>box(0.1,0.25,D,C.border,s*(W/2-0.05),0.125,0,g));
+    box(W-0.2,0.2,D-0.2,'#6b4a2f',0,0.1,0,g);[-0.3,0,0.3].forEach(z=>box(W-0.3,0.04,0.16,'#5a3d26',0,0.21,z,g));
+    for(let x=-0.75;x<=0.76;x+=0.25){const c=new THREE.Mesh(new THREE.ConeGeometry(0.05,0.14,6),mat(C.carrot));c.rotation.x=Math.PI;c.position.set(x,0.24,0.3);g.add(c);
+      [-0.5,0,0.5].forEach(a=>{const l=box(0.02,0.18,0.02,C.leaf,x+a*0.05,0.36,0.3,g);l.rotation.z=a})}
+    for(let x=-0.65;x<=0.66;x+=0.43){sph(0.13,shade(C.leaf,0.12),x,0.3,0,g,{flatShading:true},8);[0,1.6,3.2,4.7].forEach(a=>{const l=sph(0.1,C.leaf,x+Math.cos(a)*0.09,0.29,Math.sin(a)*0.09,g,null,8);l.scale.y=0.45})}
+    for(let x=-0.6;x<=0.61;x+=0.6){cyl(0.012,0.012,0.6,5,'#c9a27a',x,0.5,-0.3,g);[[0.06,0.38],[-0.06,0.5],[0.05,0.62]].forEach(([dx,y])=>{const l=sph(0.07,C.leaf,x+dx,y,-0.3,g,null,6);l.scale.set(1,0.6,1)});
+      [[0.08,0.42,0.05],[-0.07,0.55,0.04],[0.06,0.66,-0.04]].forEach(([dx,y,dz])=>sph(0.045,C.tomato,x+dx,y,-0.3+dz,g,null,8))}},
+  fence(g,C){box(2.0,0.07,0.04,C.rail,0,0.3,-0.04,g);box(2.0,0.07,0.04,C.rail,0,0.62,-0.04,g);
+    for(let i=0;i<8;i++){const x=-0.875+i*0.25;box(0.15,0.72,0.04,C.wood,x,0.36,0,g);const tp=new THREE.Mesh(new THREE.ConeGeometry(0.106,0.12,4),mat(C.wood));tp.rotation.y=Math.PI/4;tp.scale.z=0.27;tp.position.set(x,0.78,0);g.add(tp)}
+    [-1,1].forEach(s=>{box(0.1,0.85,0.1,shade(C.rail,-0.1),s*1.0,0.425,-0.04,g);box(0.13,0.04,0.13,shade(C.rail,-0.1),s*1.0,0.87,-0.04,g)})}});
 function makeItem(it){const D=ITEMS[it.type],g=new THREE.Group(),C={};D.cols.forEach(([k,,d])=>C[k]=(it.c&&it.c[k])||d);
   _anims=[];BUILD[it.type](g,C);g.userData.anims=_anims;_anims=null;
   g.traverse(m=>{if(m.isMesh){m.castShadow=!m.userData.noShadow;m.receiveShadow=true}});return g}
