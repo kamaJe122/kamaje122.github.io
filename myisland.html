@@ -20,7 +20,7 @@
   - 換日時：已完成任務自動清掉，未完成的自動留到隔天
 =====================================================================
 -->
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>我的小島</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
@@ -167,6 +167,17 @@ textarea.code{width:100%;height:150px;font:12px/1.4 ui-monospace,monospace;borde
 .cps input{-webkit-appearance:none;appearance:none;width:100%;height:16px;border-radius:999px;margin:0;border:1px solid #0002;background:#ddd}
 .cps input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--ink);box-shadow:0 1px 4px #0004;cursor:pointer}
 .cps input::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--ink);cursor:pointer}
+/* 右側功能列：永遠在最上層、不跟著頁面縮放，放不下時可以上下滑 */
+html,body,#app{touch-action:none;overscroll-behavior:none}
+#hud{position:absolute;inset:0;pointer-events:none;z-index:5}
+#hud>*{pointer-events:auto}
+#hud .chips{pointer-events:none}#hud .chips>*{pointer-events:auto}
+.sheet,.guide{z-index:7}.setup{z-index:8}
+.sheet-body,.setup,.scard,.rail{touch-action:pan-y}
+.rail{z-index:6;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:2px 2px 6px;margin:-2px -2px 0 0}
+.rail::-webkit-scrollbar{display:none}
+.rail .rbtn{flex:none}
+@media (max-height:760px){.rail{gap:6px}.rbtn{height:48px;width:58px;font-size:12px}.rbtn svg{width:15px;height:15px}}
 /* 擺設模式 */
 #app{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #app input,#app textarea{-webkit-user-select:text;user-select:text}
@@ -333,8 +344,15 @@ const PET_KIND={
   dog:{label:'狗狗',emoji:'🐶',def:'島狗',pats:COAT},
   parrot:{label:'小鳥',emoji:'🐦',def:'阿彩',pats:BIRD_PAT}};
 /* 可以擺設的物件（cols = [顏色鍵, 名稱, 預設色]；small = 小東西，拖曳時會自動放到桌面上） */
-const ITEM_CAT=[['kitchen','廚房'],['bake','烘焙'],['cafe','咖啡・裝飾'],['bed','臥室'],['living','客廳'],['outdoor','戶外'],['garden','庭園・農場']];
+const ITEM_CAT=[['isle','島嶼設施'],['kitchen','廚房'],['bake','烘焙'],['cafe','咖啡・裝飾'],['bed','臥室'],['living','客廳'],['outdoor','戶外'],['garden','庭園・農場']];
 const ITEMS={
+  lamp:{n:'路燈',e:'💡',cat:'isle',cols:[['pole','燈柱','#2b2421'],['light','燈泡','#fff2c4']]},
+  ptree:{n:'圓圓樹',e:'🌳',cat:'isle',cols:[['leaves','樹葉','#6aa86b'],['trunk','樹幹','#7b5236']]},
+  pine:{n:'尖尖樹',e:'🌲',cat:'isle',cols:[['leaves','樹葉','#5e9b63'],['trunk','樹幹','#7b5236']]},
+  house:{n:'小屋',e:'🏠',cat:'isle',cols:[['wall','牆壁','#fffaf2'],['roof','屋頂','#e8673a'],['door','門','#8a5d3c']]},
+  fountain:{n:'噴水池',e:'⛲',cat:'isle',cols:[['stone','石頭','#d8d2c6'],['water','水','#7cc8e6']]},
+  bench:{n:'長椅',e:'🪑',cat:'isle',cols:[['wood','椅面','#a26c43'],['legs','椅腳','#555555']]},
+  sign:{n:'招牌',e:'🪧',cat:'isle',cols:[['accent','色條','#e8673a'],['frame','邊框','#2b2421']]},
   island:{n:'中島櫃',e:'🍳',cat:'kitchen',cols:[['main','櫃體','#f4efe6'],['top','檯面','#c9a27a'],['knob','把手','#c9a27a']]},
   stove:{n:'爐台',e:'🔥',cat:'kitchen',cols:[['main','櫃體','#f4efe6'],['top','檯面','#8f847c']]},
   gas:{n:'瓦斯爐',e:'🍲',cat:'kitchen',small:1,cols:[['main','爐身','#d9dde3'],['grate','爐架','#2b2421'],['flame','火焰','#4fa3ff']]},
@@ -798,7 +816,22 @@ const BUILD={
     const cg=new THREE.Group();cg.position.set(0,0.38,0.36);g.add(cg);[[0.08,0.04,C.clothes],[-0.07,0.06,shade(C.clothes,0.12)],[0,-0.09,'#ffffff'],[0.06,-0.05,shade(C.clothes,-0.1)]].forEach(([x,y,c])=>{const m=sph(0.06,c,x,y,0,cg,null,8);m.scale.z=0.4});
     const gl=new THREE.Mesh(new THREE.CircleGeometry(0.2,24),glass('#bfe3ef'));gl.position.set(0,0.38,0.385);gl.userData.noShadow=true;g.add(gl);
     [[-0.3,-0.28],[0.3,-0.28],[-0.3,0.28],[0.3,0.28]].forEach(([x,z])=>box(0.08,0.02,0.08,'#8f847c',x,0.0,z,g));A((t,dt)=>{cg.rotation.z+=dt*2.5})}};
+function signText(it){if(it.text)return it.text;if(it.isle==='hub')return S.islandName||'我的小島';const is=it.isle&&isleById(it.isle);return is?is.name:'招牌'}
 Object.assign(BUILD,{
+  lamp(g,C){cyl(0.07,0.09,3,6,C.pole,0,1.5,0,g);box(0.5,0.12,0.5,C.pole,0,3.05,0,g);
+    const h=new THREE.Mesh(new THREE.SphereGeometry(0.2,8,6),new THREE.MeshStandardMaterial({color:C.light,emissive:C.light,emissiveIntensity:0}));h.position.y=2.85;h.userData.ownMat=true;h.userData.noShadow=true;g.add(h);lampHeads.push(h)},
+  ptree(g,C){cyl(0.18,0.24,1.4,6,C.trunk,0,0.7,0,g);[[0,2.1,0,1.25,0],[0.6,1.8,0.3,0.8,0.05],[-0.5,1.9,-0.3,0.85,-0.04]].forEach(t=>{const b=new THREE.Mesh(new THREE.IcosahedronGeometry(t[3],0),mat(shade(C.leaves,t[4])));b.position.set(t[0],t[1],t[2]);g.add(b)})},
+  pine(g,C){cyl(0.12,0.16,0.9,6,C.trunk,0,0.45,0,g);const c=new THREE.Mesh(new THREE.ConeGeometry(0.85,3.2,7),mat(C.leaves));c.position.y=2.4;g.add(c)},
+  house(g,C){const w=4,d=2.6,h=2.6;box(w,h,d,C.wall,0,h/2,0,g);const r=new THREE.Mesh(new THREE.CylinderGeometry(0.01,w*0.78,1.4,4),mat(C.roof));r.rotation.y=Math.PI/4;r.scale.set(1,1,d/w);r.position.y=h+0.7;g.add(r);
+    [-1,1].forEach(sx=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w*0.22,h*0.3),new THREE.MeshStandardMaterial({color:0xa9cfe0,emissive:0xffc860,emissiveIntensity:0,roughness:0.4}));m.position.set(sx*w*0.22,h*0.55,d/2+0.01);m.userData.ownMat=true;g.add(m);windows.push(m)});
+    box(0.7,1.2,0.05,C.door,0,0.6,d/2+0.02,g)},
+  fountain(g,C){cyl(2.6,2.8,0.5,16,C.stone,0,0.25,0,g);const w=new THREE.Mesh(new THREE.CylinderGeometry(2.25,2.25,0.06,16),new THREE.MeshStandardMaterial({color:C.water,emissive:shade(C.water,-0.3),emissiveIntensity:0.25,roughness:0.2}));w.position.y=0.47;w.userData.ownMat=true;g.add(w);
+    cyl(0.35,0.5,1.6,8,C.stone,0,1.1,0,g);cyl(0.9,0.9,0.15,10,C.stone,0,1.9,0,g);const top=new THREE.Mesh(new THREE.CylinderGeometry(0.75,0.75,0.04,12),mat(C.water,{transparent:true,opacity:0.8}));top.position.y=1.98;g.add(top)},
+  bench(g,C){box(2.2,0.12,0.6,C.wood,0,0.55,0,g);box(2.2,0.5,0.1,C.wood,0,0.85,-0.28,g);box(0.1,0.5,0.5,C.legs,-0.9,0.27,0,g);box(0.1,0.5,0.5,C.legs,0.9,0.27,0,g)},
+  sign(g,C,it){cyl(0.08,0.08,2.4,6,C.frame,-2.2,1.2,0,g);cyl(0.08,0.08,2.4,6,C.frame,2.2,1.2,0,g);
+    const cv=document.createElement('canvas');cv.width=1024;cv.height=200;const tex=new THREE.CanvasTexture(cv);tex.anisotropy=4;
+    const face=new THREE.Mesh(new THREE.PlaneGeometry(5,0.98),new THREE.MeshStandardMaterial({map:tex,roughness:0.7}));face.position.set(0,2.05,0.07);face.userData.ownMat=true;g.add(face);box(5.1,1.05,0.12,C.frame,0,2.05,0,g);
+    const b={cv,tex,text:signText(it||{}),color:C.accent,g};boards.push(b);paintBoard(b)},
   tree(g,C){cyl(0.18,0.26,1.6,8,C.trunk,0,0.8,0,g);const b1=cyl(0.06,0.08,0.6,6,C.trunk,0.25,1.3,0,g);b1.rotation.z=-0.7;
     const f=new THREE.Group();f.position.y=1.0;g.add(f);
     [[0,1.15,0,0.95],[0.6,0.85,0.15,0.62],[-0.55,0.9,-0.1,0.68],[0.1,0.75,-0.55,0.6],[-0.1,0.8,0.55,0.58]].forEach(([x,y,z,r],i)=>{const m=new THREE.Mesh(new THREE.IcosahedronGeometry(r,1),mat(i%2?shade(C.leaves,0.05):C.leaves));m.position.set(x,y,z);m.castShadow=true;f.add(m)});
@@ -829,7 +862,7 @@ Object.assign(BUILD,{
     for(let i=0;i<8;i++){const x=-0.875+i*0.25;box(0.15,0.72,0.04,C.wood,x,0.36,0,g);const tp=new THREE.Mesh(new THREE.ConeGeometry(0.106,0.12,4),mat(C.wood));tp.rotation.y=Math.PI/4;tp.scale.z=0.27;tp.position.set(x,0.78,0);g.add(tp)}
     [-1,1].forEach(s=>{box(0.1,0.85,0.1,shade(C.rail,-0.1),s*1.0,0.425,-0.04,g);box(0.13,0.04,0.13,shade(C.rail,-0.1),s*1.0,0.87,-0.04,g)})}});
 function makeItem(it){const D=ITEMS[it.type],g=new THREE.Group(),C={};D.cols.forEach(([k,,d])=>C[k]=(it.c&&it.c[k])||d);
-  _anims=[];BUILD[it.type](g,C);g.userData.anims=_anims;_anims=null;
+  _anims=[];BUILD[it.type](g,C,it);g.userData.anims=_anims;_anims=null;
   g.traverse(m=>{if(m.isMesh){m.castShadow=!m.userData.noShadow;m.receiveShadow=true}});return g}
 function petLabelY(k){return k==='parrot'?1.75:k==='dog'?1.55:1.35}
 
@@ -851,25 +884,12 @@ function buildWorld(){
   lampHeads=[];windows=[];BRIDGES=[];boards=[];seed=7;Object.keys(BR_OF).forEach(k=>delete BR_OF[k]);Object.keys(DESKS).forEach(k=>delete DESKS[k]);
   /* 主島（中央廣場） */
   hubGround=hexIsland(0,0,HUB_R,S.hubFloor||'#e2d9c6',true);
-  cyl(2.6,2.8,0.5,16,'#d8d2c6',0,TOP+0.25,-3);const w=new THREE.Mesh(new THREE.CylinderGeometry(2.25,2.25,0.06,16),new THREE.MeshStandardMaterial({color:0x7cc8e6,emissive:0x2a7fa8,emissiveIntensity:0.25,roughness:0.2}));w.position.set(0,TOP+0.47,-3);world.add(w);
-  cyl(0.35,0.5,1.6,8,'#d8d2c6',0,TOP+1.1,-3);cyl(0.9,0.9,0.15,10,'#d8d2c6',0,TOP+1.9,-3);
-  [[-5.5,-1.5,0.6],[5.5,-1.5,-0.6]].forEach(([x,z,r])=>{const g=new THREE.Group();g.position.set(x,TOP,z);g.rotation.y=r;world.add(g);box(2.2,0.12,0.6,'#a26c43',0,0.55,0,g);box(2.2,0.5,0.1,'#a26c43',0,0.85,-0.28,g);box(0.1,0.5,0.5,'#555',-0.9,0.27,0,g);box(0.1,0.5,0.5,'#555',0.9,0.27,0,g)});
-  [[-4,6.5],[4,6.5],[-6.5,-4],[6.5,-4]].forEach(p=>lamp(p[0],p[1]));
-  [1.047,2.094,3.142,4.189,5.236].forEach((a,j)=>tree(Math.sin(a)*HUB_R*0.74,Math.cos(a)*HUB_R*0.74,0.85+rnd()*0.3,['round','cone','round','cone','round'][j]));
-  makeBoard(S.islandName||'我的小島',HUB_SHIRT,0,9.3,0);
   DESKS.hub=[];
   /* 小島 */
   S.isles.slice().sort((a,b)=>a.slot-b.slot).forEach(is=>{
     const s=SLOTS[is.slot],th=THEMES[is.theme%THEMES.length],cx=s.x,cz=s.z;
     const pal=is.floor?floorPal(is.floor):th.tiles;hexIsland(cx,cz,HEX_R,pal[1]);tiles(cx,cz,15,14,pal);
     const pc=isleCenter(parentOf(is));BR_OF[is.id]=cuteBridge(pc.x,pc.z,cx,cz);
-    house(cx+4.5,cz-5.2,4,2.6,2.6,'#fffaf2',th.shirt);
-    [0,2.094,4.189].forEach((a,j)=>tree(cx+Math.sin(a)*HEX_R*0.74,cz+Math.cos(a)*HEX_R*0.74,0.85+rnd()*0.3,['round','cone','round'][j]));
-    lamp(cx+6.2,cz+3.2);
-    /* 招牌：避開橋頭 */
-    let bx=cx-3.9,ry=0.18;const ends=[];BRIDGES.forEach(r=>[[r.x0,r.z0],[r.x1,r.z1]].forEach(([x,q])=>{if(Math.hypot(x-cx,q-cz)<HEX_R+1)ends.push([x,q])}));
-    const near=x=>ends.some(([ex,eq])=>Math.hypot(ex-x,eq-(cz+8.2))<4.5);if(near(bx)&&!near(cx+3.9)){bx=cx+3.9;ry=-0.18}
-    makeBoard(is.name,th.shirt,bx,cz+8.2,ry);
     DESKS[is.id]=[];[cz+0.2,cz+3.4].forEach(r=>[cx-5,cx,cx+5].forEach(c=>DESKS[is.id].push({x:c,z:r,taken:null})));
   });
   /* 外海的小點綴 */
@@ -883,8 +903,22 @@ function buildWorld(){
   const addZ=(id,txt,no,pos)=>{const w=div('lbl','');const p=div('zpill','<b>'+no+'</b>'+esc(txt),w);p.addEventListener('click',()=>openIsle(id));zLabels.push({w,pos})};
   addZ('hub','主島','00',new THREE.Vector3(0,TOP+4.2,10.4));
   S.isles.forEach(is=>{const s=SLOTS[is.slot];addZ(is.id,is.name,String(is.slot+1).padStart(2,'0'),new THREE.Vector3(s.x,TOP+5.6,s.z-5.2))});
-  spawnAll();spawnPets();buildItems();
+  seedDecor();spawnAll();spawnPets();buildItems();
 }
+/* 島上原本就有的路燈、樹、小屋、噴水池、長椅、招牌：第一次會轉成「可擺設的物件」，之後可以移動、刪除、換色 */
+function seedDecor(){if(!S.deco||typeof S.deco!=='object')S.deco={};let added=false;
+  const add=(type,x,z,o)=>{S.items.push(Object.assign({id:uid(),type,x:+x.toFixed(2),z:+z.toFixed(2),y:0,ry:0,s:1,c:{}},o||{}));added=true};
+  const greens=['#6aa86b','#7db36f','#5e9b63','#8cbf79'];
+  const trees=(cx,cz,angles,kinds)=>angles.forEach((a,j)=>add(kinds[j]==='cone'?'pine':'ptree',cx+Math.sin(a)*HEX_R*0.74,cz+Math.cos(a)*HEX_R*0.74,{s:+(0.85+rnd()*0.3).toFixed(2),c:{leaves:greens[Math.floor(rnd()*4)]}}));
+  if(!S.deco.hub){S.deco.hub=1;add('fountain',0,-3);add('bench',-5.5,-1.5,{ry:0.6});add('bench',5.5,-1.5,{ry:-0.6});
+    [[-4,6.5],[4,6.5],[-6.5,-4],[6.5,-4]].forEach(p=>add('lamp',p[0],p[1]));trees(0,0,[1.047,2.094,3.142,4.189,5.236],['round','cone','round','cone','round']);
+    add('sign',0,9.3,{isle:'hub',c:{accent:HUB_SHIRT}})}
+  S.isles.forEach(is=>{if(S.deco[is.id])return;S.deco[is.id]=1;const s=SLOTS[is.slot],th=THEMES[is.theme%THEMES.length],cx=s.x,cz=s.z;
+    add('house',cx+4.5,cz-5.2,{isle:is.id,c:{roof:th.shirt}});trees(cx,cz,[0,2.094,4.189],['round','cone','round']);add('lamp',cx+6.2,cz+3.2);
+    let bx=cx-3.9,ry=0.18;const ends=[];BRIDGES.forEach(r=>[[r.x0,r.z0],[r.x1,r.z1]].forEach(([x,q])=>{if(Math.hypot(x-cx,q-cz)<HEX_R+1)ends.push([x,q])}));
+    const near=x=>ends.some(([ex,eq])=>Math.hypot(ex-x,eq-(cz+8.2))<4.5);if(near(bx)&&!near(cx+3.9)){bx=cx+3.9;ry=-0.18}
+    add('sign',bx,cz+8.2,{ry,isle:is.id,c:{accent:th.shirt}})});
+  if(added)save()}
 function floorPal(f){return [shade(f,0.03),f,shade(f,0.07),shade(f,-0.03)]}
 
 /* =========================================================
@@ -1219,9 +1253,13 @@ function openSheet(m,a){restoreOwner();mode=m;arg=a;confirmKey=null;draft=null;s
   document.getElementById('chips').style.visibility='hidden';
   Object.values(RAIL).forEach(id=>document.getElementById(id).setAttribute('aria-pressed','false'));
   const rb=(['iform','vform','pform'].includes(m)&&a)?null:RAIL[m];if(rb)document.getElementById(rb).setAttribute('aria-pressed','true');
-  render();sBody.scrollTop=0}
-function closeSheet(){restoreOwner();sheet.hidden=true;mode=null;selItem=null;drag=null;controls.enabled=true;sel=null;selPet=null;document.getElementById('chips').style.visibility='visible';Object.values(RAIL).forEach(id=>document.getElementById(id).setAttribute('aria-pressed','false'))}
+  render();sBody.scrollTop=0;requestAnimationFrame(fitRail)}
+function fitRail(){const r=document.querySelector('.rail');if(!r)return;const top=r.getBoundingClientRect().top;let bot=window.innerHeight;if(!sheet.hidden)bot=Math.min(bot,sheet.getBoundingClientRect().top);r.style.maxHeight=Math.max(56,bot-top-8)+'px'}
+function closeSheet(){restoreOwner();sheet.hidden=true;mode=null;selItem=null;drag=null;controls.enabled=true;sel=null;selPet=null;document.getElementById('chips').style.visibility='visible';Object.values(RAIL).forEach(id=>document.getElementById(id).setAttribute('aria-pressed','false'));requestAnimationFrame(fitRail)}
 document.getElementById('sheetClose').addEventListener('click',closeSheet);
+window.addEventListener('resize',()=>requestAnimationFrame(fitRail));
+['gesturestart','gesturechange'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+if(window.visualViewport){const vv=window.visualViewport,hud=document.getElementById('hud'),fixHud=()=>{const k=vv.scale||1;if(Math.abs(k-1)<0.01){hud.style.transform='';return}hud.style.transformOrigin='0 0';hud.style.transform='translate('+vv.offsetLeft+'px,'+vv.offsetTop+'px) scale('+(1/k)+')'};vv.addEventListener('resize',fixHud);vv.addEventListener('scroll',fixHud)}
 function rerender(){if(mode)render()}
 
 function personRow(p){const left=p.quests.filter(q=>!q.done).length;return '<button class="row" type="button" data-person="'+p.id+'"><span class="dot" style="background:'+STATUS[p.status]+'"></span><span class="tx"><span class="nm">'+esc(p.name)+(left?' <span class="seen">任務 '+left+'</span>':'')+'</span><span class="ds">'+esc(p.task||'（還沒寫在做什麼）')+'</span></span><span class="ag">'+esc(p.status)+'</span></button>'}
@@ -1305,7 +1343,7 @@ function render(){
     if(confirmKey==='reset')h+='<div class="confirm"><span>所有小島、島民、任務都會消失，無法復原。</span><button class="btn" data-ask="">取消</button><button class="btn redfill" data-reset="1">確定重來</button></div>';
     h+='<div class="note">🤖 想加新功能？把這個 HTML 檔整份貼給 Claude，說「幫我加○○」就能改。資料只存在這台裝置的瀏覽器裡。</div>'}
   else if(mode==='build'){sTitle.textContent='🛠️ 擺設模式';
-    h+='<div class="say">挑一個物件放到畫面中間 👇 <b>按住島上的物件就能拖曳</b>；點一下物件可以調高度、方向和顏色。小東西（蛋糕、咖啡組…）拖到桌子上會自動放在桌面。</div>';
+    h+='<div class="say">挑一個物件放到畫面中間 👇 <b>按住島上的物件就能拖曳</b>；點一下物件可以調高度、方向和顏色。小東西（蛋糕、咖啡組…）拖到桌子上會自動放在桌面。路燈、樹、小屋、招牌這些島上原本就有的東西，也可以點選後移動、換色或收起來。</div>';
     h+='<div class="tabs">'+ITEM_CAT.map(([k,l])=>'<button type="button" class="tab" data-icat="'+k+'" aria-selected="'+(buildCat===k)+'">'+l+'</button>').join('')+'</div>';
     h+='<div class="igrid">'+Object.keys(ITEMS).filter(k=>ITEMS[k].cat===buildCat).map(k=>'<button type="button" class="icard" data-additem="'+k+'"><span aria-hidden="true">'+ITEMS[k].e+'</span>'+ITEMS[k].n+'</button>').join('')+'</div>';
     h+='<div class="grp">🏠 已經擺好的（'+S.items.length+'）</div>'+(S.items.length?'<div class="tabs">'+S.items.map(it=>'<button type="button" class="tab" data-selitem="'+it.id+'">'+ITEMS[it.type].e+' '+ITEMS[it.type].n+'</button>').join('')+'</div>':'<div class="meta">還沒有擺任何東西，從上面挑一個吧！</div>');
@@ -1318,6 +1356,7 @@ function render(){
     h+='<div>'+sliderRow('高度','iy',0,5,0.01,it.y||0,(it.y||0).toFixed(2))+'<div class="tabs hq">'+HEIGHTS.map(([l,v])=>'<button type="button" class="tab" data-hset="'+v+'">'+l+'</button>').join('')+'</div>'+
       sliderRow('方向角度','iry',0,359,1,degOf(it),degOf(it)+'°')+'<div class="tabs hq"><button type="button" class="tab" data-rot="-45">↺ 45°</button><button type="button" class="tab" data-rot="45">↻ 45°</button><button type="button" class="tab" data-rot="180">轉 180°</button></div>'+
       sliderRow('大小','is',0.5,2,0.05,it.s||1,(it.s||1).toFixed(2)+'×')+'</div></div>';
+    if(it.type==='sign')h+='<div class="fld"><label for="fSign">招牌文字（空白＝島的名字）</label><input type="text" id="fSign" maxlength="14" value="'+esc(it.text||'')+'" placeholder="'+esc(signText(Object.assign({},it,{text:''})))+'"></div>';
     h+='<div class="grp">🎨 顏色</div>'+D.cols.map(([k,l,dv])=>cpRow(k,l,(it.c&&it.c[k])||dv)).join('');
     h+='<div class="btnrow"><button class="btn" type="button" data-backbuild="1">⬅️ 回物件清單</button><button class="btn" type="button" data-dupitem="1">📄 複製一個</button><button class="btn red" type="button" data-ask="delitem">🗑️ 收起來</button></div>';
     if(confirmKey==='delitem')h+='<div class="confirm"><span>確定把「'+D.n+'」收起來嗎？</span><button class="btn" data-ask="">取消</button><button class="btn redfill" data-delitem="1">確定</button></div>'}
@@ -1376,13 +1415,13 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
   if(d.saveisle){const n=document.getElementById('fIN').value.trim();if(!n){toast('要取個名字喔');return}
     if(arg==='hub'){S.islandName=n;S.hubFloor=draft.floor||null;save();buildWorld();updateHud();draft=null;openIsle('hub');toast('✨ 島名改好了');return}
     draft.name=n;draft.note=document.getElementById('fNote').value.trim();
-    const k=S.isles.findIndex(x=>x.id===draft.id),isNew=k<0;
+    const k=S.isles.findIndex(x=>x.id===draft.id),isNew=k<0;if(!isNew&&S.isles[k].theme!==draft.theme){const sh=THEMES[draft.theme%THEMES.length].shirt;S.items.forEach(it=>{if(it.isle!==draft.id)return;if(!it.c)it.c={};if(it.type==='house')it.c.roof=sh;if(it.type==='sign')it.c.accent=sh})}
     if(isNew){if(draft.slot<0){toast('海面已經滿了 🌊');return}S.isles.push(draft)}else S.isles[k]=draft;
     const id=draft.id;draft=null;save();buildWorld();updateHud();
     if(isNew){toast('🏝️ '+n+' 浮出海面了！');setView(S.ui.bird,false);setTimeout(()=>openIsle(id),950);guideHook('isle')}else openIsle(id);return}
   if(d.newp){openSheet('vform');draft.isle=d.newp;render();return}
   if(d.editisle){draft=null;openSheet('iform',d.editisle);return}
-  if(d.deli){S.people.forEach(p=>{if(p.isle===d.deli)p.isle='hub'});S.isles=S.isles.filter(i=>i.id!==d.deli);save();buildWorld();updateHud();closeSheet();setView(S.ui.bird,false);toast('小島沉入海底了 🌊');return}
+  if(d.deli){const dc=isleCenter(d.deli);S.items=S.items.filter(it=>it.isle!==d.deli&&Math.hypot(it.x-dc.x,it.z-dc.z)>HEX_R*0.98);if(S.deco)delete S.deco[d.deli];S.people.forEach(p=>{if(p.isle===d.deli)p.isle='hub'});S.isles=S.isles.filter(i=>i.id!==d.deli);save();buildWorld();updateHud();closeSheet();setView(S.ui.bird,false);toast('小島沉入海底了 🌊');return}
   if(d.tm){S.ui.timeMode=d.tm==='live'?'live':'manual';if(d.tm!=='live')S.ui.hour=simHour;save();render();return}
   if(d.saveowner){const n=document.getElementById('fON').value.trim();S.owner.name=n||S.owner.name;S.owner.look=Object.assign({},draft.look);ownerBackup=null;draft=null;save();buildMe();updateHud();closeSheet();toast('✨ 造型更新完成');return}
   if(d.open){draft=null;if(d.open==='guide'){closeSheet();startGuide();return}openSheet(d.open);return}
@@ -1395,6 +1434,7 @@ sBody.addEventListener('submit',e=>{const f=e.target.closest('[data-addq]');if(!
   const ni=sBody.querySelector('[data-addq] input');if(ni)ni.focus();guideHook('quest')});
 sBody.addEventListener('change',e=>{if(e.target.id==='fIsle'&&draft){draft.isle=e.target.value;const th=isleTheme(draft.isle),L=Object.assign({},draft.look);if(!L.outfit||L.outfit==='uniform')L.shirt=th?th.shirt:HUB_SHIRT;L.capColor=L.capC||L.shirt;pvSet(L)}});
 sBody.addEventListener('input',e=>{
+  if(mode==='item'&&e.target.id==='fSign'){const it=S.items.find(x=>x.id===arg);if(it){it.text=e.target.value.trim();rebuildItem(it);saveSoon()}return}
   if(mode==='item'){const it=S.items.find(x=>x.id===arg);if(it){if(!it.c)it.c={};if(cpInput(sBody,e.target,it.c,()=>{rebuildItem(it);saveSoon()}))return;const k=e.target.dataset.isl;
     if(k){const v=+e.target.value;if(k==='iy')it.y=v;else if(k==='iry')it.ry=v*Math.PI/180;else if(k==='is')it.s=v;const o=itemObjs[it.id];if(o)placeItem(o,it);syncSliders(it);if(k==='is')measureSel();saveSoon();return}}}
   if(mode==='iform'&&draft&&cpInput(sBody,e.target,draft,null))return;
