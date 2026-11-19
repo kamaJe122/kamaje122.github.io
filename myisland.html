@@ -318,7 +318,7 @@ const SKIN_C=['#f6d2b4','#efc39f','#e2b08a','#d9a37d','#b07a52','#8a5a3c'];
 const HAIR_C=['#231d1b','#5a3a28','#a8642f','#e0b44c','#d9708f','#5b7fe0','#9aa3ab'];
 const SHIRT_C=['#e8673a','#3a3a3e','#2f9e5f','#3f84cf','#6a5fc8','#d24f86','#f2c94c','#f4efe6'];
 const PANTS_C=['#26262b','#2f3b52','#4a4036','#6b5f58','#c9b48f'];
-const STYLES=[['short','短髮'],['bob','妹妹頭'],['long','長髮'],['bun','包包頭'],['cap','棒球帽'],['curly','短Q毛'],['curlyMid','到肩的Q毛'],['pony','單馬尾'],['clawclip','鯊魚夾頭'],['slick','油頭'],['buzz','三吋頭']];
+const STYLES=[['short','短髮'],['bob','妹妹頭'],['long','長髮'],['bun','包包頭'],['cap','棒球帽'],['curly','短Q毛'],['curlyMid','到肩的Q毛'],['pony','單馬尾'],['clawclip','鯊魚夾頭'],['slick','油頭'],['buzz','三吋頭'],['middle','中分']];
 const OUTFITS=[['uniform','島制服'],['basic','T恤＋長褲'],['pajama','點點睡衣'],['boxers','男生四角褲'],['towel','只裹浴巾'],['towelWrap','浴巾＋包頭巾'],['chef','黑色廚師服'],['tank','男生吊嘎'],['uncle','阿伯粗橫條上衣']];
 const OUT_COL={basic:[['shirt','上衣顏色','#e8673a']],pajama:[['oc','睡衣顏色','#9cc3e6'],['oc2','點點顏色','#ffffff']],boxers:[['oc','四角褲顏色','#3f84cf'],['oc2','褲頭條紋','#ffffff']],
   towel:[['oc','浴巾顏色','#ffffff']],towelWrap:[['oc','浴巾顏色','#f6d9e4'],['oc2','包頭巾顏色','#ffffff']],chef:[['oc','廚師服顏色','#2b2421'],['oc2','鈕扣顏色','#e9e4da']],
@@ -615,6 +615,10 @@ function hairFor(head,o){const st=o.style||'short',hc=o.hair,G=o.gender==='m'?'m
   if(st==='clawclip'){const k=G==='m'?0.75:1;S(0.19*k,0,0.1+(1-k)*0.15,-0.42,1.35,0.85,0.8);if(G!=='m')[-1,1].forEach(s=>S(0.07,s*0.27,0.2,-0.42));
     const cc=o.clipC||'#e8a25a',cl=new THREE.Group();cl.position.set(0,0.12+(1-k)*0.15,-0.58+(1-k)*0.08);cl.scale.setScalar(k);head.add(cl);box(0.4,0.09,0.07,cc,0,0,0,cl,{roughness:0.35});for(let i=0;i<6;i++)box(0.03,0.15,0.04,cc,-0.15+i*0.06,-0.08,0.03,cl,{roughness:0.35});
     if(G==='f'){bangs(true);[-1,1].forEach(s=>B(0.04,0.28,0.05,s*0.36,-0.1,0.24))}if(G==='m')sideburns()}
+  if(st==='middle'){const pg=new THREE.Group();pg.rotation.x=-0.28;pg.position.y=0.02;head.add(pg);
+    const pt=new THREE.Mesh(new THREE.TorusGeometry(0.452,0.016,4,14,0.85),mat(o.skin||'#efc39f'));pt.rotation.set(0,-Math.PI/2,Math.PI/2-0.85);pg.add(pt);
+    [-1,1].forEach(s=>{const a=B(0.28,0.075,0.09,s*0.15,0.25,0.355);a.rotation.set(-0.25,s*0.35,-s*0.42);const b=B(0.12,0.2,0.09,s*0.34,0.1,0.27);b.rotation.set(0,s*0.6,-s*0.12)});
+    if(G==='f'){B(0.86,0.7,0.36,0,-0.2,-0.2);strands(0.55)}else{B(0.7,0.16,0.2,0,-0.1,-0.32);if(G==='m')sideburns()}}
   if(st==='slick'){if(G==='f'){S(0.16,0,-0.16,-0.42,1.1,0.9,0.9);sph(0.04,'#e8a25a',0,-0.05,-0.5,head,null,6)}
     else{S(0.3,0,0.3,-0.05,1.3,0.55,1.3);if(G==='m')sideburns()}}}
 /* 島嶼小動物：貓咪、狗狗（土狗・柴犬・鬆獅）、小鳥（臉朝 +z） */
@@ -941,16 +945,47 @@ function spawn(p,i){
     speed:seat?0:({'進行中':1.7,'穩定運作':0.85,'暫停':0.5,'閒置':0.35,'待辦':0}[p.status]||0.6)};
   c.g.rotation.y=v.face;
   if(p.status==='閒置'){c.eyes.forEach(e=>e.scale.set(1.3,0.22,1));c.head.rotation.z=0.28}
+  if(p.rest&&p.rest.id){const it=S.items.find(x=>x.id===p.rest.id);if(it&&REST[it.type]&&REST[it.type][p.rest.i]){v.R={id:p.rest.id,i:p.rest.i,auto:false};v.arrived=true}else p.rest=null}
   chars.push(v);byId[p.id]=v;attachLabels(v);return v}
 const ACTS={'進行中':['look','stretch','coffee'],'穩定運作':['coffee','look','stretch'],'閒置':['nap','nap','stretch'],'暫停':['coffee','look'],'待辦':['look']};
+/* 坐沙發、坐長椅、躺床：spot 是家具上的位置（家具自己的座標，臉朝 +z） */
+const REST={sofa:[{x:-0.48,z:0.1,y:0.6,k:'sit'},{x:0.48,z:0.1,y:0.6,k:'sit'}],bench:[{x:-0.5,z:0.02,y:0.61,k:'sit'},{x:0.5,z:0.02,y:0.61,k:'sit'}],bed:[{x:-0.46,z:0.95,y:0.6,k:'lie'},{x:0.46,z:0.95,y:0.6,k:'lie'}]};
+function restWorld(it,sp){const k=it.s||1,c=Math.cos(it.ry||0),n=Math.sin(it.ry||0),lx=sp.x*k,lz=sp.z*k;return {x:it.x+lx*c+lz*n,z:it.z-lx*n+lz*c,y:(it.y||0)+sp.y*k,ry:it.ry||0}}
+function restTaken(id,i,me){return chars.some(o=>o!==me&&o.R&&o.R.id===id&&o.R.i===i)}
+function findRest(v,kind){const types=kind==='lie'?['bed']:['sofa','bench'],out=[];
+  S.items.forEach(it=>{if(!types.includes(it.type))return;if((isleAt(it.x,it.z)||'hub')!==v.p.isle)return;REST[it.type].forEach((sp,i)=>{if(!restTaken(it.id,i,v))out.push({it,i,d:Math.hypot(it.x-v.x,it.z-v.zz)+(it.type==='bench'?1000:0)})})});
+  return out.sort((a,b)=>a.d-b.d)}
+function standUp(v){const c=v.c;c.g.rotation.order='XYZ';const ry=c.g.rotation.y;c.g.rotation.set(0,ry,0);c.legL.rotation.x=c.legR.rotation.x=0;c.armL.rotation.set(0,0,0);c.armR.rotation.set(0,0,0);c.head.rotation.set(0,0,0);
+  if(v.p.status!=='閒置')c.eyes.forEach(e=>e.scale.set(1,1,1));else{c.eyes.forEach(e=>e.scale.set(1.3,0.22,1));c.head.rotation.z=0.28}
+  if(v.R&&v.arrived){v.x=c.g.position.x+Math.sin(ry)*0.9;v.zz=c.g.position.z+Math.cos(ry)*0.9}v.tx=v.x;v.tz=v.zz;v.R=null;v.arrived=false;v.wait=1.5;v.face=ry}
+function restPose(v,w,k){const c=v.c,sc=c.g.scale.y;c.g.rotation.order='YXZ';
+  if(k==='lie'){c.g.rotation.set(-Math.PI/2,w.ry,0);c.g.position.set(w.x,TOP+w.y+0.42*sc,w.z);c.legL.rotation.x=c.legR.rotation.x=0;c.armL.rotation.set(0,0,0.12);c.armR.rotation.set(0,0,-0.12);c.head.rotation.set(0,0,0);c.eyes.forEach(e=>e.scale.set(1.3,0.22,1))}
+  else{c.g.rotation.set(0,w.ry,0);c.g.position.set(w.x,TOP+w.y-0.42*sc,w.z);c.legL.rotation.x=c.legR.rotation.x=-1.45;c.armL.rotation.set(-0.35,0,0);c.armR.rotation.set(-0.35,0,0)}}
+function sendRest(pid,kind){const v=byId[pid],p=S.people.find(x=>x.id===pid);if(!v||!p)return false;
+  if(kind==='up'){p.rest=null;save();if(v.R)standUp(v);return true}
+  const c=findRest(v,kind);if(!c.length){toast(kind==='lie'?'🛏️ 這座島上還沒有空的床，先按「擺設」放一張吧':'🛋️ 這座島上還沒有空的沙發或長椅，先按「擺設」放一張吧');return false}
+  if(v.R)standUp(v);p.rest={id:c[0].it.id,i:c[0].i};save();v.R={id:p.rest.id,i:p.rest.i,auto:false};v.arrived=false;
+  toast(kind==='lie'?'💤 '+p.name+' 去床上躺一下':'🛋️ '+p.name+' 去坐一下');return true}
+function tryAutoRest(v){if(v.R||v.seat||!['穩定運作','暫停','閒置'].includes(v.p.status))return;const kind=v.p.status==='閒置'&&Math.random()<0.7?'lie':'sit';
+  const c=findRest(v,kind);if(!c.length)return;const pick=c[Math.floor(Math.random()*Math.min(3,c.length))];v.R={id:pick.it.id,i:pick.i,auto:true,until:v.t+10+Math.random()*16};v.arrived=false}
+function animRest(v,dt){const c=v.c,P=S.ui.paused,it=S.items.find(x=>x.id===v.R.id),sp=it&&REST[it.type]&&REST[it.type][v.R.i];
+  if(!sp){if(!v.R.auto){v.p.rest=null;save()}standUp(v);return false}
+  const w=restWorld(it,sp);
+  if(!v.arrived){const dx=w.x-v.x,dz=w.z-v.zz,d=Math.hypot(dx,dz);
+    if(d<0.15){v.arrived=true}else{if(!P){const st=Math.min(d,1.8*dt);v.x+=dx/d*st;v.zz+=dz/d*st;v.face=Math.atan2(dx,dz)}
+      c.g.rotation.order='XYZ';c.g.rotation.x=0;c.g.position.set(v.x,TOP+0.17+(P?0:Math.abs(Math.sin(v.t*9))*0.08),v.zz);let dr=v.face-c.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));c.g.rotation.y+=dr*Math.min(1,dt*8);
+      const sw=P?0:Math.sin(v.t*9)*0.6;c.legL.rotation.x=sw;c.legR.rotation.x=-sw;c.armL.rotation.set(-sw*0.8,0,0);c.armR.rotation.set(sw*0.8,0,0);c.cup.visible=false;return true}}
+  restPose(v,w,sp.k);if(!P&&sp.k==='sit')c.head.rotation.y=Math.sin(v.t*0.6)*0.25;
+  if(v.R.auto&&v.t>v.R.until)standUp(v);return true}
 function animChar(v,dt){const c=v.c,P=S.ui.paused;v.t+=dt;
+  if(v.R&&animRest(v,dt))return;
   if(v.seat){c.g.position.set(v.x,TOP+0.32,v.zz);c.g.rotation.y=0;c.legL.rotation.x=c.legR.rotation.x=-1.45;
     if(!P){const ty=Math.sin(v.t*13);c.armL.rotation.set(-0.85+ty*0.08,0,0);c.head.rotation.x=0.12;
       if(v.p.status==='待辦')c.armR.rotation.set(0,0,2.65+Math.sin(v.t*5)*0.25);else c.armR.rotation.set(-0.85-ty*0.08,0,0)}return}
   if(!P&&v.speed){
     if(v.wait>0)v.wait-=dt;
     else{const dx=v.tx-v.x,dz=v.tz-v.zz,d=Math.hypot(dx,dz);
-      if(d<0.2){v.wait=1.5+Math.random()*3;v.tx=v.rect.x0+Math.random()*(v.rect.x1-v.rect.x0);v.tz=v.rect.z0+Math.random()*(v.rect.z1-v.rect.z0)}
+      if(d<0.2){v.wait=1.5+Math.random()*3;v.tx=v.rect.x0+Math.random()*(v.rect.x1-v.rect.x0);v.tz=v.rect.z0+Math.random()*(v.rect.z1-v.rect.z0);if(Math.random()<0.18)tryAutoRest(v)}
       else{const s=Math.min(d,v.speed*dt);v.x+=dx/d*s;v.zz+=dz/d*s;v.face=Math.atan2(dx,dz)}}}
   const walking=!P&&v.speed&&v.wait<=0;
   c.g.position.x=v.x;c.g.position.z=v.zz;let dr=v.face-c.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));c.g.rotation.y+=dr*Math.min(1,dt*8);
@@ -1277,6 +1312,7 @@ function render(){
     h+='<div class="grp">📋 每日任務</div><div class="bar"><i style="width:'+pct+'%"></i></div>';
     h+=p.quests.length?p.quests.map(q=>questLi(p,q)).join(''):'<div class="meta" style="margin:6px 0">還沒有任務，在下面新增一個。</div>';
     h+='<form class="addrow" data-addq="'+p.id+'"><input type="text" maxlength="40" placeholder="新增任務，例如：整理收據" aria-label="新增任務"><button class="btn on" type="submit">＋</button></form>';
+    h+='<div class="btnrow"><button class="btn" data-rest="sit">🛋️ 坐沙發</button><button class="btn" data-rest="lie">🛏️ 躺床上</button>'+(p.rest?'<button class="btn on" data-rest="up">🚶 起來走走</button>':'')+'</div>';
     h+='<div class="btnrow"><button class="btn" data-edit="'+p.id+'">✏️ 編輯島民</button><button class="btn red" data-ask="delp">🗑️ 請他搬走</button></div>';
     if(confirmKey==='delp')h+='<div class="confirm"><span>確定請「'+esc(p.name)+'」搬離小島？他的任務也會一起刪掉。</span><button class="btn" data-ask="">取消</button><button class="btn redfill" data-delp="'+p.id+'">確定</button></div>'}
   else if(mode==='vform'){const isNew=!arg;if(!draft){const p=arg&&S.people.find(x=>x.id===arg);draft=p?JSON.parse(JSON.stringify(p)):{id:uid(),name:'',task:'',status:'進行中',isle:(S.isles[S.isles.length-1]||{id:'hub'}).id,look:randomLook(),quests:[]}}
@@ -1391,6 +1427,7 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
   if(d.q){const [pid,qid]=d.q.split('|');const p=S.people.find(x=>x.id===pid),q=p&&p.quests.find(x=>x.id===qid);if(!q)return;q.done=b.checked;S.xp=Math.max(0,(S.xp||0)+(q.done?10:-10));save();
     if(byId[pid])refreshQ(byId[pid]);updateHud();if(q.done&&p.quests.every(x=>x.done))toast('🎉 '+p.name+' 今天的任務全部完成！');else if(q.done)toast('+10 經驗值');render();return}
   if(d.qdel){const [pid,qid]=d.qdel.split('|');const p=S.people.find(x=>x.id===pid);if(!p)return;p.quests=p.quests.filter(x=>x.id!==qid);save();if(byId[pid])refreshQ(byId[pid]);updateHud();render();return}
+  if(d.rest&&mode==='detail'){if(sendRest(arg,d.rest))render();return}
   if(d.person!=null){draft=null;select(d.person);return}
   if(d.goisle){openIsle(d.goisle);return}
   if(d.pet){selectPet(d.pet);return}
