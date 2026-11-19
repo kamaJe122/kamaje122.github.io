@@ -13,6 +13,7 @@
              breed(mutt|shiba|chow),longHair,ears(prick|drop),pats}]（島嶼小動物）
   - items = [{id,type(ITEMS),x,z,y(高度),ry(方向弧度),s(大小),c:{顏色}}]（擺設模式放的家具）
   - 小島地板：isles[].floor / S.hubFloor（#hex，沒設定就用主題色）
+  - 發布新版：把下面的 APP_VERSION、APP_NOTES 和網站根目錄的 version.json 一起改成新版本號
   - look = { skin, hair, style(STYLES), kid, outfit(OUTFITS), shirt, pants, oc, oc2, capC, clipC,
              accs:[ACCS 的 key…], ac:{配件key:顏色} }（所有顏色都是 #hex，可用調色盤自由調）
   - 小島位置：SLOTS（中央主島 + 12 個六角形位置）；顏色主題：THEMES
@@ -178,6 +179,32 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
 .rail::-webkit-scrollbar{display:none}
 .rail .rbtn{flex:none}
 @media (max-height:760px){.rail{gap:6px}.rbtn{height:48px;width:58px;font-size:12px}.rbtn svg{width:15px;height:15px}}
+/* 擺設：選取框與鎖頭 */
+.selbox{position:absolute;left:0;top:0;border:2.5px dashed var(--orange);border-radius:12px;pointer-events:none;z-index:4;box-shadow:0 0 0 2px #fff8}
+.selbox.locked{border:3px solid #f2b705;box-shadow:0 0 0 3px #f2b70555,0 0 18px #f2b70599}
+.lockbtn{position:absolute;right:-24px;bottom:-24px;width:48px;height:48px;border-radius:50%;border:2.5px solid var(--orange);background:#fff;font-size:22px;line-height:1;display:grid;place-items:center;cursor:pointer;pointer-events:auto;box-shadow:0 3px 10px #0003;padding:0}
+.selbox.locked .lockbtn{border-color:#c99400;background:#f2b705}
+.lockbar{display:flex;align-items:center;gap:8px;background:#fff6d6;border:2px solid #f2b705;border-radius:14px;padding:8px 10px;margin:0 0 10px;font-size:13.5px}
+.lockbar span{flex:1;min-width:0}
+.lockbar .btn{min-height:40px}
+.isearch{width:100%;font:inherit;font-size:16px;border:1px solid var(--line);border-radius:12px;padding:9px 12px;background:#fff;color:var(--ink);margin:2px 0 8px}
+.igrp{margin:0 0 6px;border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
+.igrp>button{width:100%;display:flex;align-items:center;gap:8px;font:inherit;font-weight:700;font-size:14px;background:#fffaf3;border:none;padding:10px 12px;cursor:pointer;color:var(--ink);min-height:44px}
+.igrp>button .cv{margin-left:auto;color:var(--ink-soft);font-size:12px}
+.igrp .ibody{padding:6px 8px 8px}
+.irow{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:12px;padding:3px;margin:0 0 5px;background:#fff}
+.irow.sel{border-color:var(--orange);box-shadow:0 0 0 2px #e8673a33}
+.irow.locked{border:2px solid #f2b705;background:#fffbea}
+.irow .iname{flex:1;min-width:0;text-align:left;font:inherit;font-size:13.5px;font-weight:700;border:none;background:none;padding:8px;cursor:pointer;color:var(--ink);min-height:40px}
+.ptag{display:inline-block;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#f3ece3;border-radius:999px;padding:1px 8px;margin-left:4px;white-space:nowrap}
+.ilock,.iedit{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:19px;cursor:pointer;flex:none;padding:0}
+.ilock.on{background:#f2b705;border-color:#c99400}
+.upbar{position:absolute;top:calc(env(safe-area-inset-top,0px) + 74px);left:12px;right:86px;margin:0 auto;max-width:540px;display:flex;align-items:center;gap:8px;background:#2a2421;color:#fff;border-radius:16px;padding:7px 8px 7px 14px;z-index:6;box-shadow:0 6px 20px #0004;font-size:13.5px;font-weight:700}
+.upbar span{flex:1;min-width:0}
+.upbar .btn{min-height:40px;white-space:nowrap}
+.upnote{position:absolute;top:calc(env(safe-area-inset-top,0px) + 74px);left:12px;right:86px;margin:0 auto;max-width:420px;background:var(--paper);border:2px solid #3fa66a;border-radius:18px;padding:12px 14px;z-index:9;box-shadow:0 10px 30px #0004;font-size:13.5px}
+.upnote b{font-family:var(--font-display);font-size:16px}
+.upnote ul{margin:6px 0 8px;padding-left:20px}
 /* 擺設模式 */
 #app{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #app input,#app textarea{-webkit-user-select:text;user-select:text}
@@ -281,6 +308,9 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
   </div>
 
   <div class="toast" id="toast" hidden></div>
+  <div class="selbox" id="selBox" hidden><button type="button" class="lockbtn" id="lockBtn" aria-label="鎖定這個物件" aria-pressed="false">🔓</button></div>
+  <div class="upbar" id="upBar" role="status" hidden><span id="upText"></span><button type="button" class="btn on" id="upNow">立即更新</button><button type="button" class="btn" id="upLater">稍後</button></div>
+  <div class="upnote" id="upNote" role="dialog" aria-label="更新完成" hidden></div>
   <div class="loading" id="loading">正在組合你的小島…</div>
 </div>
 
@@ -293,6 +323,8 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
+const APP_VERSION='1.0.3';
+const APP_NOTES=['擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，坐在桌前打字','待辦':'在等你給東西，會舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -1231,28 +1263,67 @@ function addItemObj(it){if(!ITEMS[it.type])return;const g=makeItem(it);g.userDat
 function buildItems(){itemObjs={};S.items.forEach(addItemObj)}
 function rebuildItem(it){const o=itemObjs[it.id];if(o){world.remove(o);disposeObj(o)}addItemObj(it);if(selItem===it.id)measureSel()}
 function removeItemObj(id){const o=itemObjs[id];if(o){world.remove(o);disposeObj(o)}delete itemObjs[id]}
-function measureSel(){const o=itemObjs[selItem];if(!o)return;const b=new THREE.Box3().setFromObject(o),s=b.getSize(new THREE.Vector3());selR=Math.max(0.5,Math.hypot(s.x,s.z)/2)}
+function measureSel(){const o=itemObjs[selItem];if(!o){selLB.makeEmpty();return}const b=new THREE.Box3().setFromObject(o),s=b.getSize(new THREE.Vector3());selR=Math.max(0.5,Math.hypot(s.x,s.z)/2);
+  const P=o.position.clone(),R=o.rotation.y,K=o.scale.x;o.position.set(0,0,0);o.rotation.y=0;o.scale.setScalar(1);o.updateMatrixWorld(true);selLB.setFromObject(o);o.position.copy(P);o.rotation.y=R;o.scale.setScalar(K);o.updateMatrixWorld(true)}
 function surfaceAt(x,z,skip){const rc=new THREE.Raycaster(new THREE.Vector3(x,TOP+12,z),new THREE.Vector3(0,-1,0));const objs=Object.keys(itemObjs).filter(k=>k!==skip).map(k=>itemObjs[k]);
   const h=rc.intersectObjects(objs,true).find(h=>!h.object.material.transparent);return h?Math.max(0,+(h.point.y-TOP).toFixed(2)):0}
 function itemHit(e){const r=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(mouse,camera);
   const h=ray.intersectObjects(Object.values(itemObjs),true);if(!h.length)return null;let o=h[0].object;while(o&&!(o.userData&&o.userData.item))o=o.parent;return o?o.userData.item:null}
 function visiblePoint(){const r=renderer.domElement.getBoundingClientRect();let bot=r.bottom;if(!sheet.hidden)bot=Math.min(bot,sheet.getBoundingClientRect().top);
   mouse.set(-0.1,-((r.top+bot)/2-r.top)/r.height*2+1);ray.setFromCamera(mouse,camera);const p=new THREE.Vector3();return ray.ray.intersectPlane(groundPlane,p)?p:null}
-function flyToItem(id){const o=itemObjs[id];if(!o)return;const f=new THREE.Vector3();camera.getWorldDirection(f);f.y=0;if(f.lengthSq()<1e-4)f.set(0,0,-1);f.normalize();flyTo(o.position.clone().sub(f.multiplyScalar(4.5)),16)}
+function flyToItem(id){const o=itemObjs[id];if(!o)return;flyTo(o.position.clone().setY(o.position.y+0.8),16)}
+/* 擺設面板打開時，把畫面中心往上移到面板上方看得到的地方，選取／鎖定的物件就不會被面板擋住 */
+let viewOff=0;function updateViewOffset(dt){const want=editOn()&&!sheet.hidden?Math.max(0,(H-(sheet.getBoundingClientRect().top-renderer.domElement.getBoundingClientRect().top))/2):0;
+  viewOff+=(want-viewOff)*Math.min(1,dt*8);if(Math.abs(viewOff)<0.5){if(camera.view&&camera.view.enabled){camera.clearViewOffset()}viewOff=want<0.5?0:viewOff;if(!viewOff)return}camera.setViewOffset(W,H,0,viewOff,W,H)}
 function addItem(type){const D=ITEMS[type],t=controls.target,v=visiblePoint();let x=v?v.x:t.x,z=v?v.z:t.z;if(!isleAt(x,z)){x=meState.x+1.5;z=meState.z+1}
   const f=new THREE.Vector3();camera.getWorldDirection(f);
   const it={id:uid(),type,x:+(x+(Math.random()-0.5)*1.6).toFixed(2),z:+(z+(Math.random()-0.5)*1.6).toFixed(2),y:0,ry:Math.round(Math.atan2(-f.x,-f.z)/(Math.PI/4))*(Math.PI/4),s:1,c:{}};
   if(D.small)it.y=surfaceAt(it.x,it.z,null);
   S.items.push(it);save();addItemObj(it);selectItem(it.id);toast(D.e+' '+D.n+' 放好了！按住它就能拖曳')}
 function selectItem(id){openSheet('item',id);measureSel()}
+/* 鎖定：同一時間只鎖一個；鎖定時畫面繞著它轉、跟著它走，點其他東西不會換選取 */
+let lockItem=null,pendingGo=null,buildQ='',buildOpen={};const selLB=new THREE.Box3(),_c3=new THREE.Vector3(),_f3=new THREE.Vector3();
+function itemIsle(it){return isleAt(it.x,it.z)}
+function itemIsleName(it){const k=itemIsle(it);return k?isleName(k):'未擺放'}
+function setLock(id,quiet){lockItem=id||null;controls.enablePan=!lockItem;if(lockItem){selItem=lockItem;measureSel()}if(!quiet&&editOn())render()}
+function toggleLock(id){const it=S.items.find(x=>x.id===id);if(!it)return;if(lockItem===id){setLock(null);toast('🔓 已解除鎖定')}else{setLock(id);toast('🔒 已鎖定「'+ITEMS[it.type].n+'」，畫面會跟著它')}}
+function pickItem(id,fly){if(!itemObjs[id])return;selItem=id;measureSel();if(fly)flyToItem(id);if(editOn())render()}
+document.getElementById('lockBtn').addEventListener('click',e=>{e.stopPropagation();if(selItem)toggleLock(selItem)});
+function updateSelBox(){const sb=document.getElementById('selBox'),o=editOn()&&selItem&&itemObjs[selItem];if(!o||selLB.isEmpty()){sb.hidden=true;return}
+  o.updateMatrixWorld();let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9,ok=true;const mn=selLB.min,mx=selLB.max;
+  for(let i=0;i<8;i++){_c3.set(i&1?mx.x:mn.x,i&2?mx.y:mn.y,i&4?mx.z:mn.z).applyMatrix4(o.matrixWorld).project(camera);if(_c3.z>1){ok=false;break}
+    const sx=(_c3.x+1)/2*W,sy=(1-_c3.y)/2*H;x0=Math.min(x0,sx);y0=Math.min(y0,sy);x1=Math.max(x1,sx);y1=Math.max(y1,sy)}
+  if(!ok||x1<0||y1<0||x0>W||y0>H){sb.hidden=true;return}
+  const pad=8;sb.hidden=false;sb.style.transform='translate('+(x0-pad).toFixed(1)+'px,'+(y0-pad).toFixed(1)+'px)';sb.style.width=(x1-x0+pad*2).toFixed(1)+'px';sb.style.height=(y1-y0+pad*2).toFixed(1)+'px';
+  const lk=lockItem===selItem;sb.classList.toggle('locked',lk);const b=document.getElementById('lockBtn');if(b.textContent!==(lk?'🔒':'🔓')){b.textContent=lk?'🔒':'🔓';b.setAttribute('aria-pressed',String(lk));b.setAttribute('aria-label',lk?'解除鎖定':'鎖定這個物件')}}
+function followLock(dt){if(!lockItem)return;const o=itemObjs[lockItem];if(!o){setLock(null,true);return}if(drag||tw)return;
+  _f3.set(o.position.x,o.position.y+0.8,o.position.z).sub(controls.target);if(_f3.lengthSq()<1e-6)return;_f3.multiplyScalar(Math.min(1,dt*6));controls.target.add(_f3);camera.position.add(_f3)}
+function refreshPlaceUI(){if(!editOn())return;const it=lockItem&&S.items.find(x=>x.id===lockItem);const lb=sBody.querySelector('.lockbar span');if(lb&&it)lb.innerHTML='🔒 目前鎖定：<b>'+esc(ITEMS[it.type].n)+'</b>（'+esc(itemIsleName(it))+'）';
+  const cur=mode==='item'&&S.items.find(x=>x.id===arg),tg=sBody.querySelector('#itIsle');if(cur&&tg)tg.textContent='📍 '+itemIsleName(cur);const l=document.getElementById('iList');if(l)l.innerHTML=itemListHTML()}
+function lockBarHTML(){if(!lockItem)return '';const it=S.items.find(x=>x.id===lockItem);if(!it)return '';
+  return '<div class="lockbar"><span>🔒 目前鎖定：<b>'+esc(ITEMS[it.type].n)+'</b>（'+esc(itemIsleName(it))+'）</span><button type="button" class="btn" data-unlock="1">解除</button></div>'}
+function itemRow(it){const D=ITEMS[it.type];if(!D)return '';const lk=lockItem===it.id,sl=selItem===it.id;
+  return '<div class="irow'+(lk?' locked':'')+(sl?' sel':'')+'"><button type="button" class="iname" data-selitem="'+it.id+'">'+(lk?'🔒 ':'')+D.e+' '+esc(D.n)+(it.type==='sign'?' '+esc(signText(it)):'')+'<span class="ptag">📍 '+esc(itemIsleName(it))+'</span></button>'+
+    (sl||lk?'<button type="button" class="ilock'+(lk?' on':'')+'" data-lockitem="'+it.id+'" aria-label="'+(lk?'解除鎖定':'鎖定')+'">'+(lk?'🔒':'🔓')+'</button><button type="button" class="iedit" data-edititem="'+it.id+'" aria-label="調整位置和顏色">✏️</button>':'')+'</div>'}
+function curIsle(){return isleAt(controls.target.x,controls.target.z)||isleAt(meState.x,meState.z)||'hub'}
+function itemListHTML(){const q=buildQ.trim().toLowerCase();
+  if(q){const hit=S.items.filter(it=>ITEMS[it.type]&&(ITEMS[it.type].n.toLowerCase().includes(q)||(it.type==='sign'&&signText(it).toLowerCase().includes(q))));
+    return hit.length?'<div class="meta">找到 '+hit.length+' 個：</div>'+hit.map(itemRow).join(''):'<div class="meta">找不到「'+esc(buildQ)+'」，試試別的名字。</div>'}
+  if(!S.items.length)return '<div class="meta">還沒有擺任何東西，從上面挑一個吧！</div>';
+  const cur=curIsle(),keys=[cur].concat(['hub'].concat(S.isles.map(i=>i.id)).filter(k=>k!==cur)).concat(['none']),by={};
+  S.items.forEach(it=>{if(!ITEMS[it.type])return;const k=itemIsle(it)||'none';(by[k]=by[k]||[]).push(it)});
+  return keys.filter(k=>by[k]&&by[k].length).map(k=>{const open=buildOpen[k]!=null?buildOpen[k]:k===cur;const nm=k==='none'?'📦 未擺放':(k==='hub'?'👑 ':'🏝️ ')+esc(isleName(k));
+    return '<div class="igrp"><button type="button" data-grp="'+k+'" aria-expanded="'+open+'">'+nm+'（'+by[k].length+'）'+(k===cur?'<span class="ptag">你在這裡</span>':'')+'<span class="cv">'+(open?'▲ 收合':'▼ 展開')+'</span></button>'+(open?'<div class="ibody">'+by[k].map(itemRow).join('')+'</div>':'')+'</div>'}).join('')}
+function confirmGoHTML(){if(!pendingGo||!lockItem)return '';const a=S.items.find(x=>x.id===lockItem),b=S.items.find(x=>x.id===pendingGo);if(!a||!b)return '';
+  return '<div class="confirm"><span>目前鎖定在「'+esc(ITEMS[a.type].n)+'」，要解除並前往「'+esc(ITEMS[b.type].n)+'」嗎？</span><button class="btn" type="button" data-gocancel="1">取消</button><button class="btn redfill" type="button" data-gounlock="1">解除並前往</button></div>'}
 function nudgeItem(it,dir){const f=new THREE.Vector3();camera.getWorldDirection(f);f.y=0;f.normalize();const r=new THREE.Vector3(-f.z,0,f.x),st=0.25;
-  const v={f:f,b:f.clone().negate(),l:r.clone().negate(),r:r}[dir];it.x=+(it.x+v.x*st).toFixed(2);it.z=+(it.z+v.z*st).toFixed(2);if(ITEMS[it.type].small){it.y=surfaceAt(it.x,it.z,it.id);syncSliders(it)}placeItem(itemObjs[it.id],it);saveSoon()}
+  const v={f:f,b:f.clone().negate(),l:r.clone().negate(),r:r}[dir];it.x=+(it.x+v.x*st).toFixed(2);it.z=+(it.z+v.z*st).toFixed(2);if(ITEMS[it.type].small){it.y=surfaceAt(it.x,it.z,it.id);syncSliders(it)}placeItem(itemObjs[it.id],it);saveSoon();refreshPlaceUI()}
 function degOf(it){return Math.round((((it.ry||0)*180/Math.PI)%360+360)%360)}
 function sliderRow(label,key,min,max,step,val,txt){return '<label class="srow"><span>'+label+'</span><input type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+val+'" data-isl="'+key+'"><b data-isv="'+key+'">'+txt+'</b></label>'}
 function syncSliders(it){const set=(k,v,t)=>{const i=sBody.querySelector('[data-isl="'+k+'"]');if(i)i.value=v;const b=sBody.querySelector('[data-isv="'+k+'"]');if(b)b.textContent=t};
   set('iy',it.y||0,(it.y||0).toFixed(2));set('iry',degOf(it),degOf(it)+'°');set('is',it.s||1,(it.s||1).toFixed(2)+'×')}
 const editOn=()=>mode==='build'||mode==='item';
-renderer.domElement.addEventListener('pointerdown',e=>{if(!editOn())return;const id=itemHit(e);if(!id)return;const it=S.items.find(x=>x.id===id);if(!it)return;
+renderer.domElement.addEventListener('pointerdown',e=>{if(!editOn())return;const id=itemHit(e);if(!id)return;if(lockItem&&id!==lockItem)return;const it=S.items.find(x=>x.id===id);if(!it)return;
   controls.enabled=false;const pl=new THREE.Plane(new THREE.Vector3(0,1,0),-(TOP+(it.y||0))),p=new THREE.Vector3();
   if(!ray.ray.intersectPlane(pl,p)){controls.enabled=true;return}
   drag={id,pl,ox:it.x-p.x,oz:it.z-p.z,pid:e.pointerId};if(selItem!==id)selectItem(id)},{capture:true});
@@ -1260,7 +1331,7 @@ window.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.pid)retur
   const r=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(mouse,camera);
   const p=new THREE.Vector3();if(!ray.ray.intersectPlane(drag.pl,p))return;it.x=+(p.x+drag.ox).toFixed(2);it.z=+(p.z+drag.oz).toFixed(2);
   if(ITEMS[it.type].small){it.y=surfaceAt(it.x,it.z,it.id);syncSliders(it)}placeItem(o,it)});
-function endDrag(e){if(!drag||(e&&e.pointerId!==drag.pid))return;drag=null;controls.enabled=true;save()}
+function endDrag(e){if(!drag||(e&&e.pointerId!==drag.pid))return;drag=null;controls.enabled=true;save();refreshPlaceUI()}
 window.addEventListener('pointerup',endDrag);window.addEventListener('pointercancel',endDrag);
 
 /* =========================================================
@@ -1284,13 +1355,13 @@ let mode=null,arg=null,draft=null,confirmKey=null;
 const RAIL={iform:'bAddIsle',vform:'bAddPerson',pform:'bAddPet',quest:'bQuest',list:'bList',time:'bTime',settings:'bSet',build:'bEdit',item:'bEdit'};
 function restoreOwner(){if(ownerBackup){S.owner.look=ownerBackup;ownerBackup=null;buildMe()}}
 function openSheet(m,a){restoreOwner();mode=m;arg=a;confirmKey=null;draft=null;sel=m==='detail'?a:null;selPet=m==='pet'?a:null;
-  sheet.hidden=false;sheet.classList.toggle('tall',['owner','vform','iform','pform'].includes(m));sheet.classList.toggle('short',m==='build'||m==='item');selItem=m==='item'?a:null;if(m!=='item'){drag=null;controls.enabled=true}
+  sheet.hidden=false;sheet.classList.toggle('tall',['owner','vform','iform','pform'].includes(m));sheet.classList.toggle('short',m==='build'||m==='item');const ed=m==='build'||m==='item';selItem=m==='item'?a:(ed?selItem:null);pendingGo=null;if(!ed&&lockItem)setLock(null,true);if(m!=='item'){drag=null;controls.enabled=true}
   document.getElementById('chips').style.visibility='hidden';
   Object.values(RAIL).forEach(id=>document.getElementById(id).setAttribute('aria-pressed','false'));
   const rb=(['iform','vform','pform'].includes(m)&&a)?null:RAIL[m];if(rb)document.getElementById(rb).setAttribute('aria-pressed','true');
   render();sBody.scrollTop=0;requestAnimationFrame(fitRail)}
 function fitRail(){const r=document.querySelector('.rail');if(!r)return;const top=r.getBoundingClientRect().top;let bot=window.innerHeight;if(!sheet.hidden)bot=Math.min(bot,sheet.getBoundingClientRect().top);r.style.maxHeight=Math.max(56,bot-top-8)+'px'}
-function closeSheet(){restoreOwner();sheet.hidden=true;mode=null;selItem=null;drag=null;controls.enabled=true;sel=null;selPet=null;document.getElementById('chips').style.visibility='visible';Object.values(RAIL).forEach(id=>document.getElementById(id).setAttribute('aria-pressed','false'));requestAnimationFrame(fitRail)}
+function closeSheet(){restoreOwner();sheet.hidden=true;mode=null;selItem=null;pendingGo=null;if(lockItem)setLock(null,true);drag=null;controls.enabled=true;sel=null;selPet=null;document.getElementById('chips').style.visibility='visible';Object.values(RAIL).forEach(id=>document.getElementById(id).setAttribute('aria-pressed','false'));requestAnimationFrame(fitRail)}
 document.getElementById('sheetClose').addEventListener('click',closeSheet);
 window.addEventListener('resize',()=>requestAnimationFrame(fitRail));
 ['gesturestart','gesturechange'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
@@ -1379,15 +1450,17 @@ function render(){
     if(confirmKey==='reset')h+='<div class="confirm"><span>所有小島、島民、任務都會消失，無法復原。</span><button class="btn" data-ask="">取消</button><button class="btn redfill" data-reset="1">確定重來</button></div>';
     h+='<div class="note">🤖 想加新功能？把這個 HTML 檔整份貼給 Claude，說「幫我加○○」就能改。資料只存在這台裝置的瀏覽器裡。</div>'}
   else if(mode==='build'){sTitle.textContent='🛠️ 擺設模式';
+    h+=lockBarHTML()+confirmGoHTML();
     h+='<div class="say">挑一個物件放到畫面中間 👇 <b>按住島上的物件就能拖曳</b>；點一下物件可以調高度、方向和顏色。小東西（蛋糕、咖啡組…）拖到桌子上會自動放在桌面。路燈、樹、小屋、招牌這些島上原本就有的東西，也可以點選後移動、換色或收起來。</div>';
     h+='<div class="tabs">'+ITEM_CAT.map(([k,l])=>'<button type="button" class="tab" data-icat="'+k+'" aria-selected="'+(buildCat===k)+'">'+l+'</button>').join('')+'</div>';
     h+='<div class="igrid">'+Object.keys(ITEMS).filter(k=>ITEMS[k].cat===buildCat).map(k=>'<button type="button" class="icard" data-additem="'+k+'"><span aria-hidden="true">'+ITEMS[k].e+'</span>'+ITEMS[k].n+'</button>').join('')+'</div>';
-    h+='<div class="grp">🏠 已經擺好的（'+S.items.length+'）</div>'+(S.items.length?'<div class="tabs">'+S.items.map(it=>'<button type="button" class="tab" data-selitem="'+it.id+'">'+ITEMS[it.type].e+' '+ITEMS[it.type].n+'</button>').join('')+'</div>':'<div class="meta">還沒有擺任何東西，從上面挑一個吧！</div>');
+    h+='<div class="grp">🏠 已經擺好的（'+S.items.length+'）・依所在的島分組</div><input type="search" class="isearch" id="iSearch" placeholder="🔎 搜尋物件名稱（所有島）" value="'+esc(buildQ)+'" aria-label="搜尋物件"><div id="iList">'+itemListHTML()+'</div>';
     h+='<div class="grp">🎨 地板顏色</div><div class="tabs">'+[{id:'hub',name:'主島'}].concat(S.isles).map(is=>'<button type="button" class="tab" data-editisle="'+is.id+'">'+esc(is.name)+'</button>').join('')+'</div>';
     h+='<button class="go ghost" type="button" data-endedit="1">✅ 完成擺設</button>'}
   else if(mode==='item'){const it=S.items.find(x=>x.id===arg);if(!it){mode='build';render();return}const D=ITEMS[it.type];
-    sTitle.textContent=D.e+' '+D.n;
-    h+='<div class="meta">按住島上的「'+D.n+'」可以直接拖曳；方向鍵會照你現在看的角度移動。</div>';
+    sTitle.textContent=D.e+' '+D.n;const lk=lockItem===it.id;
+    h+=lockBarHTML()+'<div class="btnrow" style="margin-top:0"><button type="button" class="btn'+(lk?' on':'')+'" data-lockitem="'+it.id+'" style="min-height:44px">'+(lk?'🔒 解除鎖定':'🔓 鎖定這個物件')+'</button><span class="ptag" id="itIsle">📍 '+esc(itemIsleName(it))+'</span></div>';
+    h+='<div class="meta">按住島上的「'+D.n+'」可以直接拖曳；方向鍵會照你現在看的角度移動。'+(lk?'鎖定中：畫面會繞著它轉，點其他東西不會換選取。':'')+'</div>';
     h+='<div class="mv"><div class="pad"><span></span><button type="button" class="btn" data-nudge="f" aria-label="往前">▲</button><span></span><button type="button" class="btn" data-nudge="l" aria-label="往左">◀</button><button type="button" class="btn" data-nudge="b" aria-label="往後">▼</button><button type="button" class="btn" data-nudge="r" aria-label="往右">▶</button></div>';
     h+='<div>'+sliderRow('高度','iy',0,5,0.01,it.y||0,(it.y||0).toFixed(2))+'<div class="tabs hq">'+HEIGHTS.map(([l,v])=>'<button type="button" class="tab" data-hset="'+v+'">'+l+'</button>').join('')+'</div>'+
       sliderRow('方向角度','iry',0,359,1,degOf(it),degOf(it)+'°')+'<div class="tabs hq"><button type="button" class="tab" data-rot="-45">↺ 45°</button><button type="button" class="tab" data-rot="45">↻ 45°</button><button type="button" class="tab" data-rot="180">轉 180°</button></div>'+
@@ -1417,11 +1490,17 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
     if(d.rot){it.ry=(it.ry||0)+(+d.rot)*Math.PI/180;if(o)placeItem(o,it);syncSliders(it);saveSoon();return}
     if(d.hset!=null){it.y=+d.hset;if(o)placeItem(o,it);syncSliders(it);saveSoon();return}
     if(d.dupitem){const c=JSON.parse(JSON.stringify(it));c.id=uid();c.x=+(c.x+0.8).toFixed(2);c.z=+(c.z+0.4).toFixed(2);S.items.push(c);save();addItemObj(c);selectItem(c.id);toast('📄 複製好了，拖曳到想要的位置');return}
-    if(d.delitem){removeItemObj(it.id);S.items=S.items.filter(x=>x.id!==it.id);save();openSheet('build');toast('🧹 收起來了');return}}}
+    if(d.delitem){if(lockItem===it.id)setLock(null,true);removeItemObj(it.id);S.items=S.items.filter(x=>x.id!==it.id);save();openSheet('build');toast('🧹 收起來了');return}}}
   if(mode==='iform'&&draft&&cpClick(sBody,b,draft,null))return;
   if(d.icat){buildCat=d.icat;render();return}
   if(d.additem){addItem(d.additem);return}
-  if(d.selitem){selectItem(d.selitem);flyToItem(d.selitem);return}
+  if(d.selitem){if(lockItem&&lockItem!==d.selitem){pendingGo=d.selitem;render();sBody.scrollTop=0;return}pickItem(d.selitem,true);return}
+  if(d.edititem){selectItem(d.edititem);return}
+  if(d.lockitem){if(selItem!==d.lockitem){selItem=d.lockitem;measureSel()}toggleLock(d.lockitem);return}
+  if(d.unlock){setLock(null);toast('🔓 已解除鎖定');return}
+  if(d.gocancel){pendingGo=null;render();return}
+  if(d.gounlock){const g=pendingGo;pendingGo=null;setLock(null,true);pickItem(g,true);return}
+  if(d.grp){const cur=curIsle(),k=d.grp,open=buildOpen[k]!=null?buildOpen[k]:k===cur;buildOpen[k]=!open;const l=document.getElementById('iList');if(l)l.innerHTML=itemListHTML();return}
   if(d.backbuild){openSheet('build');return}
   if(d.endedit){closeSheet();toast('✅ 擺設完成');return}
   if(d.q){const [pid,qid]=d.q.split('|');const p=S.people.find(x=>x.id===pid),q=p&&p.quests.find(x=>x.id===qid);if(!q)return;q.done=b.checked;S.xp=Math.max(0,(S.xp||0)+(q.done?10:-10));save();
@@ -1471,6 +1550,7 @@ sBody.addEventListener('submit',e=>{const f=e.target.closest('[data-addq]');if(!
   const ni=sBody.querySelector('[data-addq] input');if(ni)ni.focus();guideHook('quest')});
 sBody.addEventListener('change',e=>{if(e.target.id==='fIsle'&&draft){draft.isle=e.target.value;const th=isleTheme(draft.isle),L=Object.assign({},draft.look);if(!L.outfit||L.outfit==='uniform')L.shirt=th?th.shirt:HUB_SHIRT;L.capColor=L.capC||L.shirt;pvSet(L)}});
 sBody.addEventListener('input',e=>{
+  if(e.target.id==='iSearch'){buildQ=e.target.value;const l=document.getElementById('iList');if(l)l.innerHTML=itemListHTML();return}
   if(mode==='item'&&e.target.id==='fSign'){const it=S.items.find(x=>x.id===arg);if(it){it.text=e.target.value.trim();rebuildItem(it);saveSoon()}return}
   if(mode==='item'){const it=S.items.find(x=>x.id===arg);if(it){if(!it.c)it.c={};if(cpInput(sBody,e.target,it.c,()=>{rebuildItem(it);saveSoon()}))return;const k=e.target.dataset.isl;
     if(k){const v=+e.target.value;if(k==='iy')it.y=v;else if(k==='iry')it.ry=v*Math.PI/180;else if(k==='is')it.s=v;const o=itemObjs[it.id];if(o)placeItem(o,it);syncSliders(it);if(k==='is')measureSel();saveSoon();return}}}
@@ -1581,14 +1661,36 @@ function loop(){const dt=Math.min(0.05,clock.getDelta());
   else{selRing.scale.setScalar(1);const sv=sel&&byId[sel]?byId[sel].c.g:selPet&&petById[selPet]?petById[selPet].m.g:null;if(sv){selRing.position.set(sv.position.x,TOP+0.2+bridgeY(sv.position.x,sv.position.z),sv.position.z);selRing.visible=true}else selRing.visible=false;}
   if(!S.ui.paused){const tt=clock.elapsedTime;for(const id in itemObjs){const an=itemObjs[id].userData.anims;if(an)for(const f of an)f(tt,dt)}}
   if(!S.ui.paused){const a=bokehGeo.attributes.position;for(let i=0;i<NB;i++){let y=a.getY(i)+dt*0.25;if(y>11)y=2;a.setY(i,y);a.setX(i,a.getX(i)+Math.sin(meState.t*0.5+i)*dt*0.08)}a.needsUpdate=true}
+  followLock(dt);updateViewOffset(dt);
   if(tw){tw.t=Math.min(1,tw.t+dt/0.9);const e=1-Math.pow(1-tw.t,3);controls.target.lerpVectors(tw.ft,tw.tt,e);camera.position.lerpVectors(tw.fp,tw.tp,e);if(tw.t>=1)tw=null}
-  controls.update();renderer.render(scene,camera);updateLabels();pvTick(dt);
+  controls.update();renderer.render(scene,camera);updateLabels();updateSelBox();pvTick(dt);
   requestAnimationFrame(loop)}
 
+/* =========================================================
+   20. 版本更新提醒（version.json）
+   ========================================================= */
+const VERSION_URL=location.hostname==='kamaje122.github.io'?'version.json':'https://kamaje122.github.io/version.json';
+const isFile=location.protocol==='file:'||location.hostname!=='kamaje122.github.io';
+let upSnooze=0,upRemote=null;
+function cmpVer(a,b){a=String(a).split('.').map(Number);b=String(b).split('.').map(Number);for(let i=0;i<3;i++){const d=(a[i]||0)-(b[i]||0);if(d)return d}return 0}
+function checkVersion(){if(!window.fetch)return;fetch(VERSION_URL+'?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(v=>{if(!v||!v.version)return;upRemote=v;
+  if(cmpVer(v.version,APP_VERSION)>0&&Date.now()>=upSnooze){document.getElementById('upText').textContent=isFile?'🎉 有新版本 '+v.version+' 了！到下載頁下載最新版。':'🎉 有新版本了！重新整理就能使用最新功能。';document.getElementById('upNow').textContent=isFile?'前往下載':'立即更新';document.getElementById('upBar').hidden=false}}).catch(()=>{})}
+document.getElementById('upLater').addEventListener('click',()=>{document.getElementById('upBar').hidden=true;upSnooze=Date.now()+30*60*1000});
+document.getElementById('upNow').addEventListener('click',()=>{if(isFile){window.open('https://kamaje122.github.io/myisland-download.html','_blank');return}
+  if(lockItem)setLock(null,true);drag=null;save();try{localStorage.setItem('island-updated',JSON.stringify(upRemote||{}))}catch(e){}
+  location.replace(location.pathname+'?v='+encodeURIComponent((upRemote&&upRemote.version)||Date.now())+location.hash)});
+setInterval(checkVersion,10*60*1000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkVersion()});
+function showUpdated(){let info=null;try{info=JSON.parse(localStorage.getItem('island-updated')||'null');localStorage.removeItem('island-updated')}catch(e){}
+  const old=S.appVer;if(S.islandName&&!fresh&&(info||old!==APP_VERSION)){const notes=(info&&info.version===APP_VERSION&&Array.isArray(info.notes)&&info.notes.length)?info.notes:APP_NOTES;
+    const el=document.getElementById('upNote');el.innerHTML='<b>✅ 已更新到 '+APP_VERSION+' 版</b><div class="meta">你的島嶼、物件、島民和動物都還在。這次更新了：</div><ul>'+notes.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul><button type="button" class="btn on" id="upOk">好</button>';
+    el.hidden=false;document.getElementById('upOk').addEventListener('click',()=>el.hidden=true);setTimeout(()=>{el.hidden=true},15000)}
+  if(S.appVer!==APP_VERSION){S.appVer=APP_VERSION;save()}
+  if(/[?&]v=/.test(location.search))history.replaceState(null,'',location.pathname+location.hash)}
 /* 啟動 */
 if(S.islandName){startGame(false);rollDay();if(!S.guideDone)startGuide()}
 else{buildWorld();buildMe();camera.position.set(9,12,30);controls.target.set(0,2,2);controls.update();showSetup()}
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>boards.forEach(paintBoard));
+showUpdated();checkVersion();
 requestAnimationFrame(()=>{loop();const ld=document.getElementById('loading');ld.style.opacity=0;setTimeout(()=>ld.remove(),700)});
 })();
 </script>
