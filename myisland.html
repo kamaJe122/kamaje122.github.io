@@ -323,8 +323,8 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.0.3';
-const APP_NOTES=['擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
+const APP_VERSION='1.0.4';
+const APP_NOTES=['修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，坐在桌前打字','待辦':'在等你給東西，會舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -1286,7 +1286,7 @@ let lockItem=null,pendingGo=null,buildQ='',buildOpen={};const selLB=new THREE.Bo
 function itemIsle(it){return isleAt(it.x,it.z)}
 function itemIsleName(it){const k=itemIsle(it);return k?isleName(k):'未擺放'}
 function setLock(id,quiet){lockItem=id||null;controls.enablePan=!lockItem;if(lockItem){selItem=lockItem;measureSel()}if(!quiet&&editOn())render()}
-function toggleLock(id){const it=S.items.find(x=>x.id===id);if(!it)return;if(lockItem===id){setLock(null);toast('🔓 已解除鎖定')}else{setLock(id);toast('🔒 已鎖定「'+ITEMS[it.type].n+'」，畫面會跟著它')}}
+function toggleLock(id){const it=S.items.find(x=>x.id===id);if(!it)return;if(lockItem===id){setLock(null);toast('🔓 已解除鎖定')}else{setLock(id);toast('🔒 已鎖定「'+ITEMS[it.type].n+'」：固定不動，手指拖曳只會轉畫面')}}
 function pickItem(id,fly){if(!itemObjs[id])return;selItem=id;measureSel();if(fly)flyToItem(id);if(editOn())render()}
 document.getElementById('lockBtn').addEventListener('click',e=>{e.stopPropagation();if(selItem)toggleLock(selItem)});
 function updateSelBox(){const sb=document.getElementById('selBox'),o=editOn()&&selItem&&itemObjs[selItem];if(!o||selLB.isEmpty()){sb.hidden=true;return}
@@ -1323,7 +1323,7 @@ function sliderRow(label,key,min,max,step,val,txt){return '<label class="srow"><
 function syncSliders(it){const set=(k,v,t)=>{const i=sBody.querySelector('[data-isl="'+k+'"]');if(i)i.value=v;const b=sBody.querySelector('[data-isv="'+k+'"]');if(b)b.textContent=t};
   set('iy',it.y||0,(it.y||0).toFixed(2));set('iry',degOf(it),degOf(it)+'°');set('is',it.s||1,(it.s||1).toFixed(2)+'×')}
 const editOn=()=>mode==='build'||mode==='item';
-renderer.domElement.addEventListener('pointerdown',e=>{if(!editOn())return;const id=itemHit(e);if(!id)return;if(lockItem&&id!==lockItem)return;const it=S.items.find(x=>x.id===id);if(!it)return;
+renderer.domElement.addEventListener('pointerdown',e=>{if(!editOn()||lockItem)return;const id=itemHit(e);if(!id)return;const it=S.items.find(x=>x.id===id);if(!it)return;
   controls.enabled=false;const pl=new THREE.Plane(new THREE.Vector3(0,1,0),-(TOP+(it.y||0))),p=new THREE.Vector3();
   if(!ray.ray.intersectPlane(pl,p)){controls.enabled=true;return}
   drag={id,pl,ox:it.x-p.x,oz:it.z-p.z,pid:e.pointerId};if(selItem!==id)selectItem(id)},{capture:true});
@@ -1460,7 +1460,7 @@ function render(){
   else if(mode==='item'){const it=S.items.find(x=>x.id===arg);if(!it){mode='build';render();return}const D=ITEMS[it.type];
     sTitle.textContent=D.e+' '+D.n;const lk=lockItem===it.id;
     h+=lockBarHTML()+'<div class="btnrow" style="margin-top:0"><button type="button" class="btn'+(lk?' on':'')+'" data-lockitem="'+it.id+'" style="min-height:44px">'+(lk?'🔒 解除鎖定':'🔓 鎖定這個物件')+'</button><span class="ptag" id="itIsle">📍 '+esc(itemIsleName(it))+'</span></div>';
-    h+='<div class="meta">按住島上的「'+D.n+'」可以直接拖曳；方向鍵會照你現在看的角度移動。'+(lk?'鎖定中：畫面會繞著它轉，點其他東西不會換選取。':'')+'</div>';
+    h+='<div class="meta">按住島上的「'+D.n+'」可以直接拖曳；方向鍵會照你現在看的角度移動。'+(lk?'<b>🔒 鎖定中：物件固定不動</b>，手指拖曳只會轉動畫面、不會移動任何東西；真的要移動，請用下面的方向鍵和滑桿。':'')+'</div>';
     h+='<div class="mv"><div class="pad"><span></span><button type="button" class="btn" data-nudge="f" aria-label="往前">▲</button><span></span><button type="button" class="btn" data-nudge="l" aria-label="往左">◀</button><button type="button" class="btn" data-nudge="b" aria-label="往後">▼</button><button type="button" class="btn" data-nudge="r" aria-label="往右">▶</button></div>';
     h+='<div>'+sliderRow('高度','iy',0,5,0.01,it.y||0,(it.y||0).toFixed(2))+'<div class="tabs hq">'+HEIGHTS.map(([l,v])=>'<button type="button" class="tab" data-hset="'+v+'">'+l+'</button>').join('')+'</div>'+
       sliderRow('方向角度','iry',0,359,1,degOf(it),degOf(it)+'°')+'<div class="tabs hq"><button type="button" class="tab" data-rot="-45">↺ 45°</button><button type="button" class="tab" data-rot="45">↻ 45°</button><button type="button" class="tab" data-rot="180">轉 180°</button></div>'+
