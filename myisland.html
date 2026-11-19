@@ -141,7 +141,7 @@ body{font-family:var(--font-body);font-size:15px;line-height:1.55;-webkit-tap-hi
 .timebig{font-family:var(--font-display);font-weight:900;font-size:34px;font-variant-numeric:tabular-nums;line-height:1}
 input[type=range]{width:100%;accent-color:var(--orange)}
 .ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-soft)}
-textarea.code{width:100%;height:150px;font:12px/1.4 ui-monospace,monospace;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff;color:var(--ink)}
+textarea.code{width:100%;height:120px;margin:6px 0;font:12px/1.4 ui-monospace,monospace;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff;color:var(--ink)}
 
 /* 長相編輯器 */
 .editor{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:start}
@@ -179,6 +179,11 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
 .rail::-webkit-scrollbar{display:none}
 .rail .rbtn{flex:none}
 @media (max-height:760px){.rail{gap:6px}.rbtn{height:48px;width:58px;font-size:12px}.rbtn svg{width:15px;height:15px}}
+.bkcard{display:flex;flex-direction:column;gap:2px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:0 0 10px;font-size:13px;color:var(--ink-soft)}
+.bkcard b{color:var(--ink);font-size:14.5px}
+.bkcard.ok{border:2px solid #3fa66a;background:#f1faf4}.bkcard.bad{border:2px solid #e5534b;background:#fdf1f0}
+.bkbtns{display:flex;flex-direction:column;gap:0}.bkbtns .go{margin-top:8px}
+.warn2{background:#fff4d6;border:1.5px solid #f2b705;border-radius:12px;padding:8px 10px;font-size:12.5px;margin:0 0 8px}
 /* 擺設：選取框與鎖頭 */
 .selbox{position:absolute;left:0;top:0;border:2.5px dashed var(--orange);border-radius:12px;pointer-events:none;z-index:4;box-shadow:0 0 0 2px #fff8}
 .selbox.locked{border:3px solid #f2b705;box-shadow:0 0 0 3px #f2b70555,0 0 18px #f2b70599}
@@ -323,8 +328,8 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.0.6';
-const APP_NOTES=['新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
+const APP_VERSION='1.0.7';
+const APP_NOTES=['匯出島嶼：可以下載備份檔、分享到 LINE／檔案，或一鍵複製（複製不了會自動幫你全選）','匯入島嶼：可以選備份檔或貼上文字，先預覽內容再匯入，匯入後還能還原','新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -1409,6 +1414,28 @@ function questLi(p,q,who){return '<div class="li'+(q.done?' done':'')+'"><input 
 function totals(){let all=0,done=0;S.people.forEach(p=>p.quests.forEach(q=>{all++;if(q.done)done++}));return {all,done}}
 function level(){return 1+Math.floor((S.xp||0)/100)}
 
+/* 匯出／匯入 */
+function inAppUA(){return /FBAN|FBAV|Instagram|Line\/|MicroMessenger|KAKAOTALK|Threads|; wv\)/i.test(navigator.userAgent||'')}
+function backupText(){return JSON.stringify({app:'my-island',version:APP_VERSION,savedAt:new Date().toISOString(),data:S})}
+function backupFile(txt){const d=new Date(),p=n=>String(n).padStart(2,'0');const name='my-island-backup-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+'.json';
+  try{return new File([txt],name,{type:'application/json'})}catch(e){const b=new Blob([txt],{type:'application/json'});b.name=name;return b}}
+function summaryOf(o){return '小島 '+(o.isles||[]).length+' 座・島民 '+(o.people||[]).length+' 位・動物 '+(o.pets||[]).length+' 隻・物件 '+(o.items||[]).length+' 個'}
+function selectAllIn(t){if(!t)return;t.focus();t.select();try{t.setSelectionRange(0,t.value.length)}catch(e){}}
+function copyText(txt){return new Promise(res=>{const fb=()=>{const ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;top:0;left:0;width:2px;height:2px;opacity:0;font-size:16px';document.body.appendChild(ta);
+    ta.focus();ta.select();try{ta.setSelectionRange(0,txt.length)}catch(e){}let ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();res(ok)};
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(()=>res(true),fb)}else fb()})}
+function parseBackup(txt){txt=String(txt||'').replace(/^﻿/,'').trim();if(!txt)throw new Error('empty');const a=txt.indexOf('{'),b=txt.lastIndexOf('}');if(a<0||b<a)throw new Error('nojson');
+  let o=JSON.parse(txt.slice(a,b+1));let meta={};if(o&&o.app==='my-island'&&o.data){meta={version:o.version,savedAt:o.savedAt};o=o.data}
+  if(!o||typeof o!=='object'||!o.owner||!Array.isArray(o.isles)||!Array.isArray(o.people))throw new Error('shape');return {data:o,meta}}
+let pendingImport=null;
+function previewImport(txt){const box=document.getElementById('imPrev');if(!box)return;pendingImport=null;
+  try{const r=parseBackup(txt);pendingImport=r.data;const when=r.meta.savedAt?new Date(r.meta.savedAt).toLocaleString('zh-TW'):'（舊版備份，沒有時間）';
+    box.innerHTML='<div class="bkcard ok"><b>✅ 讀到備份：🏝️ '+esc(r.data.islandName||'我的小島')+'（島主 '+esc((r.data.owner&&r.data.owner.name)||'—')+'）</b><span>'+summaryOf(r.data)+'</span><span>備份時間：'+esc(when)+'</span></div>'+
+      '<div class="confirm"><span>匯入後，這台裝置上現在的「'+esc(S.islandName||'島')+'」會被取代（會先自動留一份，可以還原）。</span><button class="btn redfill" type="button" data-imp="go">✅ 確定匯入</button></div>'}
+  catch(e){box.innerHTML='<div class="bkcard bad"><b>❌ 讀不懂這段備份</b><span>'+(e.message==='empty'?'還沒有貼上或選檔案。':'請確認是完整的備份檔或備份文字（開頭是 { 、結尾是 } ，中間不能少）。')+'</span></div>'}}
+function hasUndoImport(){try{return !!localStorage.getItem('island-before-import')}catch(e){return false}}
+function doImport(){if(!pendingImport){toast('請先檢查備份');return}try{if(S.islandName)localStorage.setItem('island-before-import',JSON.stringify(S));localStorage.setItem(KEY,JSON.stringify(pendingImport))}catch(e){toast('存不進去：瀏覽器的儲存空間可能滿了');return}
+  toast('📥 匯入完成，正在重新載入…');setTimeout(()=>location.reload(),400)}
 function render(){
   let h='';
   if(mode==='detail'){const p=S.people.find(x=>x.id===arg);if(!p){closeSheet();return}
@@ -1480,8 +1507,9 @@ function render(){
   else if(mode==='settings'){sTitle.textContent='⚙️ 設定';
     h+='<button class="row" data-open="owner"><span class="tx"><span class="nm">👑 島主造型與名字</span><span class="ds">換髮型、衣服、配件</span></span></button>';
     h+='<button class="row" data-editisle="hub"><span class="tx"><span class="nm">🏝️ 改島的名字</span><span class="ds">目前：'+esc(S.islandName)+'</span></span></button>';
-    h+='<button class="row" data-open="backup"><span class="tx"><span class="nm">📤 備份島嶼</span><span class="ds">複製一段文字，換手機也能搬過去</span></span></button>';
-    h+='<button class="row" data-open="import"><span class="tx"><span class="nm">📥 匯入島嶼</span><span class="ds">貼上備份文字還原</span></span></button>';
+    h+='<button class="row" data-open="backup"><span class="tx"><span class="nm">📤 匯出島嶼（備份）</span><span class="ds">下載備份檔、分享或複製，換手機也能搬過去</span></span></button>';
+    h+='<button class="row" data-open="import"><span class="tx"><span class="nm">📥 匯入島嶼（還原）</span><span class="ds">選備份檔或貼上備份文字</span></span></button>';
+    if(hasUndoImport())h+='<button class="row" data-imp="undo"><span class="tx"><span class="nm">↩️ 還原匯入前的島</span><span class="ds">剛剛匯入的不是你要的？回到匯入前</span></span></button>';
     h+='<button class="row" data-open="guide"><span class="tx"><span class="nm">❓ 再看一次教學</span><span class="ds">4 步驟認識你的小島</span></span></button>';
     h+='<button class="row" data-ask="reset"><span class="tx"><span class="nm" style="color:#c2412d">🔄 重新開始</span><span class="ds">清除所有資料，回到建島畫面</span></span></button>';
     if(confirmKey==='reset')h+='<div class="confirm"><span>所有小島、島民、任務都會消失，無法復原。</span><button class="btn" data-ask="">取消</button><button class="btn redfill" data-reset="1">確定重來</button></div>';
@@ -1506,10 +1534,16 @@ function render(){
     h+='<div class="grp">🎨 顏色</div>'+D.cols.map(([k,l,dv])=>cpRow(k,l,(it.c&&it.c[k])||dv)).join('');
     h+='<div class="btnrow"><button class="btn" type="button" data-backbuild="1">⬅️ 回物件清單</button><button class="btn" type="button" data-dupitem="1">📄 複製一個</button><button class="btn red" type="button" data-ask="delitem">🗑️ 收起來</button></div>';
     if(confirmKey==='delitem')h+='<div class="confirm"><span>確定把「'+D.n+'」收起來嗎？</span><button class="btn" data-ask="">取消</button><button class="btn redfill" data-delitem="1">確定</button></div>'}
-  else if(mode==='backup'){sTitle.textContent='📤 備份島嶼';const txt=JSON.stringify(S);
-    h+='<p class="meta">複製下面整段文字，存在記事本或傳給自己。</p><textarea class="code" readonly id="bk">'+esc(txt)+'</textarea><button class="go" type="button" data-copy="1">📋 複製</button>'}
-  else if(mode==='import'){sTitle.textContent='📥 匯入島嶼';
-    h+='<p class="meta">貼上之前備份的文字（會覆蓋現在這座島）。</p><textarea class="code" id="im"></textarea><button class="go" type="button" data-import="1">匯入</button>'}
+  else if(mode==='backup'){sTitle.textContent='📤 匯出島嶼（備份）';save();const txt=backupText(),sm=summaryOf(S);
+    h+='<div class="bkcard"><b>🏝️ '+esc(S.islandName||'我的小島')+'</b><span>'+sm+'</span><span>大小約 '+Math.max(1,Math.round(txt.length/1024))+' KB</span></div>';
+    if(inAppUA())h+='<div class="warn2">⚠️ 你現在在 App 內建瀏覽器（Instagram／LINE…），「下載」可能沒反應，建議用「分享」或「複製」；也可以點右上角改用 Safari／Chrome 開啟。</div>';
+    h+='<div class="bkbtns"><button class="go" type="button" data-bk="file">💾 下載備份檔</button><button class="go ghost" type="button" data-bk="share">📤 分享備份（傳到 LINE、存到檔案）</button><button class="go ghost" type="button" data-bk="copy">📋 複製備份文字</button></div>';
+    h+='<div class="meta" style="margin-top:12px">複製不了的話：按「全選」後，長按反白的文字 →「拷貝」。</div><textarea class="code" id="bk" spellcheck="false">'+esc(txt)+'</textarea><button class="btn" type="button" data-bk="select">🔤 全選文字</button>'}
+  else if(mode==='import'){sTitle.textContent='📥 匯入島嶼（還原）';
+    h+='<div class="meta">用備份檔或備份文字把島嶼搬回來。<b>匯入會取代現在這台裝置上的島</b>，但我們會先幫你留一份，匯入後還能「還原」。</div>';
+    h+='<label class="go" style="cursor:pointer">📂 選擇備份檔<input type="file" id="imFile" accept=".json,.txt,application/json,text/plain" hidden></label>';
+    h+='<div class="meta" style="margin:12px 0 4px">或把備份文字貼在下面：</div><textarea class="code" id="im" spellcheck="false" placeholder="在這裡長按 →「貼上」"></textarea>';
+    h+='<div class="btnrow"><button class="btn" type="button" data-imp="paste">📋 從剪貼簿貼上</button><button class="btn on" type="button" data-imp="check">🔍 檢查備份</button></div><div id="imPrev"></div>'}
   sBody.innerHTML=h;
   if(mode==='vform'){const th=isleTheme(draft.isle);lookEditor(document.getElementById('vEditor'),draft.look,null,{resident:true,shirt:th?th.shirt:HUB_SHIRT})}
   if(mode==='pform')petEditor(document.getElementById('pEditor'),draft);
@@ -1579,13 +1613,23 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
   if(d.saveowner){const n=document.getElementById('fON').value.trim();S.owner.name=n||S.owner.name;S.owner.look=Object.assign({},draft.look);ownerBackup=null;draft=null;save();buildMe();updateHud();closeSheet();toast('✨ 造型更新完成');return}
   if(d.open){draft=null;if(d.open==='guide'){closeSheet();startGuide();return}openSheet(d.open);return}
   if(d.reset){try{localStorage.removeItem(KEY)}catch(err){}location.reload();return}
-  if(d.copy){const t=document.getElementById('bk');const txt=t.value;try{navigator.clipboard.writeText(txt).then(()=>toast('已複製 ✅'),()=>{t.select();toast('請長按文字手動複製')})}catch(err){t.select();toast('請長按文字手動複製')}return}
-  if(d.import){try{const o=JSON.parse(document.getElementById('im').value);if(!o||!o.owner||!Array.isArray(o.isles)||!Array.isArray(o.people))throw 0;localStorage.setItem(KEY,JSON.stringify(o));location.reload()}catch(err){toast('格式不對，請確認有完整貼上')}return}
+  if(d.bk){const txt=backupText(),t=document.getElementById('bk');
+    if(d.bk==='select'){selectAllIn(t);toast('已全選，長按反白的文字 →「拷貝」');return}
+    if(d.bk==='copy'){copyText(txt).then(ok=>{if(ok)toast('📋 已複製備份文字 ✅ 可以貼到記事本或傳給自己');else{selectAllIn(t);toast('這個瀏覽器不讓自動複製，已幫你全選，請長按 →「拷貝」')}});return}
+    const f=backupFile(txt);
+    if(d.bk==='share'){if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'我的小島備份'}).then(()=>toast('📤 已分享備份'),()=>{})}
+      else if(navigator.share){navigator.share({title:'我的小島備份',text:txt}).then(()=>toast('📤 已分享備份'),()=>{})}else{toast('這個瀏覽器不支援分享，改用下載或複製')}return}
+    if(d.bk==='file'){try{const u=URL.createObjectURL(f),a=document.createElement('a');a.href=u;a.download=f.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);toast('💾 已下載 '+f.name)}catch(e){toast('下載失敗，改用分享或複製')}return}}
+  if(d.imp==='paste'){const t=document.getElementById('im');if(navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(x=>{t.value=x;previewImport(x)},()=>{t.focus();toast('請在框框裡長按 →「貼上」')})}else{t.focus();toast('請在框框裡長按 →「貼上」')}return}
+  if(d.imp==='check'){previewImport(document.getElementById('im').value);return}
+  if(d.imp==='go'){doImport();return}
+  if(d.imp==='undo'){let old=null;try{old=localStorage.getItem('island-before-import')}catch(e){}if(!old){toast('沒有可以還原的資料');return}try{localStorage.setItem(KEY,old);localStorage.removeItem('island-before-import')}catch(e){}location.reload();return}
 });
 sBody.addEventListener('submit',e=>{const f=e.target.closest('[data-addq]');if(!f)return;e.preventDefault();const inp=f.querySelector('input'),t=inp.value.trim();if(!t)return;
   const p=S.people.find(x=>x.id===f.dataset.addq);if(!p)return;p.quests.push({id:uid(),text:t,done:false});save();if(byId[p.id])refreshQ(byId[p.id]);updateHud();render();
   const ni=sBody.querySelector('[data-addq] input');if(ni)ni.focus();guideHook('quest')});
-sBody.addEventListener('change',e=>{if(e.target.id==='fIsle'&&draft){draft.isle=e.target.value;const th=isleTheme(draft.isle),L=Object.assign({},draft.look);if(!L.outfit||L.outfit==='uniform')L.shirt=th?th.shirt:HUB_SHIRT;L.capColor=L.capC||L.shirt;pvSet(L)}});
+sBody.addEventListener('change',e=>{
+  if(e.target.id==='imFile'){const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const t=document.getElementById('im');if(t)t.value=String(r.result||'');previewImport(String(r.result||''))};r.onerror=()=>toast('讀不到這個檔案');r.readAsText(f);return}if(e.target.id==='fIsle'&&draft){draft.isle=e.target.value;const th=isleTheme(draft.isle),L=Object.assign({},draft.look);if(!L.outfit||L.outfit==='uniform')L.shirt=th?th.shirt:HUB_SHIRT;L.capColor=L.capC||L.shirt;pvSet(L)}});
 sBody.addEventListener('input',e=>{
   if(e.target.id==='iSearch'){buildQ=e.target.value;const l=document.getElementById('iList');if(l)l.innerHTML=itemListHTML();return}
   if(mode==='item'&&e.target.id==='fSign'){const it=S.items.find(x=>x.id===arg);if(it){it.text=e.target.value.trim();rebuildItem(it);saveSoon()}return}
