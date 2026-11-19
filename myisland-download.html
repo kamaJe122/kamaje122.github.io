@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>我的小島・下載</title>
+<meta name="description" content="下載「我的小島」3D 玩具風任務小島網頁，存到自己的電腦或手機就能玩。">
+<meta property="og:title" content="🏝️ 我的小島 — 免費下載">
+<meta property="og:description" content="一個檔案就能玩的 3D 小島任務板，下載後用瀏覽器打開即可。">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+:root{--orange:#e8673a;--orange-deep:#c94f25;--ink:#2a2421;--ink-soft:#6b5f58;--paper:#fbf6ef;--panel:#fffdf9;--line:#eadfd3;--sea:#bfe3ef;--sea-deep:#8ccbe0}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;background:linear-gradient(180deg,var(--sea) 0%,var(--sea-deep) 100%);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;line-height:1.6;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.card{width:100%;max-width:440px;background:var(--panel);border:3px solid var(--ink);border-radius:28px;box-shadow:0 8px 0 var(--ink);padding:32px 24px 26px;text-align:center}
+.emoji{font-size:64px;line-height:1;margin-bottom:6px;animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px) rotate(-3deg)}}
+h1{font-family:"Zen Maru Gothic","Noto Sans TC",sans-serif;font-weight:900;font-size:30px;margin:0 0 4px}
+.sub{color:var(--ink-soft);margin:0 0 22px}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px 18px;border-radius:18px;border:3px solid var(--ink);font:900 18px/1.2 "Zen Maru Gothic","Noto Sans TC",sans-serif;text-decoration:none;cursor:pointer;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 0 0 var(--ink)!important}
+.primary{background:var(--orange);color:#fff;box-shadow:0 5px 0 var(--ink)}
+.primary:hover{background:var(--orange-deep)}
+.ghost{background:#fff;color:var(--ink);box-shadow:0 4px 0 var(--ink);margin-top:14px;font-size:16px}
+.btn svg{width:22px;height:22px;flex:none}
+.steps{margin:24px 0 0;padding:16px 18px;background:var(--paper);border:2px dashed var(--line);border-radius:18px;text-align:left;font-size:14px}
+.steps b{font-family:"Zen Maru Gothic",sans-serif}
+.steps ol{margin:6px 0 0;padding-left:20px}
+.steps li{margin:4px 0}
+.note{font-size:12.5px;color:var(--ink-soft);margin-top:16px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;transition:transform .25s;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="emoji" aria-hidden="true">🏝️</div>
+  <h1>我的小島</h1>
+  <p class="sub">3D 玩具風任務小島・一個檔案就能玩</p>
+
+  <a class="btn primary" id="dl" href="myisland.html" download="my-island.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+    下載 HTML 檔
+  </a>
+  <a class="btn ghost" href="myisland.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 4 14 8-14 8z"/></svg>
+    直接線上玩
+  </a>
+  <button class="btn ghost" id="share" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/></svg>
+    分享這個頁面給朋友
+  </button>
+
+  <div class="steps">
+    <b>📥 下載後怎麼玩？</b>
+    <ol>
+      <li>按「下載 HTML 檔」存到電腦或手機</li>
+      <li>用瀏覽器（Chrome / Safari / Edge）打開 <code>my-island.html</code></li>
+      <li>取名字、建小島，開始玩！</li>
+    </ol>
+  </div>
+  <p class="note">需要網路載入 3D 引擎與字型。進度存在你自己的瀏覽器裡，不會上傳到任何地方。</p>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script>
+(function(){
+  var toastEl=document.getElementById('toast'),t;
+  function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(t);t=setTimeout(function(){toastEl.classList.remove('show')},2200)}
+  // 備援：部分瀏覽器忽略 download 屬性時，改用 Blob 強制下載
+  document.getElementById('dl').addEventListener('click',function(e){
+    if(!window.fetch||!window.Blob)return;
+    e.preventDefault();
+    fetch(this.href).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){
+      var u=URL.createObjectURL(new Blob([b],{type:'text/html'})),a=document.createElement('a');
+      a.href=u;a.download='my-island.html';document.body.appendChild(a);a.click();a.remove();
+      setTimeout(function(){URL.revokeObjectURL(u)},4000);toast('開始下載囉 🎉');
+    }).catch(function(){location.href='myisland.html'});
+  });
+  document.getElementById('share').addEventListener('click',function(){
+    var url=location.href;
+    if(navigator.share){navigator.share({title:'我的小島',text:'來下載我的小島 🏝️',url:url}).catch(function(){});return}
+    try{navigator.clipboard.writeText(url).then(function(){toast('連結已複製，貼給朋友吧！')},function(){prompt('複製這個連結：',url)})}catch(e){prompt('複製這個連結：',url)}
+  });
+})();
+</script>
+</body>
+</html>
