@@ -362,6 +362,8 @@ const ITEMS={
   coop:{n:'雞舍',e:'🐔',cat:'garden',cols:[['wall','牆壁','#f4e3c1'],['roof','屋頂','#d4482f'],['chicken','雞','#ffffff']]},
   garden:{n:'菜園',e:'🥕',cat:'garden',cols:[['border','木框','#a26c43'],['leaf','菜葉','#5bb85d'],['carrot','紅蘿蔔','#f08a3c'],['tomato','番茄','#e5534b']]},
   fence:{n:'圍欄',e:'🪵',cat:'garden',cols:[['wood','圍欄','#f4efe6'],['rail','橫木','#c9a27a']]}};
+const GENDER_H={m:1.06,f:0.95};/* 男生比女生高 */
+function cmOf(l){return Math.round(166*(l.kid?0.72:1)*(GENDER_H[l.gender]||1)*(+l.height||1))}
 const HEIGHTS=[['地面',0],['茶几',0.45],['桌面',0.82],['流理台',0.98]];
 const HEX_R=12,HUB_R=12,TOP=1.0;
 /* 中央主島 + 12 個小島位置（外圈 p = 接到哪一座內圈小島） */
@@ -375,7 +377,7 @@ const uid=()=>Math.random().toString(36).slice(2,9);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
-function randomLook(){const l={skin:pick(SKIN_C),hair:pick(HAIR_C),style:pick(STYLES)[0],shirt:pick(SHIRT_C),pants:pick(PANTS_C),accs:[],ac:{}};if(Math.random()<0.3)l.accs.push(pick(['glasses','silver','flower','bag','phone']));return l}
+function randomLook(){const l={gender:Math.random()<0.5?'m':'f',height:1,skin:pick(SKIN_C),hair:pick(HAIR_C),style:pick(STYLES)[0],shirt:pick(SHIRT_C),pants:pick(PANTS_C),accs:[],ac:{}};if(Math.random()<0.3)l.accs.push(pick(['glasses','silver','flower','bag','phone']));return l}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.owner&&Array.isArray(s.isles)&&Array.isArray(s.people))return s}catch(e){}return null}
 let S=load();
 const fresh=!S;
@@ -556,7 +558,7 @@ function makeChar(o){
   if(has('phone')){const c=aC('phone'),ph=new THREE.Group();ph.position.set(0.02,-0.66,0.12);ph.rotation.x=-0.7;armL.add(ph);box(0.11,0.2,0.025,c,0,0,0,ph);box(0.09,0.16,0.005,'#9fd3ff',0,0.005,0.014,ph,{emissive:'#5aa9e6',emissiveIntensity:0.5})}
   const hit=new THREE.Mesh(new THREE.CylinderGeometry(0.75,0.75,2.3,8),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));hit.position.y=1.15;g.add(hit);
   const cup=new THREE.Group();cup.position.set(0,-0.6,0.12);cyl(0.075,0.06,0.17,8,'#ffffff',0,0,0,cup);cyl(0.073,0.073,0.02,8,'#6b3e22',0,0.08,0,cup);cup.visible=false;armR.add(cup);
-  if(o.kid){g.scale.setScalar(0.72);head.scale.setScalar(1.2)}
+  {const H=(GENDER_H[o.gender]||1)*(+o.height||1),W=1+(H-1)*0.4,K=o.kid?0.72:1,hx=(1+(H-1)*0.25)*(o.kid?1.2:1);g.scale.set(K*W,K*H,K*W);head.scale.set(hx/W,hx/H,hx/W)}
   return {g,legL,legR,armL,armR,head,eyes,torso,hit,cup}}
 /* 髮型 */
 function hairFor(head,o){const st=o.style||'short',hc=o.hair,gloss=st==='slick';
@@ -983,10 +985,10 @@ let W=1,H=1;
 function place(el,pos){tmpV.copy(pos).project(camera);if(tmpV.z>1||tmpV.x<-1.2||tmpV.x>1.2||tmpV.y<-1.2||tmpV.y>1.2){el.style.display='none';return}
   el.style.display='';el.style.transform='translate3d('+((tmpV.x+1)/2*W).toFixed(1)+'px,'+((1-tmpV.y)/2*H).toFixed(1)+'px,0)'}
 function updateLabels(){const camD=camera.position.distanceTo(controls.target),near=camD<55;const zl=camD>110?'far':camD>55?'mid':'near';if(labels.dataset.zoom!==zl)labels.dataset.zoom=zl;
-  chars.forEach(v=>{const gp=v.c.g.position;P3.set(gp.x,gp.y+2.75,gp.z);place(v.badge,P3);
-    const show=(S.ui.names&&near)||sel===v.p.id;v.tagWrap.style.visibility=show?'visible':'hidden';P3.y=gp.y+3.35;place(v.tagWrap,P3);v.tag.classList.toggle('sel',sel===v.p.id)});
+  chars.forEach(v=>{const gp=v.c.g.position;const hs=v.c.g.scale.y;P3.set(gp.x,gp.y+0.2+2.55*hs,gp.z);place(v.badge,P3);
+    const show=(S.ui.names&&near)||sel===v.p.id;v.tagWrap.style.visibility=show?'visible':'hidden';P3.y=gp.y+0.8+2.55*hs;place(v.tagWrap,P3);v.tag.classList.toggle('sel',sel===v.p.id)});
   pets.forEach(v=>{const gp=v.m.g.position;const show=(S.ui.names&&near)||selPet===v.p.id;v.tagWrap.style.visibility=show?'visible':'hidden';P3.set(gp.x,gp.y+petLabelY(v.kind),gp.z);place(v.tagWrap,P3);v.tag.classList.toggle('sel',selPet===v.p.id)});
-  if(me){P3.set(me.g.position.x,me.g.position.y+3.55,me.g.position.z);place(meTagWrap,P3)}
+  if(me){P3.set(me.g.position.x,me.g.position.y+1.0+2.55*me.g.scale.y,me.g.position.z);place(meTagWrap,P3)}
   zLabels.forEach(z=>place(z.w,z.pos))}
 
 /* =========================================================
@@ -1106,7 +1108,8 @@ function newPetDraft(kind){const lastIsle=(S.isles[S.isles.length-1]||{id:'hub'}
 function lookEditor(host,look,onChange,opts){opts=opts||{};normLook(look);if(!look.outfit)look.outfit=opts.resident?'uniform':'basic';
   const pvLook=()=>{const L=Object.assign({},look);if(L.outfit==='uniform'&&opts.shirt)L.shirt=opts.shirt;L.capColor=look.capC||L.shirt;return L};
   const draw=()=>{let h='<div class="editor"><div class="pv" id="pvBox"></div><div>';
-    h+=tabRow('島民類型','kid',[['0','大人'],['1','小孩']],look.kid?'1':'0');
+    h+=tabRow('性別','gender',[['m','男生'],['f','女生']],look.gender||'');h+=tabRow('島民類型','kid',[['0','大人'],['1','小孩']],look.kid?'1':'0');
+    h+='<label class="srow"><span>身高</span><input type="range" min="85" max="115" step="1" value="'+Math.round((+look.height||1)*100)+'" data-lh="1" aria-label="身高"><b data-lhv>'+cmOf(look)+' cm</b></label><div class="hint" style="margin:-2px 0 8px">男生預設比女生高，滑桿可以再調高或調矮。</div>';
     h+=cpRow('skin','膚色',look.skin,SKIN_C);
     h+=tabRow('髮型','style',STYLES,look.style||'short');
     h+=cpRow('hair','髮色',look.hair,HAIR_C);
@@ -1125,7 +1128,7 @@ function lookEditor(host,look,onChange,opts){opts=opts||{};normLook(look);if(!lo
     if(d.dice){const r=randomLook();['skin','hair','style','shirt','pants','accs'].forEach(k=>look[k]=r[k]);look.ac={};draw();upd();return}
     if(d.lk){if(d.lk==='kid')look.kid=d.v==='1';else look[d.lk]=d.v;draw();upd();return}
     if(d.acc){const k=d.acc,i=look.accs.indexOf(k);if(i>=0)look.accs.splice(i,1);else{look.accs.push(k);const pair={apron:'apronPT',apronPT:'apron',glasses:'silver',silver:'glasses'}[k];if(pair)look.accs=look.accs.filter(x=>x!==pair)}draw();upd()}};
-  host.oninput=e=>cpInput(host,e.target,look,upd);
+  host.oninput=e=>{if(e.target.dataset.lh){look.height=+e.target.value/100;const b=host.querySelector('[data-lhv]');if(b)b.textContent=cmOf(look)+' cm';upd();return}cpInput(host,e.target,look,upd)};
   draw()}
 
 /* =========================================================
@@ -1475,7 +1478,7 @@ function loop(){const dt=Math.min(0.05,clock.getDelta());
     let dr=meState.face-me.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));me.g.rotation.y+=dr*Math.min(1,dt*10);
     const sw=walking?Math.sin(meState.t*10)*0.6:0;me.legL.rotation.x=sw;me.legR.rotation.x=-sw;me.armL.rotation.x=-sw*0.8;
     const wave=!walking&&(meState.t%7)<1.4;me.armR.rotation.x=walking?sw*0.8:0;me.armR.rotation.z=wave?2.5+Math.sin(meState.t*9)*0.35:0;
-    marker.position.set(meState.x,me.g.position.y+2.88+Math.sin(meState.t*3)*0.12,meState.z);marker.rotation.y+=dt*1.5}
+    marker.position.set(meState.x,me.g.position.y+0.33+2.55*me.g.scale.y+Math.sin(meState.t*3)*0.12,meState.z);marker.rotation.y+=dt*1.5}
   if(editOn()&&selItem&&itemObjs[selItem]){const o=itemObjs[selItem];selRing.position.set(o.position.x,o.position.y+0.05,o.position.z);selRing.scale.setScalar(selR/0.85*(1+Math.sin(meState.t*4)*0.04));selRing.visible=true}
   else{selRing.scale.setScalar(1);const sv=sel&&byId[sel]?byId[sel].c.g:selPet&&petById[selPet]?petById[selPet].m.g:null;if(sv){selRing.position.set(sv.position.x,TOP+0.2+bridgeY(sv.position.x,sv.position.z),sv.position.z);selRing.visible=true}else selRing.visible=false;}
   if(!S.ui.paused){const tt=clock.elapsedTime;for(const id in itemObjs){const an=itemObjs[id].userData.anims;if(an)for(const f of an)f(tt,dt)}}
