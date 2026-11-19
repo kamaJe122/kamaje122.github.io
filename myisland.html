@@ -220,6 +220,8 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
 .upbar span{flex:1;min-width:0}
 .upbar .btn{min-height:40px;white-space:nowrap}
 .upnote{position:absolute;top:calc(env(safe-area-inset-top,0px) + 74px);left:12px;right:86px;margin:0 auto;max-width:420px;background:var(--paper);border:2px solid #3fa66a;border-radius:18px;padding:12px 14px;z-index:9;box-shadow:0 10px 30px #0004;font-size:13.5px}
+.nask{position:absolute;inset:0;background:#0006;display:flex;align-items:center;justify-content:center;padding:16px;z-index:9}
+.ncard{background:var(--paper);border-radius:22px;padding:20px 18px 16px;max-width:360px;width:100%;text-align:center;box-shadow:0 12px 40px #0005}.ncard b{font-family:var(--font-display);font-size:18px}.ncard p{font-size:14px;margin:8px 0 6px}.nbell{font-size:40px;line-height:1;margin-bottom:6px}
 .upnote b{font-family:var(--font-display);font-size:16px}
 .upnote ul{margin:6px 0 8px;padding-left:20px}
 /* 擺設模式 */
@@ -329,6 +331,9 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
   <div class="selbox" id="selBox" hidden><button type="button" class="lockbtn" id="lockBtn" aria-label="鎖定這個物件" aria-pressed="false">🔓</button></div>
   <div class="upbar" id="upBar" role="status" hidden><span id="upText"></span><button type="button" class="btn on" id="upNow">立即更新</button><button type="button" class="btn" id="upLater">稍後</button></div>
   <div class="upnote" id="upNote" role="dialog" aria-label="更新完成" hidden></div>
+  <div class="nask" id="notifAsk" role="dialog" aria-label="更新通知" hidden><div class="ncard"><div class="nbell" aria-hidden="true">🔔</div><b>要開啟「新版本通知」嗎？</b>
+    <p>小島有新功能時，用手機通知告訴你，不會錯過。<br><span class="meta">只會在有新版本時通知，不會亂發。之後也可以在「設定」關掉。</span></p>
+    <button type="button" class="go" id="notifYes">🔔 開啟更新通知</button><button type="button" class="go ghost" id="notifNo">先不要</button></div></div>
   <div class="loading" id="loading">正在組合你的小島…</div>
 </div>
 
@@ -341,8 +346,8 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.1.0';
-const APP_NOTES=['島民可以排作息了：點島民 →「🗓️ 作息與工作」，設定幾點到幾點散步（或去各島串門子）、待在哪裡、在哪裡做什麼工作','新增 32 種職業和 21 種工作動作：拉花、送餐、炒菜、切菜、挖土、拔雜草、倒土、澆水、掃地…（可複選，輪流做）','可以安裝成 App 了：設定 →「📲 安裝成 App」，有桌面圖示、全螢幕、沒網路也能開','建島畫面多了「📥 我有備份，把島搬過來」，App 版可以直接匯入瀏覽器的島','新增物件：冰滴咖啡組（木盤、湯匙、紅糖、牛奶、冰磚山形杯、木腰帶玻璃壺），在「咖啡・裝飾」','匯出島嶼：可以下載備份檔、分享到 LINE／檔案，或一鍵複製（複製不了會自動幫你全選）','匯入島嶼：可以選備份檔或貼上文字，先預覽內容再匯入，匯入後還能還原','新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
+const APP_VERSION='1.1.1';
+const APP_NOTES=['App 版可以開「新版本通知」了：第一次會先問你要不要開，之後可在 設定 →「🔔 新版本通知」開關','島民可以排作息了：點島民 →「🗓️ 作息與工作」，設定幾點到幾點散步（或去各島串門子）、待在哪裡、在哪裡做什麼工作','新增 32 種職業和 21 種工作動作：拉花、送餐、炒菜、切菜、挖土、拔雜草、倒土、澆水、掃地…（可複選，輪流做）','可以安裝成 App 了：設定 →「📲 安裝成 App」，有桌面圖示、全螢幕、沒網路也能開','建島畫面多了「📥 我有備份，把島搬過來」，App 版可以直接匯入瀏覽器的島','新增物件：冰滴咖啡組（木盤、湯匙、紅糖、牛奶、冰磚山形杯、木腰帶玻璃壺），在「咖啡・裝飾」','匯出島嶼：可以下載備份檔、分享到 LINE／檔案，或一鍵複製（複製不了會自動幫你全選）','匯入島嶼：可以選備份檔或貼上文字，先預覽內容再匯入，匯入後還能還原','新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -1680,6 +1685,7 @@ function render(){
     h+='<button class="row" data-open="owner"><span class="tx"><span class="nm">👑 島主造型與名字</span><span class="ds">換髮型、衣服、配件</span></span></button>';
     h+='<button class="row" data-editisle="hub"><span class="tx"><span class="nm">🏝️ 改島的名字</span><span class="ds">目前：'+esc(S.islandName)+'</span></span></button>';
     h+='<button class="row" data-open="install"><span class="tx"><span class="nm">📲 '+(isStandalone()?'你正在用 App 版 ✅':'安裝成 App（加到主畫面）')+'</span><span class="ds">桌面圖示、全螢幕、沒網路也能開，存檔比較不容易被清掉</span></span></button>';
+    {const st=notifState();h+='<button class="row" data-notif="toggle"><span class="tx"><span class="nm">🔔 新版本通知：'+(st==='on'?'已開啟 ✅':st==='denied'?'被系統關掉了':st==='unsupported'?'這裡不支援':'未開啟')+'</span><span class="ds">'+(st==='unsupported'?(isStandalone()?'這台裝置的瀏覽器不支援通知':'iPhone 要先「加到主畫面」用 App 版才能開通知'):st==='denied'?'要到手機的「設定 → 通知 → 我的小島」打開':'有新版本時用手機通知告訴你')+'</span></span></button>'}
     h+='<button class="row" data-open="backup"><span class="tx"><span class="nm">📤 匯出島嶼（備份）</span><span class="ds">下載備份檔、分享或複製，換手機也能搬過去</span></span></button>';
     h+='<button class="row" data-open="import"><span class="tx"><span class="nm">📥 匯入島嶼（還原）</span><span class="ds">選備份檔或貼上備份文字</span></span></button>';
     if(hasUndoImport())h+='<button class="row" data-imp="undo"><span class="tx"><span class="nm">↩️ 還原匯入前的島</span><span class="ds">剛剛匯入的不是你要的？回到匯入前</span></span></button>';
@@ -1830,6 +1836,7 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
     if(d.bk==='file'){try{const u=URL.createObjectURL(f),a=document.createElement('a');a.href=u;a.download=f.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);toast('💾 已下載 '+f.name)}catch(e){toast('下載失敗，改用分享或複製')}return}}
   if(d.pwa==='install'&&deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.then(r=>{if(r&&r.outcome==='accepted')toast('🎉 安裝好了！到桌面找小島圖示');deferredInstall=null;render()}).catch(()=>{});return}
   if(d.pwa==='copy'){copyText(location.origin+location.pathname).then(ok=>toast(ok?'📋 已複製網址，到 Safari／Chrome 貼上打開':'請長按網址列手動複製'));return}
+  if(d.notif==='toggle'){toggleNotif();return}
   if(d.imp==='paste'){const t=document.getElementById('im');if(navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(x=>{t.value=x;previewImport(x)},()=>{t.focus();toast('請在框框裡長按 →「貼上」')})}else{t.focus();toast('請在框框裡長按 →「貼上」')}return}
   if(d.imp==='check'){previewImport(document.getElementById('im').value);return}
   if(d.imp==='go'){doImport();return}
@@ -1961,11 +1968,30 @@ function loop(){const dt=Math.min(0.05,clock.getDelta());
 /* =========================================================
    20. 版本更新提醒（version.json）
    ========================================================= */
+/* 新版本通知（PWA）：第一次先用自己的視窗問，玩家按「開啟」才跳系統權限 */
+const NKEY='island-notif',NASKED='island-notif-asked',NLAST='island-notified';
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}function lsSet(k,v){try{if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){}}
+function notifState(){if(!('Notification' in window)||!('serviceWorker' in navigator))return 'unsupported';if(Notification.permission==='denied')return 'denied';return (Notification.permission==='granted'&&lsGet(NKEY)==='on')?'on':'off'}
+function writeMeta(){if(!window.caches)return;caches.open('my-island-meta').then(c=>c.put('/__island_meta',new Response(JSON.stringify({app:APP_VERSION,notif:notifState()==='on',notified:lsGet(NLAST)||''}),{headers:{'Content-Type':'application/json'}}))).catch(()=>{})}
+function setPeriodic(on){if(!('serviceWorker' in navigator))return;navigator.serviceWorker.ready.then(reg=>{if(!reg.periodicSync)return;
+  if(!on){reg.periodicSync.unregister('island-version').catch(()=>{});return}
+  const go=()=>reg.periodicSync.register('island-version',{minInterval:12*60*60*1000}).catch(()=>{});
+  if(navigator.permissions&&navigator.permissions.query)navigator.permissions.query({name:'periodic-background-sync'}).then(r=>{if(r.state==='granted')go()}).catch(go);else go()}).catch(()=>{})}
+function showSysNotif(title,body,tag){if(notifState()!=='on')return;navigator.serviceWorker.ready.then(reg=>reg.showNotification(title,{body,tag:tag||'island-update',icon:'icons/island-192.png',badge:'icons/island-192.png',data:{url:'./myisland.html?source=notify'}})).catch(()=>{try{new Notification(title,{body,icon:'icons/island-192.png'})}catch(e){}})}
+function enableNotif(){lsSet(NASKED,'1');if(notifState()==='unsupported'){toast(isStandalone()?'這台裝置不支援通知':'iPhone 要先加到主畫面，用 App 版開啟才能開通知');return}
+  Notification.requestPermission().then(p=>{if(p==='granted'){lsSet(NKEY,'on');writeMeta();setPeriodic(true);showSysNotif('✅ 更新通知開好了','小島有新版本時，會用通知告訴你。','island-hello');toast('🔔 已開啟更新通知')}
+    else{lsSet(NKEY,null);writeMeta();toast(p==='denied'?'通知被關掉了，可以到手機設定裡打開':'先不開通知，之後可以在設定開啟')}if(mode==='settings')render()})}
+function toggleNotif(){const st=notifState();if(st==='on'){lsSet(NKEY,'off');writeMeta();setPeriodic(false);toast('🔕 已關閉更新通知');render();return}
+  if(st==='denied'){toast('通知被系統關掉了：請到手機「設定 → 通知」找「我的小島」打開');return}enableNotif()}
+function maybeAskNotif(){if(!isStandalone()||notifState()!=='off'||lsGet(NASKED)||!S.islandName||!('Notification' in window))return;  setTimeout(()=>{if(mode||!document.getElementById('setup').hidden||lsGet(NASKED))return;document.getElementById('notifAsk').hidden=false},25000)}
+document.getElementById('notifYes').addEventListener('click',()=>{document.getElementById('notifAsk').hidden=true;enableNotif()});
+document.getElementById('notifNo').addEventListener('click',()=>{document.getElementById('notifAsk').hidden=true;lsSet(NASKED,'1');toast('好的，之後想開可以到「設定 → 🔔 新版本通知」')});
 const VERSION_URL=location.hostname==='kamaje122.github.io'?'version.json':'https://kamaje122.github.io/version.json';
 const isFile=location.protocol==='file:'||location.hostname!=='kamaje122.github.io';
 let upSnooze=0,upRemote=null;
 function cmpVer(a,b){a=String(a).split('.').map(Number);b=String(b).split('.').map(Number);for(let i=0;i<3;i++){const d=(a[i]||0)-(b[i]||0);if(d)return d}return 0}
 function checkVersion(){if(!window.fetch)return;fetch(VERSION_URL+'?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(v=>{if(!v||!v.version)return;upRemote=v;
+  if(cmpVer(v.version,APP_VERSION)>0&&document.visibilityState!=='visible'&&notifState()==='on'&&lsGet(NLAST)!==v.version){lsSet(NLAST,v.version);writeMeta();showSysNotif('🎉 我的小島有新版本 '+v.version,(Array.isArray(v.notes)&&v.notes[0])||'打開小島就能更新到最新版。')}
   if(cmpVer(v.version,APP_VERSION)>0&&Date.now()>=upSnooze){document.getElementById('upText').textContent=isFile?'🎉 有新版本 '+v.version+' 了！到下載頁下載最新版。':'🎉 有新版本了！重新整理就能使用最新功能。';document.getElementById('upNow').textContent=isFile?'前往下載':'立即更新';document.getElementById('upBar').hidden=false}}).catch(()=>{})}
 document.getElementById('upLater').addEventListener('click',()=>{document.getElementById('upBar').hidden=true;upSnooze=Date.now()+30*60*1000});
 document.getElementById('upNow').addEventListener('click',()=>{if(isFile){window.open('https://kamaje122.github.io/myisland-download.html','_blank');return}
@@ -1985,7 +2011,7 @@ if('serviceWorker' in navigator&&(location.hostname==='kamaje122.github.io'||loc
 if(S.islandName){startGame(false);rollDay();if(!S.guideDone)startGuide()}
 else{buildWorld();buildMe();camera.position.set(9,12,30);controls.target.set(0,2,2);controls.update();showSetup()}
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>boards.forEach(paintBoard));
-showUpdated();checkVersion();
+showUpdated();checkVersion();writeMeta();if(notifState()==='on')setPeriodic(true);maybeAskNotif();
 requestAnimationFrame(()=>{loop();const ld=document.getElementById('loading');ld.style.opacity=0;setTimeout(()=>ld.remove(),700)});
 })();
 </script>
