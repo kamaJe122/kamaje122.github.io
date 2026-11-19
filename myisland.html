@@ -323,8 +323,8 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.0.5';
-const APP_NOTES=['新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
+const APP_VERSION='1.0.6';
+const APP_NOTES=['新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -398,6 +398,8 @@ const ITEMS={
   piping:{n:'擠花袋',e:'🧁',cat:'bake',small:1,cols:[['bag','袋子','#ffffff'],['cream','奶油','#ffd1dc'],['tip','花嘴','#c9ced6']]},
   bread:{n:'麵包機',e:'🍞',cat:'bake',small:1,cols:[['main','機身','#f4efe6'],['lid','上蓋','#e8a25a'],['panel','面板','#2b2421']]},
   coffee:{n:'手沖咖啡組',e:'☕',cat:'cafe',small:1,cols:[['kettle','手沖壺','#2b2421'],['dripper','濾杯','#f4efe6'],['coffee','咖啡','#6b3e22']]},
+  espresso:{n:'半自動熱吧機',e:'☕',cat:'cafe',small:1,cols:[['body','機身','#d9dde3'],['panel','面板','#2b2421'],['handle','把手','#8b5a34']]},
+  register:{n:'收銀台',e:'🧾',cat:'cafe',cols:[['main','櫃身','#c9a27a'],['top','檯面','#f4efe6'],['machine','收銀機','#3a3a3e']]},
   vase:{n:'插花',e:'💐',cat:'cafe',small:1,cols:[['vase','花瓶','#9cc3e6'],['flower','花','#ff8fb3'],['center','花心','#f2c94c'],['leaf','葉子','#5bb85d']]},
   bed:{n:'雙人床',e:'🛏️',cat:'bed',cols:[['frame','床架','#c9a27a'],['blanket','被子','#9cc3e6'],['pillow','枕頭','#ffffff'],['sheet','床單','#f6efe4']]},
   vanity:{n:'梳妝台',e:'🪞',cat:'bed',cols:[['main','桌椅','#f4efe6'],['frame','鏡框','#e8a25a'],['seat','椅墊','#ff8fb3']]},
@@ -853,7 +855,29 @@ const BUILD={
     const gl=new THREE.Mesh(new THREE.CircleGeometry(0.2,24),glass('#bfe3ef'));gl.position.set(0,0.38,0.385);gl.userData.noShadow=true;g.add(gl);
     [[-0.3,-0.28],[0.3,-0.28],[-0.3,0.28],[0.3,0.28]].forEach(([x,z])=>box(0.08,0.02,0.08,'#8f847c',x,0.0,z,g));A((t,dt)=>{cg.rotation.z+=dt*2.5})}};
 function signText(it){if(it.text)return it.text;if(it.isle==='hub')return S.islandName||'我的小島';const is=it.isle&&isleById(it.isle);return is?is.name:'招牌'}
+let PAY_MAT=null;function payMat(){if(PAY_MAT)return PAY_MAT;const c=document.createElement('canvas');c.width=256;c.height=96;const x=c.getContext('2d');x.fillStyle='#fffdf8';x.fillRect(0,0,256,96);x.fillStyle='#e8673a';x.fillRect(0,0,12,96);
+  x.fillStyle='#2a2421';x.font='900 44px "Zen Maru Gothic","Noto Sans TC",sans-serif';x.textBaseline='middle';x.fillText('結帳',30,38);x.font='700 22px sans-serif';x.fillStyle='#6b5f58';x.fillText('CHECKOUT',32,74);
+  PAY_MAT=new THREE.MeshStandardMaterial({map:new THREE.CanvasTexture(c),roughness:0.7});return PAY_MAT}
 Object.assign(BUILD,{
+  espresso(g,C){const m={metalness:0.2,roughness:0.35};box(0.9,0.48,0.55,C.body,0,0.27,0,g,m);box(0.94,0.04,0.58,shade(C.body,-0.08),0,0.03,0,g);
+    box(0.88,0.03,0.52,shade(C.body,0.05),0,0.525,0,g,m);[-1,1].forEach(s=>box(0.02,0.06,0.52,shade(C.body,-0.1),s*0.43,0.57,0,g));
+    [-0.22,0,0.22].forEach(x=>{cyl(0.045,0.035,0.07,10,'#ffffff',x,0.575,-0.05,g);});
+    box(0.86,0.2,0.02,C.panel,0,0.38,0.285,g);
+    [-0.12,0.12].forEach(x=>{const d=cyl(0.055,0.055,0.02,16,'#ffffff',x,0.4,0.3,g);d.rotation.x=Math.PI/2;const r=new THREE.Mesh(new THREE.TorusGeometry(0.056,0.008,6,16),mat('#c9ced6'));r.position.set(x,0.4,0.31);g.add(r);const n=box(0.006,0.04,0.004,'#e5534b',x+0.01,0.41,0.313,g);n.rotation.z=-0.7});
+    [-0.24,0.24].forEach(x=>{cyl(0.075,0.075,0.06,14,shade(C.body,-0.15),x,0.24,0.33,g,m);cyl(0.065,0.06,0.05,14,'#8f847c',x,0.19,0.33,g,m);const h=box(0.04,0.035,0.22,C.handle,x,0.19,0.47,g);h.rotation.x=-0.15;
+      cyl(0.035,0.03,0.05,10,'#ffffff',x,0.105,0.34,g);cyl(0.032,0.032,0.008,10,'#6b3e22',x,0.13,0.34,g)});
+    box(0.82,0.04,0.2,shade(C.body,-0.12),0,0.075,0.37,g);for(let i=0;i<7;i++)box(0.82,0.005,0.012,shade(C.body,-0.25),0,0.097,0.29+i*0.025,g);
+    const w=cyl(0.012,0.012,0.22,6,'#c9ced6',0.4,0.27,0.31,g,m);w.rotation.z=0.25;sph(0.03,C.panel,0.38,0.42,0.3,g,null,8);sph(0.03,C.panel,-0.38,0.42,0.3,g,null,8);
+    const st=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,6),new THREE.MeshStandardMaterial({color:'#ffffff',transparent:true,opacity:0.6,depthWrite:false}));st.userData.ownMat=true;st.userData.noShadow=true;g.add(st);
+    A(t=>{const k=(t*0.6)%1;st.position.set(0.43,0.14+k*0.35,0.32);st.scale.setScalar(0.6+k*1.6);st.material.opacity=0.55*(1-k)})},
+  register(g,C){box(1.6,0.98,0.7,C.main,0,0.49,0,g);box(1.72,0.07,0.8,C.top,0,1.015,0.03,g);box(1.6,0.08,0.03,shade(C.main,-0.15),0,0.12,0.36,g);
+    const pl=new THREE.Mesh(new THREE.PlaneGeometry(0.62,0.23),payMat());pl.position.set(0,0.72,0.356);g.add(pl);
+    box(0.46,0.12,0.38,C.machine,-0.3,1.11,-0.05,g);box(0.44,0.05,0.03,shade(C.machine,0.1),-0.3,1.09,0.145,g);sph(0.015,'#c9ced6',-0.3,1.09,0.165,g,null,6);
+    const sd=box(0.05,0.2,0.05,C.machine,-0.3,1.27,-0.12,g);const tb=box(0.34,0.24,0.02,C.machine,-0.3,1.42,-0.1,g);tb.rotation.x=-0.35;const sc=box(0.3,0.2,0.005,'#9fd3ff',-0.3,1.423,-0.088,g,{emissive:'#5aa9e6',emissiveIntensity:0.45});sc.rotation.x=-0.35;
+    box(0.16,0.1,0.16,'#f4efe6',0.15,1.1,-0.12,g);const pp=box(0.08,0.12,0.004,'#ffffff',0.15,1.18,-0.06,g);pp.rotation.x=-0.3;
+    const cr=box(0.08,0.03,0.13,'#2b2421',0.38,1.065,0.1,g);cr.rotation.y=-0.3;box(0.05,0.004,0.04,'#5bb85d',0.38,1.083,0.08,g);
+    const jar=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.15,14,1,true),glass('#dff1f7',{side:THREE.DoubleSide}));jar.position.set(0.62,1.125,0.05);jar.userData.noShadow=true;g.add(jar);
+    [[0,0.02],[0.02,-0.01],[-0.02,0]].forEach(([x,z],i)=>{const c=cyl(0.022,0.022,0.008,10,'#f2c230',0.62+x,1.06+i*0.01,0.05+z,g,{metalness:0.3});c.rotation.z=i*0.4})},
   lamp(g,C){cyl(0.07,0.09,3,6,C.pole,0,1.5,0,g);box(0.5,0.12,0.5,C.pole,0,3.05,0,g);
     const h=new THREE.Mesh(new THREE.SphereGeometry(0.2,8,6),new THREE.MeshStandardMaterial({color:C.light,emissive:C.light,emissiveIntensity:0}));h.position.y=2.85;h.userData.ownMat=true;h.userData.noShadow=true;g.add(h);lampHeads.push(h)},
   ptree(g,C){cyl(0.18,0.24,1.4,6,C.trunk,0,0.7,0,g);[[0,2.1,0,1.25,0],[0.6,1.8,0.3,0.8,0.05],[-0.5,1.9,-0.3,0.85,-0.04]].forEach(t=>{const b=new THREE.Mesh(new THREE.IcosahedronGeometry(t[3],0),mat(shade(C.leaves,t[4])));b.position.set(t[0],t[1],t[2]);g.add(b)})},
