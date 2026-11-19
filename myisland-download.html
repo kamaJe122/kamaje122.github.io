@@ -29,6 +29,12 @@ h1{font-family:"Zen Maru Gothic","Noto Sans TC",sans-serif;font-weight:900;font-
 .steps ol{margin:6px 0 0;padding-left:20px}
 .steps li{margin:4px 0}
 .note{font-size:12.5px;color:var(--ink-soft);margin-top:16px}
+.warn{margin:0 0 16px;padding:14px 16px;background:#fff4d6;border:2.5px solid #f2b705;border-radius:18px;text-align:left;font-size:14px}
+.warn p{margin:6px 0 10px}
+.done{margin:14px 0 0;padding:14px 16px;background:#e7f6ec;border:2.5px solid #3fa66a;border-radius:18px;text-align:left;font-size:14px}
+.done p{margin:6px 0 0}
+.small-note{font-size:12.5px;color:var(--ink-soft)}
+.btn.small{font-size:14px;padding:10px 14px;margin-top:0;box-shadow:0 3px 0 var(--ink)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;transition:transform .25s;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 </style>
@@ -39,10 +45,27 @@ h1{font-family:"Zen Maru Gothic","Noto Sans TC",sans-serif;font-weight:900;font-
   <h1>我的小島</h1>
   <p class="sub">3D 玩具風任務小島・一個檔案就能玩</p>
 
+  <div class="warn" id="inapp" hidden>
+    <b>⚠️ 這裡是 App 內建瀏覽器，沒辦法下載檔案</b>
+    <p id="inappTip">請點右上角「⋯」→ 選「用瀏覽器開啟」，再按下載。</p>
+    <button class="btn ghost small" id="copy" type="button">複製這個頁面的連結</button>
+  </div>
+
   <a class="btn primary" id="dl" href="myisland.html" download="my-island.html">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
-    下載 HTML 檔
+    <span id="dlText">下載 HTML 檔</span>
   </a>
+  <button class="btn ghost" id="saveShare" type="button" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>
+    存到手機「檔案」
+  </button>
+
+  <div class="done" id="done" hidden>
+    <b>✅ 已開始下載！檔案在這裡找：</b>
+    <p id="where"></p>
+    <p class="small-note">沒看到？按上面的「存到手機『檔案』」再試一次。</p>
+  </div>
+
   <a class="btn ghost" href="myisland.html">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 4 14 8-14 8z"/></svg>
     直接線上玩
@@ -65,22 +88,68 @@ h1{font-family:"Zen Maru Gothic","Noto Sans TC",sans-serif;font-weight:900;font-
 <div class="toast" id="toast" role="status"></div>
 <script>
 (function(){
-  var toastEl=document.getElementById('toast'),t;
-  function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(t);t=setTimeout(function(){toastEl.classList.remove('show')},2200)}
-  // 備援：部分瀏覽器忽略 download 屬性時，改用 Blob 強制下載
-  document.getElementById('dl').addEventListener('click',function(e){
-    if(!window.fetch||!window.Blob)return;
-    e.preventDefault();
-    fetch(this.href).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){
-      var u=URL.createObjectURL(new Blob([b],{type:'text/html'})),a=document.createElement('a');
-      a.href=u;a.download='my-island.html';document.body.appendChild(a);a.click();a.remove();
-      setTimeout(function(){URL.revokeObjectURL(u)},4000);toast('開始下載囉 🎉');
-    }).catch(function(){location.href='myisland.html'});
+  var FILE='my-island.html', SRC='myisland.html';
+  var $=function(id){return document.getElementById(id)};
+  var toastEl=$('toast'),t;
+  function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(t);t=setTimeout(function(){toastEl.classList.remove('show')},2600)}
+
+  var ua=navigator.userAgent||'';
+  var isIOS=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var isAndroid=/Android/.test(ua);
+  var isLine=/\bLine\//i.test(ua);
+  var inApp=isLine||/FBAN|FBAV|FB_IAB|Instagram|Messenger|MicroMessenger|KAKAOTALK|Threads|TikTok|musical_ly|BytedanceWebview|; wv\)/i.test(ua);
+
+  // 1) App 內建瀏覽器（LINE / FB / IG …）通常會擋下載
+  if(inApp){
+    if(isLine&&!/openExternalBrowser=1/.test(location.search)){
+      // LINE 支援這個參數，會自動跳到手機的預設瀏覽器
+      location.replace(location.pathname+'?openExternalBrowser=1');
+    }
+    $('inapp').hidden=false;
+    if(isIOS)$('inappTip').textContent='請點右上角「⋯」或右下角的分享鈕 →「用 Safari 開啟」，再按下載。';
+    else if(isAndroid)$('inappTip').textContent='請點右上角「⋮」→「用 Chrome 開啟／用瀏覽器開啟」，再按下載。';
+  }
+
+  // 2) 預先把檔案抓好做成 Blob，按下去時「同步」觸發下載，避免手機瀏覽器擋掉
+  var blob=null, blobUrl=null, dl=$('dl');
+  function ready(b){
+    blob=new Blob([b],{type:'application/octet-stream'});
+    blobUrl=URL.createObjectURL(blob);
+    dl.href=blobUrl;
+    try{
+      var f=new File([b],FILE,{type:'text/html'});
+      if(navigator.canShare&&navigator.canShare({files:[f]})&&(isIOS||isAndroid)){
+        var btn=$('saveShare');btn.hidden=false;
+        btn.addEventListener('click',function(){
+          navigator.share({files:[f],title:'我的小島'}).catch(function(){});
+        });
+      }
+    }catch(e){}
+  }
+  if(window.fetch&&window.Blob&&window.URL){
+    fetch(SRC,{cache:'no-cache'}).then(function(r){if(!r.ok)throw 0;return r.text()}).then(ready).catch(function(){});
+  }
+
+  dl.addEventListener('click',function(e){
+    if(inApp){e.preventDefault();toast('請先改用瀏覽器開啟這個頁面 🙏');$('inapp').scrollIntoView({behavior:'smooth',block:'center'});return}
+    var where=$('where');
+    if(isIOS)where.innerHTML='iPhone／iPad：點 Safari 網址列左邊的 <b>⬇︎ 圖示</b> →「下載項目」，或打開「<b>檔案</b>」App →「下載項目」資料夾。點檔案就能玩。';
+    else if(isAndroid)where.innerHTML='Android：下拉通知列看「下載完成」，或打開「<b>檔案／下載</b>」App 的 Download 資料夾。';
+    else where.innerHTML='電腦：在瀏覽器右上角的下載清單，或「<b>下載</b>」資料夾裡找 <code>'+FILE+'</code>，雙擊打開。';
+    $('done').hidden=false;
+    $('dlText').textContent='再下載一次';
+    toast('開始下載囉 🎉');
   });
-  document.getElementById('share').addEventListener('click',function(){
-    var url=location.href;
+
+  function copyLink(){
+    var url=location.origin+location.pathname;
+    try{navigator.clipboard.writeText(url).then(function(){toast('連結已複製！')},function(){prompt('複製這個連結：',url)})}catch(e){prompt('複製這個連結：',url)}
+  }
+  $('copy').addEventListener('click',copyLink);
+  $('share').addEventListener('click',function(){
+    var url=location.origin+location.pathname;
     if(navigator.share){navigator.share({title:'我的小島',text:'來下載我的小島 🏝️',url:url}).catch(function(){});return}
-    try{navigator.clipboard.writeText(url).then(function(){toast('連結已複製，貼給朋友吧！')},function(){prompt('複製這個連結：',url)})}catch(e){prompt('複製這個連結：',url)}
+    copyLink();
   });
 })();
 </script>
