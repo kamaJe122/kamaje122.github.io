@@ -352,9 +352,9 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.2.2';
-const APP_NOTES=['😊 表情：喜、怒、哀、樂、平常，或🎲 隨心情變','💞 關係：👪 家人會不定時去找對方抱抱親親，💼 同事會不定時聊天'];
-const APP_OLD=['👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
+const APP_VERSION='1.2.3';
+const APP_NOTES=['🦜 鸚鵡的嘴巴可以換顏色了'];
+const APP_OLD=['😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -936,7 +936,7 @@ function makePet(o){normPet(o);const k=o.kind,c=o.color,a=o.accent,bc=o.belly,P=
     if(P==='mottled')for(let i=0;i<15;i++){const s=0.035+R()*0.06,m=new THREE.Mesh(new THREE.SphereGeometry(s,8,6),mat(a,{flatShading:false}));m.scale.set(1+R()*0.6,0.7+R()*0.5,0.3);stick(m,back(),side(),0).rotateZ(R()*3)}
     head=new THREE.Group();head.position.set(0,1.04,0.06);g.add(head);
     const hm=new THREE.Mesh(new THREE.SphereGeometry(0.24,12,10),mat(c,{flatShading:false}));hm.castShadow=true;head.add(hm);
-    const bk=new THREE.Mesh(new THREE.ConeGeometry(0.08,0.2,6),mat(c==='#f2c230'?'#3a3a3e':'#f2c230'));bk.rotation.x=Math.PI/2+0.5;bk.position.set(0,-0.05,0.27);head.add(bk);
+    const bk=new THREE.Mesh(new THREE.ConeGeometry(0.08,0.2,6),mat(o.beak||(c==='#f2c230'?'#3a3a3e':'#f2c230')));bk.rotation.x=Math.PI/2+0.5;bk.position.set(0,-0.05,0.27);head.add(bk);
     [-1,1].forEach(s=>{sph(0.06,'#ffffff',s*0.14,0.05,0.17,head,null,8);sph(0.035,'#1a1513',s*0.15,0.05,0.215,head,null,8)});
     if(P==='spots')[[0.08,0.2,-0.05],[-0.1,0.18,0],[0,0.23,-0.08]].forEach(([x,y,z])=>{const m=sph(0.03,a,x,y,z,head,null,6);m.scale.y=0.5});
     if(P==='mottled'){const m=sph(0.07,a,0.06,0.16,-0.1,head,null,8);m.scale.set(1.3,0.5,1)}
@@ -1791,6 +1791,7 @@ function petEditor(host,p){normPet(p);
     if(dog){h+=tabRow('品種','breed',Object.keys(BREEDS).map(k=>[k,BREEDS[k].label]),p.breed,'pk');h+=tabRow('毛長','longHair',[['0','短毛'],['1','長毛']],p.longHair?'1':'0','pk');h+=tabRow('耳朵','ears',[['prick','立耳'],['drop','垂耳']],p.ears,'pk')}
     h+=tabRow('身材','body',[['slim','很瘦'],['normal','一般'],['chubby','胖胖肉肉'],['muscle','健身肌肉']],p.body||'normal','pk');
     h+=cpRow('color',bird?'羽毛顏色（主體）':'主體顏色',p.color,bird?FEATHER:FUR);
+    if(bird)h+=cpRow('beak','嘴巴顏色',p.beak||(p.color==='#f2c230'?'#3a3a3e':'#f2c230'),['#f2c230','#f39a2b','#3a3a3e','#8f847c','#f4efe6','#ff8fb3','#e5534b']);
     h+=cpRow('belly','腹部顏色',p.belly,BELLY_C);
     h+=tabRow('花紋','pattern',K.pats,p.pattern,'pk');
     h+=cpRow('accent','花紋顏色',p.accent,ACCENT);
