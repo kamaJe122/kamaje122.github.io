@@ -353,9 +353,9 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.3.0';
-const APP_NOTES=['🐷 新動物：小豬、🐍 蛇、🐹 倉鼠、🐢 烏龜','🐾 每種動物都有 5 種以上品種可以選（柴犬、柯基、暹羅貓、玄鳳鸚鵡、黃金鼠、星龜…）','💰 手上可以拿：筆電、1／5／10／50 元硬幣、100／500／1000 元鈔票、信用卡；配件新增雨衣','☕ 咖啡廳：水杯、菜單、筆電、圓桌、長橢圓桌、竹椅、沙發椅、兒童座椅（椅子可以坐）'];
-const APP_OLD=['👀 編輯時預覽跟著捲動','🦜 鸚鵡嘴巴換顏色','😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
+const APP_VERSION='1.3.1';
+const APP_NOTES=['🥛 牛奶盒（白色屋頂盒／藍色）、旋奶機、熱吧機鋼杯、冰杓','🍴 鐵湯匙、鐵叉子、鐵刀子、放餐具的木盒子、餐巾紙、小包衛生紙','🛋️ 方形抱枕（可以放在沙發上）'];
+const APP_OLD=['🐷 小豬、蛇、倉鼠、烏龜＋每種動物 5 種以上品種；💰 錢幣鈔票、信用卡、筆電、雨衣；☕ 咖啡廳桌椅、水杯、菜單','👀 編輯時預覽跟著捲動','🦜 鸚鵡嘴巴換顏色','😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -392,6 +392,11 @@ const ACCS=[['glasses','黑框眼鏡','#2b2421'],['silver','銀框眼鏡','#c9ce
 const ACC_DEF={};ACCS.forEach(a=>ACC_DEF[a[0]]=a[2]);
 /* 印字貼圖（硬幣、鈔票、菜單） */
 const TXC={};function txMat(key,draw,w,h,o){if(TXC[key])return TXC[key];const cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d');draw(x,w,h);const t=new THREE.CanvasTexture(cv);return TXC[key]=new THREE.MeshStandardMaterial(Object.assign({map:t,roughness:0.55,side:THREE.DoubleSide},o||{}))}
+function milkBox(g,C){const m=txMat('milk'+C.box+C.band,(x,w,h)=>{x.fillStyle=C.box;x.fillRect(0,0,w,h);x.fillStyle=C.band;x.fillRect(0,h*0.12,w,h*0.26);x.fillStyle=C.box;x.font='bold 46px sans-serif';x.textAlign='center';x.fillText('鮮乳',w/2,h*0.31);
+    x.fillStyle=C.band;x.font='bold 22px sans-serif';x.fillText('100% 生乳',w/2,h*0.52);x.fillStyle='#2b2421';[[0.3,0.72,16],[0.62,0.8,12],[0.48,0.9,9]].forEach(([a,b,r])=>{x.beginPath();x.arc(w*a,h*b,r,0,7);x.fill()})},160,320);
+  box(0.09,0.2,0.09,C.box,0,0.1,0,g);[1,-1].forEach(s=>{const f=new THREE.Mesh(new THREE.PlaneGeometry(0.088,0.196),m);f.position.set(0,0.1,s*0.0452);if(s<0)f.rotation.y=Math.PI;g.add(f)});
+  [1,-1].forEach(s=>{const r=box(0.09,0.004,0.064,C.box,0,0.222,s*0.022,g);r.rotation.x=s*0.82});box(0.09,0.022,0.006,C.box,0,0.255,0,g);
+  [1,-1].forEach(s=>{const t=new THREE.Mesh(new THREE.CircleGeometry(0.037,3),mat(shade(C.box,-0.05),{side:THREE.DoubleSide}));t.rotation.set(0,s*Math.PI/2,Math.PI/2);t.position.set(s*0.044,0.218,0);g.add(t)})}
 function coinH(num,r){return (g,c)=>{const cg=new THREE.Group();cg.position.set(0,0.07,0.07);g.add(cg);const b=cyl(r,r,0.012,24,c,0,0,0,cg,{metalness:0.55,roughness:0.35});b.rotation.x=Math.PI/2;
   const m=txMat('coin'+num+c,(x,w,h)=>{x.fillStyle=c;x.fillRect(0,0,w,h);x.strokeStyle='rgba(0,0,0,.28)';x.lineWidth=10;x.beginPath();x.arc(w/2,h/2,w/2-14,0,7);x.stroke();x.fillStyle='rgba(40,30,20,.75)';x.font='bold '+(String(num).length>1?92:110)+'px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(String(num),w/2,h/2-6);x.font='bold 30px sans-serif';x.fillText('元',w/2,h/2+62)},256,256,{metalness:0.45,roughness:0.4});
   [1,-1].forEach(s=>{const f=new THREE.Mesh(new THREE.CircleGeometry(r*0.94,24),m);f.position.z=s*0.0065;if(s<0)f.rotation.y=Math.PI;cg.add(f)})}}
@@ -600,6 +605,18 @@ const ITEMS={
   island:{n:'中島櫃',e:'🍳',cat:'kitchen',cols:[['main','櫃體','#f4efe6'],['top','檯面','#c9a27a'],['knob','把手','#c9a27a']]},
   stove:{n:'爐台',e:'🔥',cat:'kitchen',cols:[['main','櫃體','#f4efe6'],['top','檯面','#8f847c']]},
   gas:{n:'瓦斯爐',e:'🍲',cat:'kitchen',small:1,cols:[['main','爐身','#d9dde3'],['grate','爐架','#2b2421'],['flame','火焰','#4fa3ff']]},
+  milkw:{n:'牛奶盒（白色屋頂盒）',e:'🥛',cat:'cafe',small:1,cols:[['box','盒子','#ffffff'],['band','色帶','#2f6fd8']]},
+  milkb:{n:'牛奶盒（藍色）',e:'🥛',cat:'cafe',small:1,cols:[['box','盒子','#2f6fd8'],['band','色帶','#ffffff']]},
+  frother:{n:'旋奶機（電動奶泡機）',e:'🌀',cat:'cafe',small:1,cols:[['body','壺身','#c9ced6'],['base','底座','#2b2421']]},
+  steelpitcher:{n:'熱吧機用鋼杯（拉花杯）',e:'🥤',cat:'cafe',small:1,cols:[['steel','不鏽鋼','#c9ced6']]},
+  icescoop:{n:'冰杓（鐵）',e:'🧊',cat:'cafe',small:1,cols:[['steel','不鏽鋼','#c9ced6']]},
+  cushion:{n:'方形抱枕',e:'🟧',cat:'living',small:1,cols:[['fabric','布料','#e8a25a'],['pipe','滾邊','#f4efe6']]},
+  spoon:{n:'鐵湯匙',e:'🥄',cat:'cafe',small:1,cols:[['steel','不鏽鋼','#c9ced6']]},
+  fork:{n:'鐵叉子',e:'🍴',cat:'cafe',small:1,cols:[['steel','不鏽鋼','#c9ced6']]},
+  tknife:{n:'鐵刀子（餐刀）',e:'🔪',cat:'cafe',small:1,cols:[['steel','不鏽鋼','#c9ced6']]},
+  cutlerybox:{n:'放餐具的木盒子',e:'🧺',cat:'cafe',small:1,cols:[['wood','木頭','#c9a27a'],['steel','餐具','#c9ced6']]},
+  napkins:{n:'餐巾紙（紙巾架）',e:'🧻',cat:'cafe',small:1,cols:[['holder','紙巾架','#c9ced6'],['paper','紙巾','#ffffff']]},
+  tissue:{n:'小包衛生紙（方形）',e:'🧻',cat:'cafe',small:1,cols:[['pack','包裝','#9fd3e6'],['paper','面紙','#ffffff']]},
   roundtable:{n:'圓形桌子',e:'⚪',cat:'cafe',cols:[['top','桌面','#c9a27a'],['leg','桌腳','#2b2421']]},
   ovaltable:{n:'長橢圓桌子',e:'🥚',cat:'cafe',cols:[['top','桌面','#c9a27a'],['leg','桌腳','#2b2421']]},
   bamboochair:{n:'竹子椅子',e:'🎋',cat:'cafe',cols:[['bamboo','竹子','#cdb56a'],['node','竹節','#8a7a3a']]},
@@ -1092,6 +1109,26 @@ const BUILD={
       for(let i=0;i<8;i++){const q=i/8*Math.PI*2,ph=i*0.8+x*9,f=new THREE.Mesh(new THREE.ConeGeometry(0.026,0.09,6),mat(C.flame,{emissive:C.flame,emissiveIntensity:0.9,transparent:true,opacity:0.85,flatShading:false}));
         f.position.set(x+Math.cos(q)*0.09,0.2,-0.03+Math.sin(q)*0.09);f.userData.noShadow=true;g.add(f);A(t=>{f.scale.y=0.8+Math.sin(t*14+ph)*0.25;f.scale.x=f.scale.z=1+Math.sin(t*11+ph)*0.1})}
       const k=cyl(0.035,0.035,0.05,10,'#2b2421',x,0.07,0.33,g);k.rotation.x=Math.PI/2})},
+  milkw(g,C){milkBox(g,C)},milkb(g,C){milkBox(g,C)},
+  frother(g,C){const st={metalness:0.25,roughness:0.32};cyl(0.075,0.08,0.035,20,C.base,0,0.0175,0,g);sph(0.008,'#3fd16b',0.06,0.02,0.05,g,{emissive:'#3fd16b',emissiveIntensity:0.9},6);
+    cyl(0.058,0.052,0.14,18,C.body,0,0.105,0,g,st);cyl(0.06,0.06,0.02,18,C.base,0,0.185,0,g);cyl(0.012,0.012,0.02,8,C.base,0,0.205,0,g);
+    const h=new THREE.Mesh(new THREE.TorusGeometry(0.04,0.009,6,12,Math.PI),mat(C.base));h.rotation.z=-Math.PI/2;h.position.set(0.062,0.11,0);g.add(h);const sp=box(0.02,0.012,0.03,C.body,-0.058,0.17,0,g,st);sp.rotation.z=0.4},
+  steelpitcher(g,C){const st={metalness:0.25,roughness:0.32};cyl(0.045,0.052,0.12,18,C.steel,0,0.06,0,g,st);const sp=box(0.03,0.012,0.05,C.steel,0,0.118,0.045,g,st);sp.rotation.x=0.45;
+    const h=new THREE.Mesh(new THREE.TorusGeometry(0.035,0.008,6,12,Math.PI),mat(C.steel,st));h.rotation.y=Math.PI/2;h.rotation.z=-Math.PI/2;h.position.set(0,0.065,-0.05);g.add(h)},
+  icescoop(g,C){const st={metalness:0.25,roughness:0.32};const sc=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.11,14,1,true,0,Math.PI),mat(C.steel,Object.assign({side:THREE.DoubleSide},st)));sc.rotation.set(Math.PI/2,0,Math.PI/2);sc.position.set(0,0.035,0.03);g.add(sc);
+    const bk=new THREE.Mesh(new THREE.CircleGeometry(0.035,14,Math.PI,Math.PI),mat(C.steel,Object.assign({side:THREE.DoubleSide},st)));bk.rotation.y=Math.PI;bk.position.set(0,0.035,-0.025);g.add(bk);
+    const hd=cyl(0.01,0.012,0.09,8,C.steel,0,0.035,-0.07,g,st);hd.rotation.x=Math.PI/2},
+  cushion(g,C){const pg=new THREE.Group();pg.position.set(0,0.19,0);pg.rotation.x=-0.22;g.add(pg);box(0.36,0.36,0.07,C.fabric,0,0,0,pg);[1,-1].forEach(s=>{const b=sph(0.2,C.fabric,0,0,s*0.03,pg,{flatShading:false},18);b.scale.set(0.95,0.95,0.2)});
+    [[0.36,0.016,0,0.18],[0.36,0.016,0,-0.18]].forEach(([w,h,x,y])=>box(w,h,0.075,C.pipe,x,y,0,pg));[-0.18,0.18].forEach(x=>box(0.016,0.36,0.075,C.pipe,x,0,0,pg))},
+  spoon(g,C){const st={metalness:0.25,roughness:0.32};box(0.014,0.004,0.11,C.steel,0,0.004,-0.03,g,st);const b=sph(0.024,C.steel,0,0.008,0.045,g,Object.assign({flatShading:false},st),12);b.scale.set(1,0.3,1.4)},
+  fork(g,C){const st={metalness:0.25,roughness:0.32};box(0.014,0.004,0.11,C.steel,0,0.004,-0.03,g,st);box(0.03,0.004,0.025,C.steel,0,0.004,0.035,g,st);[-0.011,-0.0037,0.0037,0.011].forEach(x=>box(0.004,0.004,0.035,C.steel,x,0.004,0.064,g,st))},
+  tknife(g,C){const st={metalness:0.25,roughness:0.32};box(0.014,0.006,0.09,C.steel,0,0.004,-0.045,g,st);box(0.02,0.003,0.1,C.steel,0.003,0.003,0.05,g,st);sph(0.01,C.steel,0.003,0.003,0.1,g,st,6).scale.set(1,0.3,1)},
+  cutlerybox(g,C){const W=C.wood;box(0.26,0.015,0.16,W,0,0.0075,0,g);[[0.26,0.07,0.012,0,0.04,0.074],[0.26,0.07,0.012,0,0.04,-0.074],[0.012,0.07,0.16,-0.124,0.04,0],[0.012,0.07,0.16,0.124,0.04,0],[0.008,0.06,0.15,-0.042,0.035,0],[0.008,0.06,0.15,0.042,0.035,0]].forEach(([w,h,d,x,y,z])=>box(w,h,d,W,x,y,z,g));
+    const st={metalness:0.25,roughness:0.32};[-0.083,0,0.083].forEach((x,k)=>[-0.012,0.012].forEach(dx=>{const t=box(0.012,0.004,0.14,C.steel,x+dx,0.03+Math.abs(dx)*0.6,0,g,st);t.rotation.x=0.18;if(k===0)sph(0.016,C.steel,x+dx,0.045,0.07,g,st,8).scale.set(1,0.4,1.3);if(k===1)box(0.022,0.004,0.03,C.steel,x+dx,0.045,0.07,g,st)}))},
+  napkins(g,C){const st={metalness:0.25,roughness:0.32};box(0.16,0.01,0.08,C.holder,0,0.005,0,g,st);[-0.075,0.075].forEach(x=>box(0.008,0.1,0.07,C.holder,x,0.055,0,g,st));
+    for(let i=0;i<8;i++){const n=box(0.135,0.12,0.004,C.paper,0,0.07,-0.025+i*0.007,g);n.rotation.x=(i-4)*0.02}},
+  tissue(g,C){const m=txMat('tissue'+C.pack,(x,w,h)=>{x.fillStyle=C.pack;x.fillRect(0,0,w,h);x.fillStyle='rgba(255,255,255,.75)';x.font='bold 40px sans-serif';x.textAlign='center';x.fillText('面紙',w/2,h*0.62);x.beginPath();x.arc(w*0.25,h*0.25,14,0,7);x.arc(w*0.75,h*0.8,10,0,7);x.fill()},200,140);
+    box(0.11,0.05,0.11,C.pack,0,0.025,0,g);const f=new THREE.Mesh(new THREE.PlaneGeometry(0.108,0.048),m);f.position.set(0,0.025,0.0552);g.add(f);const t=box(0.06,0.04,0.01,C.paper,0,0.065,0,g);t.rotation.z=0.2;const t2=box(0.05,0.03,0.008,C.paper,0.01,0.075,0.006,g);t2.rotation.set(0.3,0,-0.3)},
   roundtable(g,C){cyl(0.45,0.45,0.04,24,C.top,0,0.76,0,g);cyl(0.05,0.06,0.72,10,C.leg,0,0.38,0,g);cyl(0.24,0.26,0.03,16,C.leg,0,0.015,0,g)},
   ovaltable(g,C){const t=cyl(0.5,0.5,0.045,28,C.top,0,0.76,0,g);t.scale.x=2.1;[-0.62,0.62].forEach(x=>{cyl(0.05,0.06,0.72,10,C.leg,x,0.38,0,g);cyl(0.2,0.22,0.03,14,C.leg,x,0.015,0,g)})},
   bamboochair(g,C){const bam=(x,y,z,h,rx,rz)=>{const gg=new THREE.Group();gg.position.set(x,y,z);gg.rotation.set(rx||0,0,rz||0);g.add(gg);cyl(0.025,0.025,h,8,C.bamboo,0,0,0,gg);[-0.3,0,0.3].forEach(k=>cyl(0.03,0.03,0.016,8,C.node,0,k*h,0,gg))};
