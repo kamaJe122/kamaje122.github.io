@@ -353,9 +353,9 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.3.1';
-const APP_NOTES=['🥛 牛奶盒（白色屋頂盒／藍色）、旋奶機、熱吧機鋼杯、冰杓','🍴 鐵湯匙、鐵叉子、鐵刀子、放餐具的木盒子、餐巾紙、小包衛生紙','🛋️ 方形抱枕（可以放在沙發上）'];
-const APP_OLD=['🐷 小豬、蛇、倉鼠、烏龜＋每種動物 5 種以上品種；💰 錢幣鈔票、信用卡、筆電、雨衣；☕ 咖啡廳桌椅、水杯、菜單','👀 編輯時預覽跟著捲動','🦜 鸚鵡嘴巴換顏色','😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
+const APP_VERSION='1.4.0';
+const APP_NOTES=['🧱 牆壁：長、高、厚度可以自由調，純色／花紋／橫條紋／直條紋都能配色；還有玻璃門、出菜口','☕ 大圓形咖啡豆招牌、吊掛告示牌（文字可改）、牛角椅；菜單變成打開的書','🍳 餐點：香煎雞腿早午餐、花生醬牛肉漢堡、夏威夷鮮蝦披薩、提拉米蘇、奶酪、檸檬塔','☕ 飲料：拉花拿鐵、空咖啡杯、伯爵歐蕾、熱茶壺、熱茶杯、木頭托盤；還有用過的衛生紙團','🐮 新動物：牛（乳牛、娟珊牛、黃牛、水牛、和牛、高地牛）；🐶 狗狗新增黑柴犬'];
+const APP_OLD=['🥛 牛奶盒、旋奶機、鋼杯、冰杓、餐具、餐巾紙、衛生紙、抱枕','🐷 小豬、蛇、倉鼠、烏龜＋每種動物 5 種以上品種；💰 錢幣鈔票、信用卡、筆電、雨衣；☕ 咖啡廳桌椅、水杯、菜單','👀 編輯時預覽跟著捲動','🦜 鸚鵡嘴巴換顏色','😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -392,6 +392,22 @@ const ACCS=[['glasses','黑框眼鏡','#2b2421'],['silver','銀框眼鏡','#c9ce
 const ACC_DEF={};ACCS.forEach(a=>ACC_DEF[a[0]]=a[2]);
 /* 印字貼圖（硬幣、鈔票、菜單） */
 const TXC={};function txMat(key,draw,w,h,o){if(TXC[key])return TXC[key];const cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d');draw(x,w,h);const t=new THREE.CanvasTexture(cv);return TXC[key]=new THREE.MeshStandardMaterial(Object.assign({map:t,roughness:0.55,side:THREE.DoubleSide},o||{}))}
+/* 牆壁貼圖：純色／花紋／橫條紋／直條紋 */
+const WTX={};function wallMat(st,c1,c2,w,h){if(st==='solid'||!st)return mat(c1);const key=st+c1+c2;if(!WTX[key]){const cv=document.createElement('canvas');cv.width=cv.height=128;const x=cv.getContext('2d');x.fillStyle=c1;x.fillRect(0,0,128,128);x.fillStyle=c2;
+    if(st==='hstripe')x.fillRect(0,0,128,48);else if(st==='vstripe')x.fillRect(0,0,48,128);else{[[32,32],[96,96]].forEach(([cx,cy])=>{for(let k=0;k<5;k++){const a=k/5*6.283;x.beginPath();x.arc(cx+Math.cos(a)*11,cy+Math.sin(a)*11,8,0,7);x.fill()}x.fillStyle=c1;x.beginPath();x.arc(cx,cy,5,0,7);x.fill();x.fillStyle=c2});x.beginPath();x.arc(96,32,4,0,7);x.arc(32,96,4,0,7);x.fill()}
+    WTX[key]=new THREE.CanvasTexture(cv)}const t=WTX[key].clone();t.needsUpdate=true;t.wrapS=t.wrapT=THREE.RepeatWrapping;
+  if(st==='hstripe')t.repeat.set(1,h/0.4);else if(st==='vstripe')t.repeat.set(w/0.4,1);else t.repeat.set(w/0.6,h/0.6);return new THREE.MeshStandardMaterial({map:t,roughness:0.85})}
+function mugSet(g,C,full){cyl(0.1,0.085,0.012,24,C.cup,0,0.006,0,g,{roughness:0.25});cyl(0.045,0.045,0.006,18,shade(C.cup,-0.12),0,0.014,0,g);
+  const cp=new THREE.Mesh(new THREE.CylinderGeometry(0.065,0.038,0.085,22,1,true),mat(C.cup,{side:THREE.DoubleSide,roughness:0.25}));cp.position.y=0.055;g.add(cp);
+  const inn=new THREE.Mesh(new THREE.CylinderGeometry(0.062,0.036,0.082,22,1,true),mat('#ffffff',{side:THREE.BackSide}));inn.position.y=0.056;g.add(inn);cyl(0.036,0.036,0.003,18,'#ffffff',0,0.016,0,g);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(0.064,0.004,6,28),mat('#ffffff'));rim.rotation.x=Math.PI/2;rim.position.y=0.097;g.add(rim);
+  const h=new THREE.Mesh(new THREE.TorusGeometry(0.03,0.009,8,16,Math.PI*1.25),mat(C.cup,{roughness:0.25}));h.position.set(0.07,0.06,0);h.rotation.z=-Math.PI*0.62;g.add(h);
+  if(full){const m=txMat('latteart',(x,w,hh)=>{x.fillStyle='#b98a55';x.fillRect(0,0,w,hh);const gr=x.createRadialGradient(w/2,hh/2,w*0.1,w/2,hh/2,w/2);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(120,70,30,.6)');x.fillStyle=gr;x.fillRect(0,0,w,hh);
+      x.fillStyle='#fbf3e6';for(let i=0;i<6;i++){x.beginPath();x.ellipse(w*0.5,hh*0.32+i*hh*0.07,w*(0.22-i*0.025),hh*0.035,0,Math.PI,0);x.fill()}x.fillRect(w*0.49,hh*0.3,w*0.02,hh*0.45)},256,256);
+    const s=new THREE.Mesh(new THREE.CircleGeometry(0.061,28),m);s.rotation.x=-Math.PI/2;s.position.y=0.092;g.add(s)}}
+function scallopPlate(g,c){cyl(0.14,0.12,0.015,14,c,0,0.0075,0,g);for(let i=0;i<14;i++){const a=i/14*6.283;sph(0.028,c,Math.cos(a)*0.13,0.012,Math.sin(a)*0.13,g,null,6).scale.set(1,0.3,1)}}
+function tagPick(g,x,y,z){cyl(0.002,0.002,0.05,4,'#f4efe6',x,y-0.025,z,g);const t=cyl(0.022,0.022,0.004,16,'#ffffff',x,y+0.01,z,g);t.rotation.x=Math.PI/2;cyl(0.01,0.01,0.005,10,'#e3bd52',x,y+0.01,z+0.002,g).rotation.x=Math.PI/2}
+function smallFork(g,x,y,z,ry){const f=new THREE.Group();f.position.set(x,y,z);f.rotation.y=ry;g.add(f);const st={metalness:0.25,roughness:0.3};box(0.008,0.003,0.08,'#c9ced6',0,0,-0.02,f,st);box(0.018,0.003,0.015,'#c9ced6',0,0,0.025,f,st);[-0.006,0,0.006].forEach(dx=>box(0.003,0.003,0.022,'#c9ced6',dx,0,0.042,f,st))}
 function milkBox(g,C){const m=txMat('milk'+C.box+C.band,(x,w,h)=>{x.fillStyle=C.box;x.fillRect(0,0,w,h);x.fillStyle=C.band;x.fillRect(0,h*0.12,w,h*0.26);x.fillStyle=C.box;x.font='bold 46px sans-serif';x.textAlign='center';x.fillText('鮮乳',w/2,h*0.31);
     x.fillStyle=C.band;x.font='bold 22px sans-serif';x.fillText('100% 生乳',w/2,h*0.52);x.fillStyle='#2b2421';[[0.3,0.72,16],[0.62,0.8,12],[0.48,0.9,9]].forEach(([a,b,r])=>{x.beginPath();x.arc(w*a,h*b,r,0,7);x.fill()})},160,320);
   box(0.09,0.2,0.09,C.box,0,0.1,0,g);[1,-1].forEach(s=>{const f=new THREE.Mesh(new THREE.PlaneGeometry(0.088,0.196),m);f.position.set(0,0.1,s*0.0452);if(s<0)f.rotation.y=Math.PI;g.add(f)});
@@ -511,6 +527,7 @@ const BREEDS={mutt:{label:'土狗',color:'#c9a27a',belly:'#f6efe4',accent:'#6b4a
   golden:{label:'黃金獵犬',color:'#e3b062',belly:'#f3d9a4',accent:'#c98a3a',ears:'drop',longHair:true,pattern:'solid'},
   chihuahua:{label:'吉娃娃',color:'#f3d9a4',belly:'#fbf1e2',accent:'#8a5a2b',ears:'prick',longHair:false,pattern:'solid'},
   poodle:{label:'貴賓狗',color:'#c8813f',belly:'#c8813f',accent:'#8a5a2b',ears:'drop',longHair:true,pattern:'solid'},
+  kuroshiba:{label:'黑柴犬',color:'#2b2421',belly:'#f3dfc0',accent:'#c98a3a',ears:'prick',longHair:false,pattern:'bicolor'},
   husky:{label:'哈士奇',color:'#5a5f6b',belly:'#ffffff',accent:'#2b2421',ears:'prick',longHair:false,pattern:'bicolor'}};
 const PAT_OLD={stripes:'brindle',spots:'speckle',patch:'bicolor',rainbow:'solid'};
 const PET_KIND={
@@ -520,7 +537,24 @@ const PET_KIND={
   pig:{label:'小豬',emoji:'🐷',def:'小豬',pats:[['solid','純色'],['spots','斑點']],collar:1,line:'噗噗～ {isle}的泥巴最舒服了，有沒有地瓜？',snd:'噗噗！{n} 開心地用鼻子拱你'},
   snake:{label:'蛇',emoji:'🐍',def:'小蛇',pats:[['blotch','斑塊'],['bands','環紋'],['solid','純色']],line:'嘶嘶～ 我在{isle}曬太陽，不要踩到我喔。',snd:'嘶～ {n} 慢慢吐了吐舌頭'},
   hamster:{label:'倉鼠',emoji:'🐹',def:'鼠鼠',pats:[['solid','純色'],['stripe','背線'],['patch','花斑']],base:1.3,line:'（臉頰塞滿瓜子）吱吱！{isle}的瓜子是我的！',snd:'吱吱！{n} 把臉頰塞得鼓鼓的'},
+  cow:{label:'牛',emoji:'🐮',def:'小牛',pats:[['solid','純色'],['spots','乳牛斑']],collar:1,line:'哞～ {isle}的草最好吃了，{o}要不要喝牛奶？',snd:'哞～ {n} 用頭蹭了蹭你'},
   turtle:{label:'烏龜',emoji:'🐢',def:'龜龜',pats:[['plain','素殼'],['ring','年輪紋'],['star','星紋'],['spots','豹紋斑點']],line:'慢慢來比較快…… 我會慢慢逛完{isle}。',snd:'{n} 把頭慢慢伸出來看你'}};
+const __cowX=function(o,g,R){const c=o.color,a=o.accent,bc=o.belly,legs=[];
+  const b=sph(0.34,c,0,0.74,0,g,{flatShading:false},16);b.scale.set(0.95,0.85,1.6);
+  if(o.pattern==='spots')for(let i=0;i<7;i++){const th=R()*Math.PI*2,ph=0.35+R()*1.1,m=sph(0.13+R()*0.07,a,Math.sin(ph)*Math.cos(th)*0.31,0.74+Math.cos(ph)*0.27,Math.sin(ph)*Math.sin(th)*0.52,g,{flatShading:false},8);m.scale.set(1,0.45,1.2)}
+  if(o.udder){sph(0.1,'#f2a5a5',0,0.46,-0.18,g,{flatShading:false},10).scale.set(1,0.7,1);[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([sx,sz])=>cyl(0.012,0.012,0.06,6,'#f28b8b',sx*0.04,0.39,-0.18+sz*0.04,g))}
+  if(o.longHair)[-1,1].forEach(s=>{for(let i=0;i<5;i++){const f=box(0.03,0.2,0.16,c,s*0.31,0.58,-0.36+i*0.18,g);f.rotation.z=s*0.15}});
+  [[-1,1],[1,1],[-1,-1],[1,-1]].forEach(([sx,sz])=>{const L=new THREE.Group();L.position.set(sx*0.18,0.5,sz*0.36);g.add(L);box(0.12,0.46,0.12,c,0,-0.23,0,L);box(0.125,0.06,0.125,'#2b2421',0,-0.47,0,L);legs.push(L)});
+  const head=new THREE.Group();head.position.set(0,0.95,0.6);g.add(head);const hm=sph(0.18,c,0,0,0,head,{flatShading:false},14);hm.scale.set(1,1,1.2);
+  box(0.24,0.16,0.14,o.udder?'#f2b5b0':shade(bc,0.05),0,-0.1,0.18,head);[-1,1].forEach(s=>{sph(0.022,'#3a2a2a',s*0.05,-0.1,0.255,head,null,6);sph(0.03,'#1a1513',s*0.11,0.05,0.15,head,null,8);
+    const e=box(0.14,0.05,0.08,c,s*0.21,0.05,0,head);e.rotation.z=s*-0.25;
+    if(o.horns==='buffalo'){const hr=new THREE.Mesh(new THREE.TorusGeometry(0.17,0.035,6,12,Math.PI*0.7),mat('#d8cdb8'));hr.position.set(s*0.12,0.1,-0.04);hr.rotation.set(0,0,s>0?-0.2:Math.PI+0.2);head.add(hr)}
+    else if(o.horns==='long'){const hr=new THREE.Mesh(new THREE.ConeGeometry(0.035,0.32,8),mat('#e8dcc4'));hr.position.set(s*0.26,0.17,0);hr.rotation.z=s*-1.1;head.add(hr)}
+    else if(o.horns){const hr=new THREE.Mesh(new THREE.ConeGeometry(0.03,0.12,8),mat('#e8dcc4'));hr.position.set(s*0.12,0.18,-0.02);hr.rotation.z=s*-0.4;head.add(hr)}});
+  if(o.longHair){const fr=sph(0.13,c,0,0.1,0.13,head,{flatShading:true},8);fr.scale.set(1.4,0.6,0.7)}
+  const tail=new THREE.Group();tail.position.set(0,0.85,-0.54);g.add(tail);const tl=cyl(0.015,0.015,0.45,6,c,0,-0.22,0,tail);sph(0.045,a===c?shade(c,-0.2):a,0,-0.46,0,tail,null,8).scale.set(1,1.5,1);tail.rotation.x=0.15;
+  if(o.collar&&o.collar!=='none'){const co=new THREE.Mesh(new THREE.TorusGeometry(0.17,0.03,6,18),mat(o.collar));co.position.set(0,-0.14,-0.08);co.rotation.x=Math.PI/2-0.25;head.add(co);sph(0.05,'#d9b45f',0,-0.27,0.0,head,{metalness:0.5,roughness:0.3},10)}
+  return {legs,tail,head}};
 /* 每種小動物的品種（選了會套用顏色和花紋，之後還能自己改） */
 const PET_BREEDS={
   cat:{orange:{label:'橘貓',color:'#e8a25a',belly:'#fbf1e2',accent:'#a5532a',pattern:'brindle'},tabby:{label:'虎斑貓',color:'#8f847c',belly:'#f4efe6',accent:'#3a332e',pattern:'brindle'},
@@ -540,10 +574,13 @@ const PET_BREEDS={
   hamster:{golden:{label:'黃金鼠',color:'#e8a25a',belly:'#fbf1e2',accent:'#c97a35',pattern:'patch'},striped:{label:'三線鼠',color:'#8f959e',belly:'#f4efe6',accent:'#3a3a3e',pattern:'stripe'},
     pudding:{label:'布丁鼠',color:'#f2d28a',belly:'#fbf1e2',accent:'#e0b45f',pattern:'solid'},silver:{label:'銀狐倉鼠',color:'#e9ecef',belly:'#ffffff',accent:'#9aa0a8',pattern:'stripe'},
     robo:{label:'老公公鼠',color:'#d9b48a',belly:'#ffffff',accent:'#a07850',pattern:'solid',brows:true},panda:{label:'熊貓倉鼠',color:'#ffffff',belly:'#ffffff',accent:'#2b2421',pattern:'patch'}},
+  cow:{holstein:{label:'乳牛（黑白）',color:'#f4efe6',belly:'#f4efe6',accent:'#1f1a17',pattern:'spots',udder:true},jersey:{label:'娟珊牛',color:'#b07a45',belly:'#e8cfa8',accent:'#5a3a22',pattern:'solid',udder:true},
+    yellow:{label:'台灣黃牛',color:'#c98a3a',belly:'#e8c48a',accent:'#8a5a2b',pattern:'solid',horns:'short'},buffalo:{label:'水牛',color:'#5a5f6b',belly:'#6b707a',accent:'#2b2421',pattern:'solid',horns:'buffalo'},
+    wagyu:{label:'和牛',color:'#2b2421',belly:'#3a332e',accent:'#1f1a17',pattern:'solid',horns:'short'},highland:{label:'高地牛（長毛）',color:'#b8662f',belly:'#c97a40',accent:'#7a3a18',pattern:'solid',horns:'long',longHair:true}},
   turtle:{slider:{label:'巴西龜',color:'#4a6b3a',belly:'#6f8f4a',accent:'#2e4426',pattern:'ring',redEar:true},sulcata:{label:'蘇卡達象龜',color:'#c9a066',belly:'#b08a5a',accent:'#7a5a35',pattern:'ring',size:1.35},
     leopard:{label:'豹紋陸龜',color:'#e3c48a',belly:'#c9a066',accent:'#3a2a1e',pattern:'spots'},star:{label:'星龜',color:'#2b2421',belly:'#c9a066',accent:'#f2c230',pattern:'star'},
     reeves:{label:'斑龜（草龜）',color:'#5a4a35',belly:'#6f6a4a',accent:'#f2d23c',pattern:'plain',neckStripe:true}}};
-const BREED_FLAGS=['size','tusk','crest','cheek','tailC','brows','redEar','neckStripe','beak','longHair','ears'];
+const BREED_FLAGS=['udder','horns','size','tusk','crest','cheek','tailC','brows','redEar','neckStripe','beak','longHair','ears'];
 function applyBreed(p,key){const B=(PET_BREEDS[p.kind]||{})[key];if(!B)return;BREED_FLAGS.forEach(f=>delete p[f]);Object.assign(p,{breed:key,color:B.color,belly:B.belly,accent:B.accent,pattern:B.pattern});BREED_FLAGS.forEach(f=>{if(B[f]!=null)p[f]=B[f]});if(p.kind==='dog'){p.ears=B.ears;p.longHair=B.longHair}}
 /* 新的小動物：小豬、蛇、倉鼠、烏龜（臉朝 +z，腳踩 y=0） */
 const PET_X={
@@ -591,9 +628,10 @@ const PET_X={
     [-1,1].forEach(s=>{sph(0.02,'#1a1513',s*0.06,0.045,0.09,head,null,6);if(o.redEar)box(0.01,0.03,0.07,'#e5343b',s*0.083,0.02,0.0,head);if(o.neckStripe)[0,0.03].forEach(dy=>box(0.01,0.012,0.12,'#f2d23c',s*0.06,-0.01+dy,-0.04,head))});
     const tail=new THREE.Group();tail.position.set(0,0.1,-0.42);g.add(tail);const t=new THREE.Mesh(new THREE.ConeGeometry(0.03,0.1,6),mat(bc));t.rotation.x=-Math.PI/2;t.position.z=-0.04;tail.add(t);
     return {legs,tail,head}}};
+PET_X.cow=__cowX;
 
 /* 可以擺設的物件（cols = [顏色鍵, 名稱, 預設色]；small = 小東西，拖曳時會自動放到桌面上） */
-const ITEM_CAT=[['isle','島嶼設施'],['kitchen','廚房'],['bake','烘焙'],['cafe','咖啡・裝飾'],['bed','臥室'],['living','客廳'],['outdoor','戶外'],['garden','庭園・農場']];
+const ITEM_CAT=[['isle','島嶼設施'],['build','牆壁・門窗'],['food','餐點・飲料'],['kitchen','廚房'],['bake','烘焙'],['cafe','咖啡・裝飾'],['bed','臥室'],['living','客廳'],['outdoor','戶外'],['garden','庭園・農場']];
 const ITEMS={
   lamp:{n:'路燈',e:'💡',cat:'isle',cols:[['pole','燈柱','#2b2421'],['light','燈泡','#fff2c4']]},
   ptree:{n:'圓圓樹',e:'🌳',cat:'isle',cols:[['leaves','樹葉','#6aa86b'],['trunk','樹幹','#7b5236']]},
@@ -605,6 +643,25 @@ const ITEMS={
   island:{n:'中島櫃',e:'🍳',cat:'kitchen',cols:[['main','櫃體','#f4efe6'],['top','檯面','#c9a27a'],['knob','把手','#c9a27a']]},
   stove:{n:'爐台',e:'🔥',cat:'kitchen',cols:[['main','櫃體','#f4efe6'],['top','檯面','#8f847c']]},
   gas:{n:'瓦斯爐',e:'🍲',cat:'kitchen',small:1,cols:[['main','爐身','#d9dde3'],['grate','爐架','#2b2421'],['flame','火焰','#4fa3ff']]},
+  wall:{n:'牆壁（長寬高可調）',e:'🧱',cat:'build',cols:[['main','底色','#f4efe6'],['accent','花紋／條紋顏色','#c9a27a']],opts:[['style','樣式',[['solid','純色'],['pattern','花紋'],['hstripe','橫條紋'],['vstripe','直條紋']],'solid']],dims:[['w','長度',0.3,12,0.1,3],['h','高度',0.3,5,0.1,2.5],['t','厚度',0.05,0.8,0.01,0.15]]},
+  glassdoor:{n:'玻璃門',e:'🚪',cat:'build',cols:[['frame','門框','#2b2421'],['glass','玻璃','#cfe9f3'],['handle','把手','#c9ced6']]},
+  passwin:{n:'出菜口（菜口）',e:'🛎️',cat:'build',cols:[['wall','牆面','#f4efe6'],['shelf','出菜台','#c9a27a'],['lamp','保溫燈','#2b2421']]},
+  beansign:{n:'大圓形咖啡豆招牌',e:'☕',cat:'cafe',cols:[['board','招牌底色','#f4efe6'],['bean','咖啡豆','#5a3a22'],['rim','外框和柱子','#8b5a34']]},
+  hangsign:{n:'吊掛告示牌',e:'🪧',cat:'cafe',text:'告示牌文字',textDef:'餐具自助區',cols:[['board','木板','#e9dccb'],['ink','字','#1f1a17'],['strap','吊帶','#c9a27a']],opts:[['arrow','箭頭',[['L','⬅️ 左'],['R','➡️ 右'],['none','不要']],'L']]},
+  hornchair:{n:'牛角椅（木頭）',e:'🪑',cat:'cafe',cols:[['wood','木頭','#dcc8a4'],['seat','坐墊','#9a9690']]},
+  chickenplate:{n:'香煎雞腿早午餐拼盤',e:'🍳',cat:'food',small:1,cols:[['plate','盤子','#ffffff']]},
+  lattemug:{n:'拉花拿鐵（杯＋盤）',e:'☕',cat:'food',small:1,cols:[['cup','杯子','#1f7f8c']]},
+  emptymug:{n:'空的咖啡杯（杯＋盤）',e:'🫖',cat:'food',small:1,cols:[['cup','杯子','#1f7f8c']]},
+  earlgrey:{n:'伯爵歐蕾',e:'🥤',cat:'food',small:1,cols:[['tea','奶茶','#c9a27a'],['foam','奶泡','#fbf8f0'],['straw','吸管','#1f1a17']]},
+  teapot:{n:'熱茶壺',e:'🫖',cat:'food',small:1,cols:[['body','壺身','#f4f2ee'],['glaze','漸層釉色','#5aa0b0'],['lid','壺蓋','#1f7f9c']]},
+  teacup:{n:'熱茶杯',e:'🍵',cat:'food',small:1,cols:[['cup','杯子','#f4f2ee'],['glaze','漸層釉色','#a8cfd8'],['tea','茶','#5a2a14']]},
+  woodtray:{n:'木頭托盤',e:'🟫',cat:'food',small:1,cols:[['wood','木頭','#e2bf8f']]},
+  pizza:{n:'夏威夷鮮蝦披薩（木托盤）',e:'🍕',cat:'food',small:1,cols:[['board','木托盤','#c9945a']]},
+  tiramisu:{n:'提拉米蘇',e:'🍰',cat:'food',small:1,cols:[['plate','盤子','#ffffff'],['cream','奶油','#f4ead2']]},
+  pannacotta:{n:'奶酪',e:'🍮',cat:'food',small:1,cols:[['cream','奶酪','#f8f3e6']]},
+  lemontart:{n:'檸檬塔',e:'🍋',cat:'food',small:1,cols:[['plate','盤子','#ffffff'],['lemon','檸檬內餡','#f6d23c']]},
+  burger:{n:'花生醬牛肉漢堡（拼盤）',e:'🍔',cat:'food',small:1,cols:[]},
+  tissueball:{n:'用過的衛生紙團',e:'🗑️',cat:'cafe',small:1,cols:[['paper','衛生紙','#f4f2ee'],['dirt','髒污','#b8a27a']]},
   milkw:{n:'牛奶盒（白色屋頂盒）',e:'🥛',cat:'cafe',small:1,cols:[['box','盒子','#ffffff'],['band','色帶','#2f6fd8']]},
   milkb:{n:'牛奶盒（藍色）',e:'🥛',cat:'cafe',small:1,cols:[['box','盒子','#2f6fd8'],['band','色帶','#ffffff']]},
   frother:{n:'旋奶機（電動奶泡機）',e:'🌀',cat:'cafe',small:1,cols:[['body','壺身','#c9ced6'],['base','底座','#2b2421']]},
@@ -623,7 +680,7 @@ const ITEMS={
   sofachair:{n:'沙發椅子',e:'🛋️',cat:'cafe',cols:[['main','椅身','#8b5a34'],['cushion','坐墊','#e8d3b0'],['leg','椅腳','#4a2c1c']]},
   highchair:{n:'兒童座椅',e:'👶',cat:'cafe',cols:[['wood','木頭','#e2bf8f'],['tray','餐盤','#ffffff'],['pad','坐墊','#ff8fb3']]},
   waterglass:{n:'咖啡廳水杯',e:'🥛',cat:'cafe',small:1,cols:[['glass','杯子','#e4f3f8'],['water','水','#bfe6f5']]},
-  menu:{n:'菜單',e:'📋',cat:'cafe',small:1,cols:[['cover','封面','#2b2421'],['text','字','#f2c230']]},
+  menu:{n:'菜單（打開的書）',e:'📖',cat:'cafe',small:1,cols:[['cover','封面','#2b2421'],['text','標題字','#b8862f']]},
   laptop:{n:'筆記型電腦（打開）',e:'💻',cat:'cafe',small:1,cols:[['body','機身','#c9ced6'],['screen','螢幕','#7cc8e6']]},
   dishsink:{n:'堆滿髒碗盤的洗手槽',e:'🍽️',cat:'kitchen',cols:[['main','櫃體','#c9ced6'],['tap','水龍頭','#c9ced6'],['filt','過濾水龍頭','#2f8fd8'],['dish','碗盤','#ffffff'],['dirt','髒污（醬汁）','#a0602a']],opts:[['tap','水龍頭（出水口）在',[['L','左邊'],['R','右邊']],'R'],['filt','過濾水出水口在',[['L','左邊'],['R','右邊']],'L']]},
   sink:{n:'洗手台',e:'🚰',cat:'kitchen',cols:[['main','櫃體','#ffffff'],['top','檯面','#c9ced6'],['tap','水龍頭','#c9ced6']]},
@@ -999,7 +1056,7 @@ function normPet(p){if(!PET_KIND[p.kind])p.kind='cat';const K=PET_KIND[p.kind];
 function makePet(o){normPet(o);const k=o.kind,c=o.color,a=o.accent,bc=o.belly,P=o.pattern||'solid',R=srand(String(o.id||'pet'));
   const g=new THREE.Group(),legs=[],wings=[];let tail,head;
   let segs=null;if(PET_X[k]){const r=PET_X[k](o,g,R);r.legs.forEach(L=>legs.push(L));tail=r.tail;head=r.head;segs=r.segs||null}
-  else if(k==='cat'||k==='dog'){const dog=k==='dog',br=dog?o.breed:'cat',lng=!!o.longHair;
+  else if(k==='cat'||k==='dog'){const dog=k==='dog',br=dog?(o.breed==='kuroshiba'?'shiba':o.breed):'cat',lng=!!o.longHair;
     const [bw,bh,bl,lh,hs]=({cat:[0.4,0.38,0.85,0.28,0.4],mutt:[0.44,0.42,0.95,0.36,0.42],shiba:[0.46,0.42,0.85,0.3,0.44],chow:[0.54,0.5,0.85,0.28,0.48],corgi:[0.44,0.36,1.0,0.17,0.42],golden:[0.5,0.48,1.05,0.42,0.46],chihuahua:[0.3,0.28,0.55,0.24,0.38],poodle:[0.4,0.4,0.8,0.4,0.4],husky:[0.48,0.46,1.0,0.4,0.44]}[br]||[0.44,0.42,0.95,0.36,0.42]);
     const by=lh+bh/2,top=by+bh/2,fz=hs/2,sable=P==='sable';
     if(sable)gradBox(bw,bh,bl,c,a,0,by,0,g);else box(bw,bh,bl,c,0,by,0,g);
@@ -1025,7 +1082,7 @@ function makePet(o){normPet(o);const k=o.kind,c=o.color,a=o.accent,bc=o.belly,P=
     /* 頭 */
     head=new THREE.Group();head.position.set(0,top+(dog?0.1:0.08),bl/2+(br==='chow'?0.12:0.06));g.add(head);
     if(sable)gradBox(hs,hs*0.92,hs,c,a,0,0,0,head);else box(hs,hs*0.92,hs,c,0,0,0,head);
-    [-1,1].forEach(s=>sph(0.045,'#1a1513',s*0.1,0.05,fz+0.006,head,null,8));
+    [-1,1].forEach(s=>{sph(0.045,'#1a1513',s*0.1,0.05,fz+0.006,head,null,8);if(o.breed==='kuroshiba')sph(0.03,bc,s*0.1,0.13,fz+0.004,head,null,6).scale.z=0.4});
     if(br==='chow'){const m=sph(0.34,sable?a:c,0,-0.04,-0.14,head,{flatShading:true},10);m.scale.set(1.15,1.0,0.6)}
     const earC=sable||P==='tricolor'?a:c;
     if(dog){const ears=o.ears;[-1,1].forEach(s=>{const ec=P==='piebald'&&s>0?a:earC;
@@ -1129,6 +1186,68 @@ const BUILD={
     for(let i=0;i<8;i++){const n=box(0.135,0.12,0.004,C.paper,0,0.07,-0.025+i*0.007,g);n.rotation.x=(i-4)*0.02}},
   tissue(g,C){const m=txMat('tissue'+C.pack,(x,w,h)=>{x.fillStyle=C.pack;x.fillRect(0,0,w,h);x.fillStyle='rgba(255,255,255,.75)';x.font='bold 40px sans-serif';x.textAlign='center';x.fillText('面紙',w/2,h*0.62);x.beginPath();x.arc(w*0.25,h*0.25,14,0,7);x.arc(w*0.75,h*0.8,10,0,7);x.fill()},200,140);
     box(0.11,0.05,0.11,C.pack,0,0.025,0,g);const f=new THREE.Mesh(new THREE.PlaneGeometry(0.108,0.048),m);f.position.set(0,0.025,0.0552);g.add(f);const t=box(0.06,0.04,0.01,C.paper,0,0.065,0,g);t.rotation.z=0.2;const t2=box(0.05,0.03,0.008,C.paper,0.01,0.075,0.006,g);t2.rotation.set(0.3,0,-0.3)},
+  wall(g,C,it){const d=Object.assign({w:3,h:2.5,t:0.15},it&&it.d),st=(it&&it.o&&it.o.style)||'solid';const m=new THREE.Mesh(new THREE.BoxGeometry(d.w,d.h,d.t),wallMat(st,C.main,C.accent,d.w,d.h));m.position.y=d.h/2;g.add(m)},
+  glassdoor(g,C){const fm={metalness:0.2,roughness:0.4};[-0.5,0.5].forEach(x=>box(0.07,2.25,0.09,C.frame,x,1.125,0,g,fm));box(1.07,0.08,0.09,C.frame,0,2.21,0,g,fm);box(1.07,0.1,0.09,C.frame,0,0.05,0,g,fm);
+    const gl=box(0.93,2.06,0.02,C.glass,0,1.13,0,g,{transparent:true,opacity:0.32,roughness:0.05,metalness:0.1});gl.castShadow=false;gl.userData.noShadow=true;
+    [1,-1].forEach(s=>{cyl(0.018,0.018,0.7,10,C.handle,0.36,1.1,s*0.07,g,{metalness:0.4,roughness:0.3});[0.78,1.42].forEach(y=>box(0.02,0.02,0.06,C.handle,0.36,y,s*0.035,g))});box(0.22,0.06,0.002,'#ffffff',0,1.45,0.012,g,{transparent:true,opacity:0.8})},
+  passwin(g,C){const W=C.wall,T=0.16;box(2.2,1.0,T,W,0,0.5,0,g);box(2.2,0.8,T,W,0,2.0,0,g);[-1,1].forEach(s=>box(0.5,0.6,T,W,s*0.85,1.3,0,g));
+    box(1.36,0.05,0.56,C.shelf,0,1.02,0,g);[-0.3,0.3].forEach(x=>{cyl(0.012,0.012,0.12,6,'#8f847c',x,1.54,0.08,g);const l=cyl(0.09,0.05,0.08,12,C.lamp,x,1.46,0.08,g);const b=sph(0.04,'#ffcf7a',x,1.42,0.08,g,{emissive:'#ffb347',emissiveIntensity:1},8)});
+    const bell=new THREE.Mesh(new THREE.SphereGeometry(0.05,12,6,0,Math.PI*2,0,Math.PI/2),mat('#d9b45f',{metalness:0.5,roughness:0.3}));bell.position.set(0.5,1.045,0.15);g.add(bell);cyl(0.055,0.055,0.01,12,'#2b2421',0.5,1.05,0.15,g);sph(0.012,'#d9b45f',0.5,1.1,0.15,g,null,6);
+    box(1.2,0.02,0.02,'#c9ced6',0,1.56,0.09,g,{metalness:0.4,roughness:0.3});[-0.4,-0.15,0.1].forEach((x,i)=>box(0.1,0.13,0.004,'#ffffff',x,1.48,0.1,g).rotation.z=(i-1)*0.05)},
+  beansign(g,C){cyl(0.04,0.05,2.0,10,C.rim,0,1.0,0,g);cyl(0.28,0.32,0.06,18,C.rim,0,0.03,0,g);const d=cyl(0.55,0.55,0.06,40,C.rim,0,2.3,0,g);d.rotation.x=Math.PI/2;
+    const m=txMat('bean'+C.board+C.bean,(x,w,h)=>{x.fillStyle=C.board;x.fillRect(0,0,w,h);x.save();x.translate(w/2,h*0.44);x.rotate(-0.5);x.fillStyle=C.bean;x.beginPath();x.ellipse(0,0,w*0.2,w*0.28,0,0,7);x.fill();x.strokeStyle=C.board;x.lineWidth=w*0.035;x.beginPath();x.moveTo(0,-w*0.25);x.bezierCurveTo(w*0.08,-w*0.08,-w*0.08,w*0.08,0,w*0.25);x.stroke();x.restore();
+      x.fillStyle=C.bean;x.font='bold '+(w*0.1)+'px sans-serif';x.textAlign='center';x.fillText('COFFEE',w/2,h*0.86)},512,512);
+    [1,-1].forEach(s=>{const f=new THREE.Mesh(new THREE.CircleGeometry(0.5,40),m);f.position.set(0,2.3,s*0.032);if(s<0)f.rotation.y=Math.PI;g.add(f)})},
+  hangsign(g,C,it){const txt=(it&&it.text)||'餐具自助區',ar=(it&&it.o&&it.o.arrow)||'L';box(0.9,0.5,0.05,C.board,0,2.4,0,g);[-0.45,0.45].forEach(x=>{const c=cyl(0.25,0.25,0.05,20,C.board,x,2.4,0,g);c.rotation.x=Math.PI/2});
+    [-0.32,0.32].forEach(x=>box(0.09,0.62,0.012,C.strap,x,2.9,0.03,g));
+    const m=txMat('hs'+txt+ar+C.ink,(x,w,h)=>{x.clearRect(0,0,w,h);x.fillStyle=C.ink;x.font='bold 84px sans-serif';x.textAlign='center';x.textBaseline='middle';const tx=ar==='none'?w/2:w/2+50;x.fillText(txt,tx,h/2+6);
+      if(ar!=='none'){x.save();x.translate(ar==='L'?110:w-110,h/2);if(ar==='R')x.scale(-1,1);x.beginPath();x.moveTo(-60,0);x.lineTo(-10,-38);x.lineTo(-10,-14);x.lineTo(50,-14);x.lineTo(50,14);x.lineTo(-10,14);x.lineTo(-10,38);x.closePath();x.fill();x.restore()}},1024,200,{transparent:true});
+    [1,-1].forEach(s=>{const f=new THREE.Mesh(new THREE.PlaneGeometry(1.3,0.26),m);f.position.set(0,2.4,s*0.027);if(s<0)f.rotation.y=Math.PI;g.add(f)})},
+  hornchair(g,C){const W=C.wood;[[-0.2,0.2],[0.2,0.2]].forEach(([x,z])=>{const l=cyl(0.022,0.028,0.45,10,W,x,0.225,z,g);l.rotation.x=0.05});[[-0.2,-0.18],[0.2,-0.18]].forEach(([x,z])=>{const l=cyl(0.022,0.028,0.8,10,W,x,0.4,z,g);l.rotation.x=-0.06});
+    box(0.46,0.05,0.44,W,0,0.44,0,g);box(0.42,0.05,0.4,C.seat,0,0.485,0.01,g);[[0.42,0,0.2],[0.42,0,-0.18]].forEach(([w,x,z])=>box(w,0.03,0.025,W,x,0.18,z,g));
+    const h=new THREE.Mesh(new THREE.TorusGeometry(0.235,0.035,8,24,Math.PI),mat(W));h.rotation.x=-Math.PI/2;h.scale.set(1,1,1.4);h.position.set(0,0.8,0.02);g.add(h);[-1,1].forEach(s=>box(0.06,0.05,0.06,W,s*0.235,0.8,0.02,g))},
+  chickenplate(g,C){cyl(0.18,0.165,0.045,28,C.plate,0,0.0225,0,g);cyl(0.165,0.165,0.004,28,shade(C.plate,-0.03),0,0.046,0,g);
+    const egg=(x,z,r)=>{const w=cyl(0.075,0.075,0.012,14,'#fbfaf5',x,0.054,z,g);w.scale.set(1,1,0.85);w.rotation.y=r;const y=sph(0.032,'#f6b81c',x+0.012,0.062,z-0.005,g,{flatShading:false},12);y.scale.set(1,0.45,1);[0,1,2].forEach(i=>sph(0.004,'#3f7a2a',x+0.01*i,0.074,z+0.004,g,null,4))};egg(-0.08,0.07,0.3);egg(0.0,0.08,-0.2);
+    for(let i=0;i<7;i++){const t=i/6,a=-0.4+t*1.4,r=0.025+Math.sin(t*Math.PI)*0.02;const p=sph(r,i%2?'#d9963f':'#c9822f',0.07+Math.cos(a)*0.06,0.075,0.03+Math.sin(a)*0.06,g,{flatShading:false},8);p.scale.set(1,0.8,1.1)}
+    const ck=box(0.13,0.035,0.08,'#7a4a24',0.0,0.07,-0.08,g);ck.rotation.y=0.25;[-0.03,0,0.03].forEach(dx=>box(0.012,0.004,0.07,'#4a2a14',dx,0.089,-0.08,g).rotation.y=0.25);cyl(0.012,0.016,0.05,6,'#e8d8b8',-0.075,0.075,-0.1,g).rotation.z=1.4;
+    const og=cyl(0.04,0.04,0.025,14,'#f39a2b',0.02,0.065,-0.01,g);cyl(0.034,0.034,0.004,14,'#9a5a1a',0.02,0.078,-0.01,g);
+    [[-0.12,-0.02,'#e5343b'],[-0.14,0.01,'#e5343b'],[-0.11,-0.05,'#d94a2a']].forEach(([x,z,c])=>sph(0.022,c,x,0.07,z,g,{flatShading:false},8));
+    [[-0.08,-0.07,'#7a5a3a'],[-0.05,-0.09,'#c8b89a']].forEach(([x,z,c])=>{sph(0.022,c,x,0.075,z,g,null,8).scale.set(1,0.7,1)});cyl(0.016,0.016,0.03,8,'#3f7a2a',-0.1,0.065,-0.1,g).rotation.x=Math.PI/2;
+    for(let i=0;i<4;i++)sph(0.016,'#2f6a2a',-0.12+i*0.012,0.075,-0.08+i*0.01,g,null,6);const cn=cyl(0.01,0.008,0.06,6,'#f2d23c',-0.14,0.07,-0.04,g);cn.rotation.set(Math.PI/2,0,0.5);
+    cyl(0.035,0.032,0.04,14,'#ffffff',0.1,0.07,-0.07,g);for(let i=0;i<8;i++)sph(0.008,'#c99a5a',0.1+(i%3-1)*0.012,0.092,-0.07+(i/3-1)*0.01,g,null,4);const sp=box(0.008,0.004,0.08,'#ffffff',0.13,0.095,-0.03,g);sp.rotation.set(0.3,0.9,0)},
+  lattemug(g,C){mugSet(g,C,true)},emptymug(g,C){mugSet(g,C,false)},
+  earlgrey(g,C){const gl={transparent:true,opacity:0.28,roughness:0.05};cyl(0.045,0.045,0.006,16,'#e4f3f8',0,0.003,0,g,gl);cyl(0.012,0.02,0.03,10,'#e4f3f8',0,0.02,0,g,gl);
+    const G=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.028,0.26,18,1,true),mat('#e4f3f8',Object.assign({side:THREE.DoubleSide},gl)));G.position.y=0.165;g.add(G);
+    cyl(0.04,0.026,0.15,16,C.tea,0,0.11,0,g);cyl(0.048,0.04,0.09,16,C.foam,0,0.23,0,g,{flatShading:false});sph(0.048,C.foam,0,0.275,0,g,{flatShading:false},12).scale.set(1,0.15,1);
+    const st=new THREE.Group();st.position.set(0.012,0.28,0);g.add(st);cyl(0.006,0.006,0.1,6,C.straw,0,0.03,0,st);const lp=new THREE.Mesh(new THREE.TorusGeometry(0.025,0.007,6,14),mat(C.straw));lp.position.set(0.01,0.1,0);lp.rotation.y=0.5;st.add(lp);const t2=cyl(0.006,0.006,0.06,6,C.straw,0.04,0.12,0,st);t2.rotation.z=-0.7},
+  teapot(g,C){const b=sph(0.1,C.body,0,0.1,0,g,{flatShading:false},18);b.scale.set(1.05,0.95,1.05);const bt=new THREE.Mesh(new THREE.SphereGeometry(0.101,18,8,0,Math.PI*2,Math.PI*0.62,Math.PI*0.38),mat(C.glaze,{flatShading:false}));bt.scale.set(1.05,0.95,1.05);bt.position.y=0.1;g.add(bt);
+    for(let i=0;i<6;i++){const y=0.05+i*0.022,r=Math.sqrt(Math.max(0.001,0.0095-(y-0.1)*(y-0.1)))*1.06;const t=new THREE.Mesh(new THREE.TorusGeometry(r,0.004,4,20),mat(i<2?C.glaze:shade(C.body,-0.04)));t.rotation.x=Math.PI/2;t.position.y=y;g.add(t)}
+    cyl(0.05,0.055,0.02,16,C.lid,0,0.19,0,g);sph(0.022,C.lid,0,0.215,0,g,{flatShading:false},10);const sp=new THREE.Mesh(new THREE.ConeGeometry(0.022,0.1,10),mat(C.body));sp.position.set(-0.11,0.14,0);sp.rotation.z=1.0;g.add(sp);
+    const h=new THREE.Mesh(new THREE.TorusGeometry(0.05,0.011,6,14,Math.PI*1.2),mat(C.body));h.position.set(0.105,0.11,0);h.rotation.z=-Math.PI*0.6;g.add(h)},
+  teacup(g,C){const cp=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.033,0.065,16,1,true),mat(C.cup,{side:THREE.DoubleSide}));cp.position.y=0.0325;g.add(cp);cyl(0.033,0.033,0.004,16,C.cup,0,0.002,0,g);cyl(0.034,0.031,0.022,16,C.glaze,0,0.012,0,g);
+    cyl(0.037,0.037,0.004,16,C.tea,0,0.05,0,g);const h=new THREE.Mesh(new THREE.TorusGeometry(0.02,0.006,6,12,Math.PI*1.3),mat(C.cup));h.position.set(-0.045,0.035,0);h.rotation.z=Math.PI*0.35;g.add(h)},
+  woodtray(g,C){box(0.36,0.015,0.24,C.wood,0,0.0075,0,g);[[0.36,0.02,0.015,0,0.12],[0.36,0.02,0.015,0,-0.12],[0.015,0.02,0.24,0.18,0],[0.015,0.02,0.24,-0.18,0]].forEach(([w,h,d,x,z])=>box(w,h,d,C.wood,x,0.02,z,g))},
+  pizza(g,C){cyl(0.22,0.22,0.02,28,C.board,0,0.01,0,g);box(0.07,0.02,0.16,C.board,0,0.01,0.28,g);cyl(0.02,0.02,0.021,10,shade(C.board,-0.15),0,0.01,0.33,g);
+    cyl(0.19,0.19,0.012,28,'#e8b46a',0,0.026,0,g);const cr=new THREE.Mesh(new THREE.TorusGeometry(0.185,0.015,6,32),mat('#d9963f'));cr.rotation.x=Math.PI/2;cr.position.y=0.03;g.add(cr);cyl(0.172,0.172,0.006,28,'#f6d77a',0,0.034,0,g,{flatShading:false});
+    const R=srand('pizza');for(let i=0;i<10;i++){const a=R()*6.28,r=0.03+R()*0.13;box(0.025,0.015,0.025,'#f6d23c',Math.cos(a)*r,0.042,Math.sin(a)*r,g).rotation.y=R()*3}
+    for(let i=0;i<7;i++){const a=i/7*6.28+0.3,r=0.1+R()*0.04,s=new THREE.Mesh(new THREE.TorusGeometry(0.02,0.009,6,10,Math.PI*1.3),mat('#f39070'));s.rotation.set(Math.PI/2,0,a);s.position.set(Math.cos(a)*r,0.044,Math.sin(a)*r);g.add(s)}
+    for(let i=0;i<8;i++){const a=R()*6.28,r=0.02+R()*0.14;box(0.03,0.006,0.03,'#e89aa0',Math.cos(a)*r,0.04,Math.sin(a)*r,g).rotation.y=R()*3}
+    for(let i=0;i<10;i++){const a=R()*6.28,r=0.02+R()*0.15;box(0.016,0.006,0.008,'#3fa63a',Math.cos(a)*r,0.043,Math.sin(a)*r,g).rotation.y=R()*3}
+    for(let i=0;i<4;i++){const l=box(0.37,0.002,0.003,'#c98a3a',0,0.038,0,g);l.rotation.y=i*Math.PI/4}},
+  tiramisu(g,C){scallopPlate(g,C.plate);const lay=[['#9a6a3a',0.02],[C.cream,0.022],['#8a5a2a',0.016],[C.cream,0.022]];let y=0.02;lay.forEach(([c,h])=>{box(0.1,h,0.1,c,0,y+h/2,0,g);y+=h});box(0.1,0.006,0.1,'#5a3218',0,y+0.003,0,g);
+    const R=srand('tira');for(let i=0;i<30;i++){const a=R()*6.28,r=0.08+R()*0.05;box(0.006,0.002,0.006,'#5a3218',Math.cos(a)*r,0.019,Math.sin(a)*r,g)}tagPick(g,0,y+0.04,0);smallFork(g,0.09,0.02,0.02,0.3)},
+  pannacotta(g,C){cyl(0.07,0.055,0.04,18,'#ffffff',0,0.02,0,g);const jr=new THREE.Mesh(new THREE.CylinderGeometry(0.042,0.045,0.1,16,1,true),mat('#e4f3f8',{transparent:true,opacity:0.3,side:THREE.DoubleSide}));jr.position.y=0.07;g.add(jr);
+    cyl(0.04,0.043,0.07,16,C.cream,0,0.055,0,g,{flatShading:false});const lip=new THREE.Mesh(new THREE.TorusGeometry(0.042,0.005,6,18),mat('#e4f3f8',{transparent:true,opacity:0.5}));lip.rotation.x=Math.PI/2;lip.position.y=0.12;g.add(lip);
+    const sp=new THREE.Group();sp.position.set(-0.1,0.004,0);sp.rotation.y=0.2;g.add(sp);box(0.012,0.004,0.11,'#c9ced6',0,0,-0.02,sp,{metalness:0.25,roughness:0.3});sph(0.02,'#c9ced6',0,0.004,0.05,sp,{metalness:0.25,roughness:0.3},10).scale.set(1,0.3,1.4)},
+  lemontart(g,C){scallopPlate(g,C.plate);cyl(0.07,0.065,0.03,24,'#d9a05a',0,0.035,0,g);cyl(0.06,0.06,0.006,24,C.lemon,0,0.05,0,g,{flatShading:false});const R=srand('tart');for(let i=0;i<14;i++){const a=R()*6.28,r=R()*0.05;box(0.005,0.002,0.005,'#7ab83a',Math.cos(a)*r,0.054,Math.sin(a)*r,g)}tagPick(g,0.02,0.09,-0.01);smallFork(g,0.1,0.02,-0.04,-0.5)},
+  burger(g,C){box(0.46,0.012,0.26,'#3a3c40',0,0.006,0,g);const np=new THREE.Mesh(new THREE.PlaneGeometry(0.38,0.22),txMat('news',(x,w,h)=>{x.fillStyle='#f2efe6';x.fillRect(0,0,w,h);x.fillStyle='#8a8a8a';for(let i=0;i<14;i++)x.fillRect(12+(i%2)*130,14+Math.floor(i/2)*16,110,6);x.font='bold 18px serif';x.fillStyle='#555';x.fillText('DAILY NEWS',20,h-14)},256,150));np.rotation.set(-Math.PI/2,0,0.08);np.position.y=0.013;g.add(np);
+    const bx=-0.12;sph(0.07,'#d9963f',bx,0.03,0,g,{flatShading:false},14).scale.set(1,0.35,1);cyl(0.075,0.075,0.012,16,'#7ab83a',bx,0.045,0,g);cyl(0.068,0.068,0.025,16,'#3a2014',bx,0.062,0,g);box(0.11,0.006,0.11,'#f6c23c',bx,0.078,0,g).rotation.y=0.4;
+    sph(0.05,'#b07a45',bx,0.084,0.01,g,{flatShading:false},10).scale.set(1,0.3,1);[[0.02,0.02],[-0.03,0.0],[0.0,-0.03]].forEach(([dx,dz])=>sph(0.012,'#d9302a',bx+dx,0.09,dz,g,null,6));const tb=new THREE.Mesh(new THREE.SphereGeometry(0.072,16,8,0,Math.PI*2,0,Math.PI/2),mat('#d9963f',{flatShading:false}));tb.scale.y=0.75;tb.position.set(bx,0.092,0);g.add(tb);
+    [[0.0,'#f6eec0'],[0.06,'#d9302a']].forEach(([x,c])=>{cyl(0.027,0.025,0.06,12,'#e4f3f8',x,0.042,0.03,g,{transparent:true,opacity:0.3});cyl(0.024,0.022,0.035,12,c,x,0.03,0.03,g)});
+    for(let i=0;i<6;i++)sph(0.02,i%3?'#7ab83a':'#7a2a6a',-0.01+(i%3)*0.03,0.03,-0.07+Math.floor(i/3)*0.02,g,null,6).scale.set(1,0.6,1);
+    const R=srand('fries');for(let i=0;i<22;i++){const f=box(0.012,0.012,0.08+R()*0.03,'#f2c25a',0.15+(R()-0.5)*0.08,0.02+R()*0.03,(R()-0.5)*0.12,g);f.rotation.set((R()-0.5)*0.4,R()*3,(R()-0.5)*0.4)}},
+  tissueball(g,C){const R=srand('tissue');for(let i=0;i<7;i++){const m=new THREE.Mesh(new THREE.IcosahedronGeometry(0.025+R()*0.018,0),mat(C.paper));m.position.set((R()-0.5)*0.05,0.035+(R()-0.5)*0.03,(R()-0.5)*0.05);m.rotation.set(R()*3,R()*3,R()*3);g.add(m)}
+    [[0.02,0.05,0.025],[-0.02,0.03,0.03]].forEach(([x,y,z])=>sph(0.012,C.dirt,x,y,z,g,{transparent:true,opacity:0.6},6).scale.set(1,0.5,0.4))},
   roundtable(g,C){cyl(0.45,0.45,0.04,24,C.top,0,0.76,0,g);cyl(0.05,0.06,0.72,10,C.leg,0,0.38,0,g);cyl(0.24,0.26,0.03,16,C.leg,0,0.015,0,g)},
   ovaltable(g,C){const t=cyl(0.5,0.5,0.045,28,C.top,0,0.76,0,g);t.scale.x=2.1;[-0.62,0.62].forEach(x=>{cyl(0.05,0.06,0.72,10,C.leg,x,0.38,0,g);cyl(0.2,0.22,0.03,14,C.leg,x,0.015,0,g)})},
   bamboochair(g,C){const bam=(x,y,z,h,rx,rz)=>{const gg=new THREE.Group();gg.position.set(x,y,z);gg.rotation.set(rx||0,0,rz||0);g.add(gg);cyl(0.025,0.025,h,8,C.bamboo,0,0,0,gg);[-0.3,0,0.3].forEach(k=>cyl(0.03,0.03,0.016,8,C.node,0,k*h,0,gg))};
@@ -1140,8 +1259,10 @@ const BUILD={
     box(0.36,0.04,0.34,C.wood,0,0.72,0,g);box(0.32,0.03,0.3,C.pad,0,0.75,0.01,g);box(0.36,0.42,0.04,C.wood,0,0.95,-0.17,g);box(0.3,0.3,0.02,C.pad,0,0.93,-0.145,g);
     [-1,1].forEach(s=>box(0.03,0.14,0.32,C.wood,s*0.18,0.84,0,g));box(0.48,0.03,0.24,C.tray,0,0.9,0.26,g);[[0.48,0.04,0.02,0,0.92,0.38],[0.02,0.04,0.24,-0.24,0.92,0.26],[0.02,0.04,0.24,0.24,0.92,0.26]].forEach(([w,h,d,x,y,z])=>box(w,h,d,C.tray,x,y,z,g))},
   waterglass(g,C){cyl(0.045,0.037,0.13,16,C.glass,0,0.065,0,g,{transparent:true,opacity:0.35});cyl(0.041,0.034,0.09,16,C.water,0,0.05,0,g,{transparent:true,opacity:0.55});[[0.012,0.08,0.01],[-0.014,0.085,-0.01]].forEach(([x,y,z])=>box(0.025,0.025,0.025,'#f4fbff',x,y,z,g,{transparent:true,opacity:0.8}))},
-  menu(g,C){const m=txMat('menu'+C.cover+C.text,(x,w,h)=>{x.fillStyle=C.cover;x.fillRect(0,0,w,h);x.strokeStyle=C.text;x.lineWidth=8;x.strokeRect(16,16,w-32,h-32);x.fillStyle=C.text;x.font='bold 54px serif';x.textAlign='center';x.fillText('MENU',w/2,h*0.42);x.font='28px sans-serif';x.fillText('☕ 咖啡・甜點',w/2,h*0.62)},256,320);
-    [1,-1].forEach(s=>{const p=new THREE.Group();p.position.set(0,0,s*0.035);p.rotation.x=s*0.28;g.add(p);box(0.2,0.25,0.008,C.cover,0,0.122,0,p);const f=new THREE.Mesh(new THREE.PlaneGeometry(0.19,0.24),m);f.position.set(0,0.122,s*0.005);if(s<0)f.rotation.y=Math.PI;p.add(f)})},
+  menu(g,C){box(0.38,0.006,0.26,C.cover,0,0.003,0,g);const pg=(side)=>txMat('menu'+side+C.text,(x,w,h)=>{x.fillStyle='#fbf7ee';x.fillRect(0,0,w,h);x.fillStyle=C.text;x.font='bold 30px serif';x.textAlign='center';
+      x.fillText(side==='L'?'MENU':'早午餐',w/2,44);x.fillStyle='#3a332e';x.font='19px sans-serif';x.textAlign='left';const L=side==='L'?[['拿鐵',120],['美式',90],['伯爵歐蕾',140],['熱茶',110],['冰滴咖啡',150]]:[['雞腿早午餐',280],['牛肉漢堡',260],['鮮蝦披薩',320],['提拉米蘇',120],['檸檬塔',110]];
+      L.forEach(([n,pz],i)=>{x.fillText(n,20,92+i*34);x.textAlign='right';x.fillText('$'+pz,w-20,92+i*34);x.textAlign='left'})},256,280);
+    [-1,1].forEach(s=>{const p=new THREE.Mesh(new THREE.PlaneGeometry(0.18,0.25),pg(s<0?'L':'R'));p.rotation.set(-Math.PI/2,s*0.12,0);p.position.set(s*0.092,0.014,0);g.add(p)});box(0.006,0.01,0.25,shade(C.cover,-0.1),0,0.008,0,g)},
   laptop(g,C){box(0.34,0.018,0.24,C.body,0,0.009,0,g,{metalness:0.5,roughness:0.35});box(0.3,0.003,0.12,'#3a3a3e',0,0.019,0.02,g);box(0.1,0.002,0.06,shade(C.body,-0.06),0,0.019,0.09,g);
     const s=new THREE.Group();s.position.set(0,0.018,-0.115);s.rotation.x=-0.28;g.add(s);box(0.34,0.23,0.012,C.body,0,0.115,0,s,{metalness:0.5,roughness:0.35});box(0.31,0.2,0.002,C.screen,0,0.118,0.007,s,{emissive:C.screen,emissiveIntensity:0.4})},
   dishsink(g,C,it){const o=Object.assign({tap:'R',filt:'L'},it&&it.o),SX={L:-1,R:1},st={metalness:0.5,roughness:0.35};
@@ -1493,7 +1614,7 @@ Object.assign(BUILD,{
 function makeItem(it){const D=ITEMS[it.type],g=new THREE.Group(),C={};D.cols.forEach(([k,,d])=>C[k]=(it.c&&it.c[k])||d);
   _anims=[];BUILD[it.type](g,C,it);g.userData.anims=_anims;_anims=null;
   g.traverse(m=>{if(m.isMesh){m.castShadow=!m.userData.noShadow;m.receiveShadow=true}});return g}
-function petLabelY(k){return ({pig:1.25,snake:0.75,hamster:0.85,turtle:0.85})[k]||(k==='parrot'?1.75:k==='dog'?1.55:1.35)}
+function petLabelY(k){return ({pig:1.25,snake:0.75,hamster:0.85,turtle:0.85,cow:1.65})[k]||(k==='parrot'?1.75:k==='dog'?1.55:1.35)}
 
 /* =========================================================
    6. 地圖：主島 + 使用者新增的小島
@@ -1719,10 +1840,10 @@ function nowText(p){const b=schedNow(p),v=byId[p.id];if(!b)return p.freeMode==='
   return '🚶 '+(b.scope==='visit'?'到處串門子':b.scope==='place'?'在'+placeLabel(b.place)+'附近散步':'在'+(b.scope&&b.scope!=='isle'?isleName(b.scope):'本島')+'散步')+span}
 
 /* 坐沙發、坐長椅、躺床：spot 是家具上的位置（家具自己的座標，臉朝 +z） */
-const REST={sofa:[{x:-0.48,z:0.1,y:0.6,k:'sit'},{x:0.48,z:0.1,y:0.6,k:'sit'}],bench:[{x:-0.5,z:0.02,y:0.61,k:'sit'},{x:0.5,z:0.02,y:0.61,k:'sit'}],bed:[{x:-0.46,z:0.95,y:0.6,k:'lie'},{x:0.46,z:0.95,y:0.6,k:'lie'}],bamboochair:[{x:0,z:0.02,y:0.56,k:'sit'}],sofachair:[{x:0,z:0.08,y:0.55,k:'sit'}],highchair:[{x:0,z:0,y:0.84,k:'sit'}]};
+const REST={sofa:[{x:-0.48,z:0.1,y:0.6,k:'sit'},{x:0.48,z:0.1,y:0.6,k:'sit'}],bench:[{x:-0.5,z:0.02,y:0.61,k:'sit'},{x:0.5,z:0.02,y:0.61,k:'sit'}],bed:[{x:-0.46,z:0.95,y:0.6,k:'lie'},{x:0.46,z:0.95,y:0.6,k:'lie'}],bamboochair:[{x:0,z:0.02,y:0.56,k:'sit'}],sofachair:[{x:0,z:0.08,y:0.55,k:'sit'}],highchair:[{x:0,z:0,y:0.84,k:'sit'}],hornchair:[{x:0,z:0.03,y:0.58,k:'sit'}]};
 function restWorld(it,sp){const k=it.s||1,c=Math.cos(it.ry||0),n=Math.sin(it.ry||0),lx=sp.x*k,lz=sp.z*k;return {x:it.x+lx*c+lz*n,z:it.z-lx*n+lz*c,y:(it.y||0)+sp.y*k,ry:it.ry||0}}
 function restTaken(id,i,me){return chars.some(o=>o!==me&&o.R&&o.R.id===id&&o.R.i===i)}
-function findRest(v,kind){const types=kind==='lie'?['bed']:['sofa','bench','sofachair','bamboochair'],out=[];
+function findRest(v,kind){const types=kind==='lie'?['bed']:['sofa','bench','sofachair','bamboochair','hornchair'],out=[];
   S.items.forEach(it=>{if(!types.includes(it.type))return;if((isleAt(it.x,it.z)||'hub')!==v.p.isle)return;REST[it.type].forEach((sp,i)=>{if(!restTaken(it.id,i,v))out.push({it,i,d:Math.hypot(it.x-v.x,it.z-v.zz)+(it.type==='bench'?1000:0)})})});
   return out.sort((a,b)=>a.d-b.d)}
 function standUp(v){const c=v.c;c.g.rotation.order='XYZ';const ry=c.g.rotation.y;c.g.rotation.set(0,ry,0);c.legL.rotation.x=c.legR.rotation.x=0;c.armL.rotation.set(0,0,0);c.armR.rotation.set(0,0,0);c.head.rotation.set(0,0,0);
@@ -1799,8 +1920,8 @@ function pickPetTarget(v){const r=v.rect,q=pickFree(r);v.tx=q.x;v.tz=q.z;
 function animPet(v,dt){const m=v.m,P=S.ui.paused;v.t+=dt;
   if(!P){if(v.wait>0)v.wait-=dt;
     else{const dx=v.tx-v.x,dz=v.tz-v.z,d=Math.hypot(dx,dz);
-      if(d<0.15){v.wait=({cat:3,turtle:5,snake:4}[v.kind]||1.5)+Math.random()*4;v.fly=false;pickPetTarget(v)}
-      else{const sp=v.fly?2.6:({dog:1.4,cat:0.9,pig:0.8,snake:0.5,hamster:1.0,turtle:0.22}[v.kind]||0.55);if(v.fly){const s=Math.min(d,sp*dt);v.x+=dx/d*s;v.z+=dz/d*s;v.face=Math.atan2(dx,dz)}else{const a=step2(v,'x','z',v.tx,v.tz,sp*dt,null);if(a!=null)v.face=a;else if(!v._ghost){v.tx=v.x;v.tz=v.z}}}}}
+      if(d<0.15){v.wait=({cat:3,turtle:5,snake:4,cow:5}[v.kind]||1.5)+Math.random()*4;v.fly=false;pickPetTarget(v)}
+      else{const sp=v.fly?2.6:({dog:1.4,cat:0.9,pig:0.8,snake:0.5,hamster:1.0,turtle:0.22,cow:0.6}[v.kind]||0.55);if(v.fly){const s=Math.min(d,sp*dt);v.x+=dx/d*s;v.z+=dz/d*s;v.face=Math.atan2(dx,dz)}else{const a=step2(v,'x','z',v.tx,v.tz,sp*dt,null);if(a!=null)v.face=a;else if(!v._ghost){v.tx=v.x;v.tz=v.z}}}}}
   const walking=!P&&v.wait<=0;v.jump=Math.max(0,v.jump-dt*1.8);
   let y=TOP+0.17+bridgeY(v.x,v.z);
   if(v.kind==='parrot'){v.fy=v.fly&&!P?Math.min(2.2,v.fy+dt*3):Math.max(0,v.fy-dt*3);y+=v.fy+(walking&&!v.fly?Math.abs(Math.sin(v.t*10))*0.12:0)}
@@ -1811,7 +1932,7 @@ function animPet(v,dt){const m=v.m,P=S.ui.paused;v.t+=dt;
   m.legs.forEach((L,i)=>L.rotation.x=v.kind==='parrot'?(v.fy>0.1?0.9:sw*0.5*(i?1:-1)):sw*((i===0||i===3)?1:-1));
   if(P)return;
   if(m.segs){const N=m.segs.length,sp2=walking?5:1.2,amp=walking?0.13:0.05;m.segs.forEach((s,i)=>{s.position.x=Math.sin(v.t*sp2-i*0.6)*amp*(0.4+i/N)});m.head.position.x=Math.sin(v.t*sp2+0.6)*amp*0.4;const tg=m.head.userData.tg;if(tg)tg.visible=(v.t%2.2)<0.35}
-  else if(v.kind==='pig'||v.kind==='hamster'||v.kind==='turtle'){if(m.tail)m.tail.rotation.z=Math.sin(v.t*(walking?12:4))*0.4;if(v.kind==='turtle')m.head.position.z=0.42+Math.sin(v.t*0.8)*0.04}
+  else if(v.kind==='pig'||v.kind==='hamster'||v.kind==='turtle'||v.kind==='cow'){if(m.tail)m.tail.rotation.z=Math.sin(v.t*(walking?12:4))*0.4;if(v.kind==='turtle')m.head.position.z=0.42+Math.sin(v.t*0.8)*0.04}
   else if(v.kind==='dog')m.tail.rotation.z=Math.sin(v.t*(walking||v.jump>0?16:9))*0.5;
   else if(v.kind==='cat'){m.tail.rotation.z=Math.sin(v.t*2)*0.35;m.head.rotation.y=walking?0:Math.sin(v.t*0.7)*0.4}
   else{const f=v.fy>0.1||v.jump>0?Math.sin(v.t*22)*0.9:0;m.wings[0].rotation.z=-Math.abs(f)-0.05;m.wings[1].rotation.z=Math.abs(f)+0.05;m.head.rotation.x=walking?0:Math.sin(v.t*3)*0.12}}
@@ -1913,7 +2034,7 @@ function pvInit(){if(PV.r)return;PV.r=new THREE.WebGLRenderer({antialias:true,al
 function pvMount(el,look){pvInit();el.innerHTML='';el.appendChild(PV.r.domElement);PV.el=el;pvSet(look)}
 function pvClear(){if(PV.obj){PV.scene.remove(PV.obj);disposeObj(PV.obj)}PV.obj=null;PV.char=null;PV.pet=null}
 function pvSet(look){if(!PV.scene)return;pvClear();PV.char=makeChar(Object.assign({},look,{capColor:look.capColor||look.shirt}));PV.obj=PV.char.g;PV.obj.position.y=0.05;PV.scene.add(PV.obj)}
-function pvSetPet(o){if(!PV.scene)return;pvClear();PV.pet=makePet(o);PV.obj=PV.pet.g;PV.obj.scale.setScalar((o.kind==='parrot'?1.45:({hamster:2.6,snake:1.5,turtle:2.0,pig:1.7}[o.kind]||1.6))*(o.size||1));PV.obj.position.y=o.kind==='parrot'?0.05:0.15;PV.scene.add(PV.obj)}
+function pvSetPet(o){if(!PV.scene)return;pvClear();PV.pet=makePet(o);PV.obj=PV.pet.g;PV.obj.scale.setScalar((o.kind==='parrot'?1.45:({hamster:2.6,snake:1.5,turtle:2.0,pig:1.7,cow:1.25}[o.kind]||1.6))*(o.size||1));PV.obj.position.y=o.kind==='parrot'?0.05:0.15;PV.scene.add(PV.obj)}
 function pvMountPet(el,o){pvInit();el.innerHTML='';el.appendChild(PV.r.domElement);PV.el=el;pvSetPet(o)}
 function pvTick(dt){if(!PV.el||!PV.el.isConnected||!PV.obj)return;const w=PV.el.clientWidth,h=PV.el.clientHeight;if(!w||!h)return;
   const cv=PV.r.domElement;if(cv.width!==Math.round(w*PV.r.getPixelRatio())){PV.r.setSize(w,h,false);PV.cam.aspect=w/h;PV.cam.updateProjectionMatrix()}
@@ -2044,7 +2165,7 @@ function step2(o,kx,kz,tx,tz,dist,ign){const x=o[kx],z=o[kz],key=tx.toFixed(2)+'
   o._np+=s;return null}
 /* 人和人、人和動物也不會疊在一起：靠太近就互相輕輕推開（坐著／躺著的人不會被推動） */
 function separate(){const E=[];chars.forEach(v=>{if(v.inside)return;E.push({o:v,kz:'zz',r:0.4*(v.c.g.scale.x||1),fix:!!(v.R&&v.arrived)})});if(me)E.push({o:meState,kz:'z',r:0.4,fix:false});
-  pets.forEach(v=>{if(!v.fly)E.push({o:v,kz:'z',r:({dog:0.32,pig:0.32,snake:0.3,turtle:0.3,hamster:0.2}[v.kind])||0.26,fix:false})});
+  pets.forEach(v=>{if(!v.fly)E.push({o:v,kz:'z',r:({dog:0.32,pig:0.32,snake:0.3,turtle:0.3,hamster:0.2,cow:0.5}[v.kind])||0.26,fix:false})});
   const mv=(e,dx,dz)=>{const x=e.o.x+dx,z=e.o[e.kz]+dz;if(blockedAt(x,z,BODY*0.8,null))return;if(!isleAt(x,z)&&isleAt(e.o.x,e.o[e.kz]))return;e.o.x=x;e.o[e.kz]=z};
   for(let i=0;i<E.length;i++)for(let j=i+1;j<E.length;j++){const a=E[i],b=E[j];if(a.fix&&b.fix)continue;if(a.o.soc&&b.o.p&&a.o.soc.pid===b.o.p.id)continue;let dx=b.o.x-a.o.x,dz=b.o[b.kz]-a.o[a.kz],d=Math.hypot(dx,dz);const m=a.r+b.r;if(d>=m)continue;if(d<1e-4){dx=Math.random()-0.5;dz=Math.random()-0.5;d=Math.hypot(dx,dz)}
     const ov=m-d,nx=dx/d,nz=dz/d,wa=a.fix?0:b.fix?1:0.5;mv(a,-nx*ov*wa,-nz*ov*wa);mv(b,nx*ov*(1-wa),nz*ov*(1-wa))}}
@@ -2302,6 +2423,8 @@ function render(){
     h+='<div>'+sliderRow('高度','iy',0,5,0.01,it.y||0,(it.y||0).toFixed(2))+'<div class="tabs hq">'+HEIGHTS.map(([l,v])=>'<button type="button" class="tab" data-hset="'+v+'">'+l+'</button>').join('')+'</div>'+
       sliderRow('方向角度','iry',0,359,1,degOf(it),degOf(it)+'°')+'<div class="tabs hq"><button type="button" class="tab" data-rot="-45">↺ 45°</button><button type="button" class="tab" data-rot="45">↻ 45°</button><button type="button" class="tab" data-rot="180">轉 180°</button></div>'+
       sliderRow('大小','is',0.5,2,0.05,it.s||1,(it.s||1).toFixed(2)+'×')+'</div></div>';
+    if(D.text)h+='<div class="fld"><label for="fSign">'+D.text+'</label><input type="text" id="fSign" maxlength="12" value="'+esc(it.text||'')+'" placeholder="'+esc(D.textDef||'')+'"></div>';
+    if(D.dims)h+='<div class="grp">📏 長寬高（公尺）</div>'+D.dims.map(([k,l,mn,mx,st,dv])=>{const v=(it.d&&it.d[k])||dv;return sliderRow(l,'d_'+k,mn,mx,st,v,(+v).toFixed(2)+' m')}).join('');
     if(it.type==='sign')h+='<div class="fld"><label for="fSign">招牌文字（空白＝島的名字）</label><input type="text" id="fSign" maxlength="14" value="'+esc(it.text||'')+'" placeholder="'+esc(signText(Object.assign({},it,{text:''})))+'"></div>';
     if(D.opts)h+='<div class="grp">🔧 設定</div>'+D.opts.map(([k,l,list,dv])=>tabRow(l,k,list,(it.o&&it.o[k])||dv,'iopt')).join('');
     h+='<div class="grp">🎨 顏色</div>'+D.cols.map(([k,l,dv])=>cpRow(k,l,(it.c&&it.c[k])||dv)).join('');
@@ -2460,6 +2583,7 @@ sBody.addEventListener('input',e=>{
   if(mode==='item'&&e.target.id==='fSign'){const it=S.items.find(x=>x.id===arg);if(it){it.text=e.target.value.trim();rebuildItem(it);saveSoon()}return}
   if(mode==='item'){const it=S.items.find(x=>x.id===arg);if(it){if(!it.c)it.c={};if(cpInput(sBody,e.target,it.c,()=>{rebuildItem(it);saveSoon()}))return;const k=e.target.dataset.isl;
     if(k&&isLocked(it)){isFixed(it);syncSliders(it);return}
+    if(k&&k.startsWith('d_')){const v=+e.target.value;it.d=Object.assign({},it.d,{[k.slice(2)]:v});const lb=sBody.querySelector('[data-isv="'+k+'"]');if(lb)lb.textContent=v.toFixed(2)+' m';rebuildItem(it);obstDirty=true;saveSoon();return}
     if(k){const v=+e.target.value;if(k==='iy')it.y=v;else if(k==='iry')it.ry=v*Math.PI/180;else if(k==='is')it.s=v;const o=itemObjs[it.id];if(o)placeItem(o,it);syncSliders(it);if(k==='is')measureSel();saveSoon();return}}}
   if(mode==='iform'&&draft&&cpInput(sBody,e.target,draft,null))return;
 if(e.target.id==='tSlider'){S.ui.timeMode='manual';S.ui.hour=+e.target.value;save();sBody.querySelectorAll('[data-tm]').forEach(x=>x.classList.toggle('on',x.dataset.tm==='manual'))}});
