@@ -349,8 +349,8 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.1.5';
-const APP_NOTES=['🔒 鎖定改版：每個物件平常都是鎖定的，不會被不小心拖走；按 🔓 解鎖才能移動，選別的物件或離開擺設會自動鎖回去（新放的物件會先解鎖，方便擺位置）','廚房新增：鍋鏟、炒鍋、歐姆蛋拼盤、義大利麵盤、紅色電鍋、藍色工業用電扇（會轉）、雙門直立冰箱、調味料貨架','外場新增：切片蛋糕展示櫃、冰滴咖啡站（三座一起滴）、收餐具推車','島民、島主和動物走路會繞過家具，不會再穿過去','🔒 鎖定改成「固定」：固定的物件拖不動、不會被移動，其他物件照樣能選','新增：雙門大冰箱、煎台、油鍋（炸物）、電鍋、大型烤箱、蛋糕展示櫃、禮品架（蛋糕・冰滴）、冰滴咖啡塔','修正：島民會在整座島上走來走去；暫停中時按鈕會變橘色提醒，指揮島民走路會自動取消暫停','作息更細：可以設到幾點幾分、選定點／小範圍／大範圍／整座島、在地圖上點位置','新增「🏠 回家」（走回小屋進門休息）和「沒排到的時間到每座島串門子」','App 版可以開「新版本通知」了：第一次會先問你要不要開，之後可在 設定 →「🔔 新版本通知」開關','島民可以排作息了：點島民 →「🗓️ 作息與工作」，設定幾點到幾點散步（或去各島串門子）、待在哪裡、在哪裡做什麼工作','新增 32 種職業和 21 種工作動作：拉花、送餐、炒菜、切菜、挖土、拔雜草、倒土、澆水、掃地…（可複選，輪流做）','可以安裝成 App 了：設定 →「📲 安裝成 App」，有桌面圖示、全螢幕、沒網路也能開','建島畫面多了「📥 我有備份，把島搬過來」，App 版可以直接匯入瀏覽器的島','新增物件：冰滴咖啡組（木盤、湯匙、紅糖、牛奶、冰磚山形杯、木腰帶玻璃壺），在「咖啡・裝飾」','匯出島嶼：可以下載備份檔、分享到 LINE／檔案，或一鍵複製（複製不了會自動幫你全選）','匯入島嶼：可以選備份檔或貼上文字，先預覽內容再匯入，匯入後還能還原','新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
+const APP_VERSION='1.1.6';
+const APP_NOTES=['冰滴咖啡站改成單座：深色木架、圓頂背板，上面玻璃水球、中間咖啡粉管、下面圓底瓶，前面還有菜單小卡（想要一排就多放幾座）','🔒 鎖定改版：每個物件平常都是鎖定的，不會被不小心拖走；按 🔓 解鎖才能移動，選別的物件或離開擺設會自動鎖回去（新放的物件會先解鎖，方便擺位置）','廚房新增：鍋鏟、炒鍋、歐姆蛋拼盤、義大利麵盤、紅色電鍋、藍色工業用電扇（會轉）、雙門直立冰箱、調味料貨架','外場新增：切片蛋糕展示櫃、冰滴咖啡站（三座一起滴）、收餐具推車','島民、島主和動物走路會繞過家具，不會再穿過去','🔒 鎖定改成「固定」：固定的物件拖不動、不會被移動，其他物件照樣能選','新增：雙門大冰箱、煎台、油鍋（炸物）、電鍋、大型烤箱、蛋糕展示櫃、禮品架（蛋糕・冰滴）、冰滴咖啡塔','修正：島民會在整座島上走來走去；暫停中時按鈕會變橘色提醒，指揮島民走路會自動取消暫停','作息更細：可以設到幾點幾分、選定點／小範圍／大範圍／整座島、在地圖上點位置','新增「🏠 回家」（走回小屋進門休息）和「沒排到的時間到每座島串門子」','App 版可以開「新版本通知」了：第一次會先問你要不要開，之後可在 設定 →「🔔 新版本通知」開關','島民可以排作息了：點島民 →「🗓️ 作息與工作」，設定幾點到幾點散步（或去各島串門子）、待在哪裡、在哪裡做什麼工作','新增 32 種職業和 21 種工作動作：拉花、送餐、炒菜、切菜、挖土、拔雜草、倒土、澆水、掃地…（可複選，輪流做）','可以安裝成 App 了：設定 →「📲 安裝成 App」，有桌面圖示、全螢幕、沒網路也能開','建島畫面多了「📥 我有備份，把島搬過來」，App 版可以直接匯入瀏覽器的島','新增物件：冰滴咖啡組（木盤、湯匙、紅糖、牛奶、冰磚山形杯、木腰帶玻璃壺），在「咖啡・裝飾」','匯出島嶼：可以下載備份檔、分享到 LINE／檔案，或一鍵複製（複製不了會自動幫你全選）','匯入島嶼：可以選備份檔或貼上文字，先預覽內容再匯入，匯入後還能還原','新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -444,7 +444,7 @@ const ITEMS={
   uprightfridge:{n:'雙門直立冰箱',e:'🧊',cat:'kitchen',cols:[['main','機身','#f4efe6'],['handle','把手','#8f847c']]},
   spiceshelf:{n:'調味料貨架',e:'🧂',cat:'kitchen',cols:[['frame','貨架','#c9ced6']]},
   slicecase:{n:'切片蛋糕展示櫃',e:'🍰',cat:'cafe',cols:[['main','櫃身','#2b2421'],['trim','邊框','#c9a27a']]},
-  dripstation:{n:'冰滴咖啡站（三座）',e:'⏳',cat:'cafe',cols:[['wood','木架','#8b5a34'],['coffee','咖啡','#3b2414']]},
+  dripstation:{n:'冰滴咖啡站（單座）',e:'⏳',cat:'cafe',cols:[['wood','木架','#4a2c1c'],['coffee','咖啡','#2a170c'],['card','菜單小卡','#f4ead8']]},
   buscart:{n:'收餐具推車',e:'🛒',cat:'cafe',cols:[['frame','推車','#c9ced6'],['tub','收納盆','#3a3a3e']]},
   vase:{n:'插花',e:'💐',cat:'cafe',small:1,cols:[['vase','花瓶','#9cc3e6'],['flower','花','#ff8fb3'],['center','花心','#f2c94c'],['leaf','葉子','#5bb85d']]},
   bed:{n:'雙人床',e:'🛏️',cat:'bed',cols:[['frame','床架','#c9a27a'],['blanket','被子','#9cc3e6'],['pillow','枕頭','#ffffff'],['sheet','床單','#f6efe4']]},
@@ -940,14 +940,33 @@ Object.assign(BUILD,{
       const sg=new THREE.Group();sg.position.set(x,y+0.01,0.05);sg.rotation.y=0.5+i*0.3;g.add(sg);cyl(0.06,0.06,0.006,12,'#ffffff',0,0.003,0,sg);
       const w=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,0.09,3,1,false,0,Math.PI/3),mat(a));w.position.y=0.05;sg.add(w);const tp=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,0.015,3,1,false,0,Math.PI/3),mat(top));tp.position.y=0.1;sg.add(tp);sph(0.015,'#e5534b',0.03,0.115,0.04,sg,null,6)})});
     [-0.3,0,0.3].forEach(x=>box(0.18,0.06,0.01,'#ffffff',x,0.65,0.355,g))},
-  dripstation(g,C){box(1.3,0.06,0.45,C.wood,0,0.03,0,g);[-0.62,0.62].forEach(x=>box(0.05,1.2,0.05,C.wood,x,0.63,-0.15,g));box(1.3,0.05,0.2,C.wood,0,1.2,-0.08,g);box(1.3,0.05,0.2,C.wood,0,0.75,-0.08,g);box(1.3,0.05,0.2,C.wood,0,0.42,-0.08,g);
-    [-0.42,0,0.42].forEach((x,i)=>{const gw=new THREE.Mesh(new THREE.SphereGeometry(0.13,16,12),glass('#dff1f7',{opacity:0.4}));gw.position.set(x,1.07,0.02);gw.userData.noShadow=true;g.add(gw);sph(0.11,'#cfe9f3',x,1.04,0.02,g,{transparent:true,opacity:0.6},10);
-      cyl(0.008,0.008,0.1,6,'#8f847c',x,0.9,0.02,g);sph(0.013,'#e5534b',x+0.015,0.9,0.02,g,null,6);
-      const ch=new THREE.Mesh(new THREE.CylinderGeometry(0.075,0.05,0.18,14,1,true),glass('#dff1f7',{side:THREE.DoubleSide,opacity:0.4}));ch.position.set(x,0.62,0.02);g.add(ch);cyl(0.07,0.05,0.1,14,C.coffee,x,0.59,0.02,g);
-      [0.48,0.44].forEach(y=>{const c=new THREE.Mesh(new THREE.TorusGeometry(0.06,0.008,6,20),glass('#dff1f7',{opacity:0.6}));c.rotation.x=Math.PI/2;c.position.set(x,y,0.02);g.add(c)});
-      const cf=new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.085,0.2,14,1,true),glass('#dff1f7',{side:THREE.DoubleSide,opacity:0.4}));cf.position.set(x,0.16,0.02);g.add(cf);cyl(0.078,0.082,0.1+i*0.03,14,C.coffee,x,0.11+i*0.015,0.02,g);
-      const dr=sph(0.012,C.coffee,x,0.84,0.02,g,null,6);dr.userData.noShadow=true;const dr2=sph(0.01,C.coffee,x,0.4,0.02,g,null,6);dr2.userData.noShadow=true;const ph=i*0.33;
-      A(t=>{const k=(t*0.8+ph)%1;dr.position.y=0.86-k*0.13;dr.visible=k<0.9;const k2=(t*0.6+ph)%1;dr2.position.y=0.4-k2*0.12;dr2.visible=k2<0.9})})},
+  dripstation(g,C){const W=C.wood,G='#dff1f7';
+    /* 底座 + 圓頂背板（深色木頭，像店裡那種單座冰滴架） */
+    box(0.44,0.05,0.38,W,0,0.025,0,g);box(0.34,1.46,0.05,W,0,0.78,-0.15,g);
+    const top=cyl(0.17,0.17,0.05,24,W,0,1.51,-0.15,g);top.rotation.x=Math.PI/2;
+    [-0.155,0.155].forEach(x=>box(0.03,1.4,0.05,W,x,0.75,-0.11,g));
+    /* 上層：托住玻璃水球的木環 */
+    box(0.3,0.035,0.26,W,0,1.30,-0.03,g);const ring=new THREE.Mesh(new THREE.TorusGeometry(0.085,0.018,8,24),mat(W));ring.rotation.x=Math.PI/2;ring.position.set(0,1.32,0.02);g.add(ring);
+    const gw=new THREE.Mesh(new THREE.SphereGeometry(0.135,20,14),glass(G,{opacity:0.4}));gw.position.set(0,1.44,0.02);gw.userData.noShadow=true;g.add(gw);
+    sph(0.115,'#cfe9f3',0,1.42,0.02,g,{transparent:true,opacity:0.55},12);cyl(0.04,0.05,0.05,12,'#f4f4f4',0,1.595,0.02,g);sph(0.025,'#e8e8e8',0,1.635,0.02,g,null,10);
+    /* 滴速閥 */
+    cyl(0.008,0.008,0.12,6,'#8f847c',0,1.24,0.02,g);sph(0.014,'#e5534b',0.018,1.24,0.02,g,null,6);
+    /* 中層：咖啡粉玻璃管 */
+    box(0.3,0.035,0.26,W,0,0.90,-0.03,g);
+    const ch=new THREE.Mesh(new THREE.CylinderGeometry(0.065,0.06,0.24,16,1,true),glass(G,{side:THREE.DoubleSide,opacity:0.4}));ch.position.set(0,1.04,0.02);g.add(ch);
+    cyl(0.06,0.056,0.13,16,C.coffee,0,0.985,0.02,g);sph(0.07,'#f2f2f2',0,1.17,0.02,g,{transparent:true,opacity:0.5},10);
+    /* 玻璃螺旋管 */
+    [0.84,0.80,0.76].forEach(y=>{const c=new THREE.Mesh(new THREE.TorusGeometry(0.05,0.007,6,20),glass(G,{opacity:0.6}));c.rotation.x=Math.PI/2;c.position.set(0,y,0.02);g.add(c)});
+    cyl(0.006,0.006,0.3,6,G,0,0.58,0.02,g,{transparent:true,opacity:0.6});
+    /* 下層：圓底玻璃瓶裝滿冰滴咖啡 */
+    const fl=new THREE.Mesh(new THREE.SphereGeometry(0.12,20,14),glass(G,{opacity:0.35}));fl.position.set(0,0.18,0.02);fl.userData.noShadow=true;g.add(fl);
+    const cf=new THREE.Mesh(new THREE.SphereGeometry(0.105,18,12,0,Math.PI*2,Math.PI*0.38,Math.PI*0.62),mat(C.coffee));cf.position.set(0,0.18,0.02);g.add(cf);
+    const nk=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.04,0.14,14,1,true),glass(G,{side:THREE.DoubleSide,opacity:0.4}));nk.position.set(0,0.35,0.02);g.add(nk);
+    /* 前面的菜單小卡 */
+    const cd=new THREE.Group();box(0.13,0.17,0.012,'#2b2b2b',0,0,0,cd);box(0.11,0.15,0.014,C.card,0,0,0.001,cd);box(0.08,0.035,0.016,'#c98a3a',0,-0.03,0.002,cd);cd.position.set(0.15,0.13,0.15);cd.rotation.set(-0.3,-0.35,0);g.add(cd);
+    /* 水滴動畫 */
+    const d1=sph(0.011,'#cfe9f3',0,1.2,0.02,g,null,6),d2=sph(0.011,C.coffee,0,0.72,0.02,g,null,6);d1.userData.noShadow=d2.userData.noShadow=true;
+    A(t=>{const k=(t*0.8)%1;d1.position.y=1.18-k*0.06;d1.visible=k<0.9;const k2=(t*0.6+0.4)%1;d2.position.y=0.72-k2*0.3;d2.visible=k2<0.9})},
   buscart(g,C){const m={metalness:0.2,roughness:0.35};[[-0.45,-0.25],[0.45,-0.25],[-0.45,0.25],[0.45,0.25]].forEach(([x,z])=>{cyl(0.018,0.018,0.85,6,C.frame,x,0.5,z,g,m);const w=cyl(0.05,0.05,0.03,10,'#2b2421',x,0.05,z,g);w.rotation.x=Math.PI/2});
     [0.15,0.5,0.88].forEach(y=>box(0.95,0.025,0.55,C.frame,0,y,0,g,m));const hd=cyl(0.02,0.02,0.6,8,C.frame,-0.52,0.95,0,g,m);hd.rotation.x=Math.PI/2;[-0.25,0.25].forEach(z=>box(0.08,0.02,0.02,C.frame,-0.48,0.95,z,g,m));
     [[0.17,-0.2,0],[0.52,0.2,0]].forEach(([y,x])=>{box(0.5,0.16,0.4,C.tub,x,y+0.09,0,g);box(0.46,0.02,0.36,shade(C.tub,0.1),x,y+0.16,0,g)});
