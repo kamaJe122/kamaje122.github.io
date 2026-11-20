@@ -353,9 +353,9 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.4.0';
-const APP_NOTES=['🧱 牆壁：長、高、厚度可以自由調，純色／花紋／橫條紋／直條紋都能配色；還有玻璃門、出菜口','☕ 大圓形咖啡豆招牌、吊掛告示牌（文字可改）、牛角椅；菜單變成打開的書','🍳 餐點：香煎雞腿早午餐、花生醬牛肉漢堡、夏威夷鮮蝦披薩、提拉米蘇、奶酪、檸檬塔','☕ 飲料：拉花拿鐵、空咖啡杯、伯爵歐蕾、熱茶壺、熱茶杯、木頭托盤；還有用過的衛生紙團','🐮 新動物：牛（乳牛、娟珊牛、黃牛、水牛、和牛、高地牛）；🐶 狗狗新增黑柴犬'];
-const APP_OLD=['🥛 牛奶盒、旋奶機、鋼杯、冰杓、餐具、餐巾紙、衛生紙、抱枕','🐷 小豬、蛇、倉鼠、烏龜＋每種動物 5 種以上品種；💰 錢幣鈔票、信用卡、筆電、雨衣；☕ 咖啡廳桌椅、水杯、菜單','👀 編輯時預覽跟著捲動','🦜 鸚鵡嘴巴換顏色','😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
+const APP_VERSION='1.4.1';
+const APP_NOTES=['📍 新增物件會出現在你現在畫面正中間看著的地面，不會再跑到主島或別的地方'];
+const APP_OLD=['🧱 牆壁可調長寬高、玻璃門、出菜口、招牌、告示牌、牛角椅；🍳 早午餐、漢堡、披薩、甜點、飲料；🐮 牛、黑柴犬','🥛 牛奶盒、旋奶機、鋼杯、冰杓、餐具、餐巾紙、衛生紙、抱枕','🐷 小豬、蛇、倉鼠、烏龜＋每種動物 5 種以上品種；💰 錢幣鈔票、信用卡、筆電、雨衣；☕ 咖啡廳桌椅、水杯、菜單','👀 編輯時預覽跟著捲動','🦜 鸚鵡嘴巴換顏色','😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -2186,9 +2186,17 @@ function flyToItem(id){const o=itemObjs[id];if(!o)return;flyTo(o.position.clone(
 /* 擺設面板打開時，把畫面中心往上移到面板上方看得到的地方，選取／鎖定的物件就不會被面板擋住 */
 let viewOff=0;function updateViewOffset(dt){const want=(editOn()||mode==='detail'||mode==='pet')&&!sheet.hidden?Math.max(0,(H-(sheet.getBoundingClientRect().top-renderer.domElement.getBoundingClientRect().top))/2):0;
   viewOff+=(want-viewOff)*Math.min(1,dt*8);if(Math.abs(viewOff)<0.5){if(camera.view&&camera.view.enabled){camera.clearViewOffset()}viewOff=want<0.5?0:viewOff;if(!viewOff)return}camera.setViewOffset(W,H,0,viewOff,W,H)}
-function addItem(type){const D=ITEMS[type],t=controls.target,v=visiblePoint();let x=v?v.x:t.x,z=v?v.z:t.z;if(!isleAt(x,z)){x=meState.x+1.5;z=meState.z+1}
+/* 新物件放在「現在畫面正中間看著的地面」；看著海就放到最近那座島的岸邊，旁邊有東西就找附近的空位 */
+function addSpot(small){const t=controls.target;let x=t.x,z=t.z;
+  if(!isleAt(x,z)){const v=visiblePoint();if(v&&isleAt(v.x,v.z)){x=v.x;z=v.z}
+    else{const ids=['hub'].concat(S.isles.map(i=>i.id));let best=null,bd=1e9;ids.forEach(id=>{const c=isleCenter(id),d=Math.hypot(c.x-x,c.z-z);if(d<bd){bd=d;best=c}});
+      if(best){for(let k=1;k<=40;k++){const f=k/40,qx=x+(best.x-x)*f,qz=z+(best.z-z)*f;if(isleAt(qx,qz)){x=qx+(best.x-qx)*0.08;z=qz+(best.z-qz)*0.08;break}}}}}
+  if(small)return {x,z};const home=isleAt(x,z);
+  for(let r=0;r<=4;r+=0.5)for(let k=0;k<(r?10:1);k++){const a=k/10*6.283+r,qx=x+Math.cos(a)*r,qz=z+Math.sin(a)*r;if(isleAt(qx,qz)===home&&!blockedAt(qx,qz,0.45,null))return {x:qx,z:qz}}
+  return {x,z}}
+function addItem(type){const D=ITEMS[type],sp=addSpot(!!D.small),x=sp.x,z=sp.z;
   const f=new THREE.Vector3();camera.getWorldDirection(f);
-  const it={unlocked:true,id:uid(),type,x:+(x+(Math.random()-0.5)*1.6).toFixed(2),z:+(z+(Math.random()-0.5)*1.6).toFixed(2),y:0,ry:Math.round(Math.atan2(-f.x,-f.z)/(Math.PI/4))*(Math.PI/4),s:1,c:{}};
+  const it={unlocked:true,id:uid(),type,x:+x.toFixed(2),z:+z.toFixed(2),y:0,ry:Math.round(Math.atan2(-f.x,-f.z)/(Math.PI/4))*(Math.PI/4),s:1,c:{}};
   if(D.small)it.y=surfaceAt(it.x,it.z,null);
   S.items.push(it);save();addItemObj(it);selectItem(it.id);toast(D.e+' '+D.n+' 放好了！按住它就能拖曳')}
 function selectItem(id){if(selItem&&selItem!==id)relock(selItem);openSheet('item',id);measureSel()}
