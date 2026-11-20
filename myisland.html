@@ -353,9 +353,9 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.4.1';
-const APP_NOTES=['📍 新增物件會出現在你現在畫面正中間看著的地面，不會再跑到主島或別的地方'];
-const APP_OLD=['🧱 牆壁可調長寬高、玻璃門、出菜口、招牌、告示牌、牛角椅；🍳 早午餐、漢堡、披薩、甜點、飲料；🐮 牛、黑柴犬','🥛 牛奶盒、旋奶機、鋼杯、冰杓、餐具、餐巾紙、衛生紙、抱枕','🐷 小豬、蛇、倉鼠、烏龜＋每種動物 5 種以上品種；💰 錢幣鈔票、信用卡、筆電、雨衣；☕ 咖啡廳桌椅、水杯、菜單','👀 編輯時預覽跟著捲動','🦜 鸚鵡嘴巴換顏色','😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
+const APP_VERSION='1.4.2';
+const APP_NOTES=['🔄 物件可以 360° 旋轉：除了水平方向，還能調「前後傾斜（垂直）」和「左右傾斜」，也有躺平、側躺、倒過來、回正快速鍵'];
+const APP_OLD=['📍 新增物件放在你正在看的地方','🧱 牆壁可調長寬高、玻璃門、出菜口、招牌、告示牌、牛角椅；🍳 早午餐、漢堡、披薩、甜點、飲料；🐮 牛、黑柴犬','🥛 牛奶盒、旋奶機、鋼杯、冰杓、餐具、餐巾紙、衛生紙、抱枕','🐷 小豬、蛇、倉鼠、烏龜＋每種動物 5 種以上品種；💰 錢幣鈔票、信用卡、筆電、雨衣；☕ 咖啡廳桌椅、水杯、菜單','👀 編輯時預覽跟著捲動','🦜 鸚鵡嘴巴換顏色','😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -2134,12 +2134,15 @@ function lookEditor(host,look,onChange,opts){opts=opts||{};normLook(look);if(!lo
    ========================================================= */
 let itemObjs={},selItem=null,selR=1,drag=null,buildCat='kitchen',saveT=0;
 function saveSoon(){clearTimeout(saveT);saveT=setTimeout(save,400)}
-function placeItem(g,it){g.position.set(it.x,TOP+(it.y||0),it.z);g.rotation.y=it.ry||0;g.scale.setScalar(it.s||1);obstDirty=true}
+function placeItem(g,it){g.position.set(it.x,TOP+(it.y||0),it.z);g.rotation.order='YXZ';g.rotation.set(it.rx||0,it.ry||0,it.rz||0);g.scale.setScalar(it.s||1);
+  /* 前後／左右傾斜時繞著物件中心轉，不會插進地板 */
+  if(it.rx||it.rz){const hc=(g.userData.hc||0)*(it.s||1),v=new THREE.Vector3(0,hc,0).applyEuler(g.rotation);g.position.x-=v.x;g.position.z-=v.z;g.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(g);if(!b.isEmpty())g.position.y+=TOP+(it.y||0)-b.min.y}obstDirty=true}
 /* 不穿過家具：每個大型物件有一個「腳印」方框，人物和動物走路會繞開 */
 let OBST=[],obstDirty=true;const BODY=0.42,NOCOLL={balcony:1},TRUNK={tree:1,ptree:1,pine:1};
 function footprint(g,type){if(NOCOLL[type])return null;if(TRUNK[type])return {cx:0,cz:0,hx:0.35,hz:0.35};
   const b=new THREE.Box3().setFromObject(g);if(b.isEmpty())return null;return {cx:(b.min.x+b.max.x)/2,cz:(b.min.z+b.max.z)/2,hx:(b.max.x-b.min.x)/2,hz:(b.max.z-b.min.z)/2}}
 function obstRebuild(){OBST=[];for(const id in itemObjs){const fp=itemObjs[id].userData.fp;if(!fp)continue;const it=S.items.find(x=>x.id===id);if(!it||(it.y||0)>0.6)continue;const k=it.s||1,ry=it.ry||0;
+  if(it.rx||it.rz){const b=new THREE.Box3().setFromObject(itemObjs[id]);if(b.isEmpty()||b.min.y-TOP>0.6)continue;OBST.push({id,x:(b.min.x+b.max.x)/2,z:(b.min.z+b.max.z)/2,c:1,s:0,cx:0,cz:0,hx:(b.max.x-b.min.x)/2,hz:(b.max.z-b.min.z)/2});continue}
   OBST.push({id,x:it.x,z:it.z,c:Math.cos(ry),s:Math.sin(ry),cx:fp.cx*k,cz:fp.cz*k,hx:fp.hx*k,hz:fp.hz*k})}obstDirty=false}
 function blockedAt(x,z,pad,ign){if(obstDirty)obstRebuild();for(const o of OBST){if(o.id===ign)continue;const dx=x-o.x,dz=z-o.z,lx=dx*o.c-dz*o.s-o.cx,lz=dx*o.s+dz*o.c-o.cz;if(Math.abs(lx)<o.hx+pad&&Math.abs(lz)<o.hz+pad)return o}return null}
 /* 往目標走一步；前面有家具就試著往左右偏，真的卡住太久才暫時穿過去（避免永遠卡住） */
@@ -2170,7 +2173,7 @@ function separate(){const E=[];chars.forEach(v=>{if(v.inside)return;E.push({o:v,
   for(let i=0;i<E.length;i++)for(let j=i+1;j<E.length;j++){const a=E[i],b=E[j];if(a.fix&&b.fix)continue;if(a.o.soc&&b.o.p&&a.o.soc.pid===b.o.p.id)continue;let dx=b.o.x-a.o.x,dz=b.o[b.kz]-a.o[a.kz],d=Math.hypot(dx,dz);const m=a.r+b.r;if(d>=m)continue;if(d<1e-4){dx=Math.random()-0.5;dz=Math.random()-0.5;d=Math.hypot(dx,dz)}
     const ov=m-d,nx=dx/d,nz=dz/d,wa=a.fix?0:b.fix?1:0.5;mv(a,-nx*ov*wa,-nz*ov*wa);mv(b,nx*ov*(1-wa),nz*ov*(1-wa))}}
 function pickFree(r){for(let i=0;i<24;i++){const x=r.x0+Math.random()*(r.x1-r.x0),z=r.z0+Math.random()*(r.z1-r.z0);if(!blockedAt(x,z,BODY+0.2,null))return {x,z}}return {x:r.x0+Math.random()*(r.x1-r.x0),z:r.z0+Math.random()*(r.z1-r.z0)}}
-function addItemObj(it){if(!ITEMS[it.type])return;const g=makeItem(it);g.userData.item=it.id;g.userData.fp=footprint(g,it.type);placeItem(g,it);world.add(g);itemObjs[it.id]=g}
+function addItemObj(it){if(!ITEMS[it.type])return;const g=makeItem(it);g.userData.item=it.id;g.userData.fp=footprint(g,it.type);{const b=new THREE.Box3().setFromObject(g);g.userData.hc=b.isEmpty()?0:(b.min.y+b.max.y)/2}placeItem(g,it);world.add(g);itemObjs[it.id]=g}
 function buildItems(){itemObjs={};obstDirty=true;S.items.forEach(addItemObj)}
 function rebuildItem(it){const o=itemObjs[it.id];if(o){world.remove(o);disposeObj(o)}addItemObj(it);if(selItem===it.id)measureSel()}
 function removeItemObj(id){obstDirty=true;const o=itemObjs[id];if(o){world.remove(o);disposeObj(o)}delete itemObjs[id]}
@@ -2240,10 +2243,11 @@ function confirmGoHTML(){return '';const a=S.items.find(x=>x.id===lockItem),b=S.
   return '<div class="confirm"><span>目前鎖定在「'+esc(ITEMS[a.type].n)+'」，要解除並前往「'+esc(ITEMS[b.type].n)+'」嗎？</span><button class="btn" type="button" data-gocancel="1">取消</button><button class="btn redfill" type="button" data-gounlock="1">解除並前往</button></div>'}
 function nudgeItem(it,dir){const f=new THREE.Vector3();camera.getWorldDirection(f);f.y=0;f.normalize();const r=new THREE.Vector3(-f.z,0,f.x),st=0.25;
   const v={f:f,b:f.clone().negate(),l:r.clone().negate(),r:r}[dir];it.x=+(it.x+v.x*st).toFixed(2);it.z=+(it.z+v.z*st).toFixed(2);if(ITEMS[it.type].small){it.y=surfaceAt(it.x,it.z,it.id);syncSliders(it)}placeItem(itemObjs[it.id],it);saveSoon();refreshPlaceUI()}
+function tiltOf(v){return Math.round(((((v||0)*180/Math.PI)+180)%360+360)%360-180)}
 function degOf(it){return Math.round((((it.ry||0)*180/Math.PI)%360+360)%360)}
 function sliderRow(label,key,min,max,step,val,txt){return '<label class="srow"><span>'+label+'</span><input type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+val+'" data-isl="'+key+'"><b data-isv="'+key+'">'+txt+'</b></label>'}
 function syncSliders(it){const set=(k,v,t)=>{const i=sBody.querySelector('[data-isl="'+k+'"]');if(i)i.value=v;const b=sBody.querySelector('[data-isv="'+k+'"]');if(b)b.textContent=t};
-  set('iy',it.y||0,(it.y||0).toFixed(2));set('iry',degOf(it),degOf(it)+'°');set('is',it.s||1,(it.s||1).toFixed(2)+'×')}
+  set('iy',it.y||0,(it.y||0).toFixed(2));set('iry',degOf(it),degOf(it)+'°');set('irx',tiltOf(it.rx),tiltOf(it.rx)+'°');set('irz',tiltOf(it.rz),tiltOf(it.rz)+'°');set('is',it.s||1,(it.s||1).toFixed(2)+'×')}
 const editOn=()=>mode==='build'||mode==='item';
 renderer.domElement.addEventListener('pointerdown',e=>{if(!editOn())return;const id=itemHit(e);if(!id)return;const it=S.items.find(x=>x.id===id);if(!it)return;if(isLocked(it)){if(selItem!==id)selectItem(id);return}
   controls.enabled=false;const pl=new THREE.Plane(new THREE.Vector3(0,1,0),-(TOP+(it.y||0))),p=new THREE.Vector3();
@@ -2430,6 +2434,8 @@ function render(){
     h+='<div class="mv"><div class="pad"><span></span><button type="button" class="btn" data-nudge="f" aria-label="往前">▲</button><span></span><button type="button" class="btn" data-nudge="l" aria-label="往左">◀</button><button type="button" class="btn" data-nudge="b" aria-label="往後">▼</button><button type="button" class="btn" data-nudge="r" aria-label="往右">▶</button></div>';
     h+='<div>'+sliderRow('高度','iy',0,5,0.01,it.y||0,(it.y||0).toFixed(2))+'<div class="tabs hq">'+HEIGHTS.map(([l,v])=>'<button type="button" class="tab" data-hset="'+v+'">'+l+'</button>').join('')+'</div>'+
       sliderRow('方向角度','iry',0,359,1,degOf(it),degOf(it)+'°')+'<div class="tabs hq"><button type="button" class="tab" data-rot="-45">↺ 45°</button><button type="button" class="tab" data-rot="45">↻ 45°</button><button type="button" class="tab" data-rot="180">轉 180°</button></div>'+
+      sliderRow('前後傾斜（垂直）','irx',-180,180,1,tiltOf(it.rx),tiltOf(it.rx)+'°')+sliderRow('左右傾斜','irz',-180,180,1,tiltOf(it.rz),tiltOf(it.rz)+'°')+
+      '<div class="tabs hq"><button type="button" class="tab" data-tilt="x:-90">⤵ 往前躺平</button><button type="button" class="tab" data-tilt="x:90">⤴ 往後躺平</button><button type="button" class="tab" data-tilt="z:90">↪ 側躺</button><button type="button" class="tab" data-tilt="x:180">🙃 倒過來</button><button type="button" class="tab" data-tilt="0">⬆ 回正</button></div>'+
       sliderRow('大小','is',0.5,2,0.05,it.s||1,(it.s||1).toFixed(2)+'×')+'</div></div>';
     if(D.text)h+='<div class="fld"><label for="fSign">'+D.text+'</label><input type="text" id="fSign" maxlength="12" value="'+esc(it.text||'')+'" placeholder="'+esc(D.textDef||'')+'"></div>';
     if(D.dims)h+='<div class="grp">📏 長寬高（公尺）</div>'+D.dims.map(([k,l,mn,mx,st,dv])=>{const v=(it.d&&it.d[k])||dv;return sliderRow(l,'d_'+k,mn,mx,st,v,(+v).toFixed(2)+' m')}).join('');
@@ -2494,8 +2500,9 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
   if(mode==='item'){const it=S.items.find(x=>x.id===arg);if(it){if(!it.c)it.c={};const o=itemObjs[it.id];
     if(cpClick(sBody,b,it.c,()=>{rebuildItem(it);saveSoon()}))return;
     if(d.iopt){it.o=Object.assign({},it.o,{[d.iopt]:d.v});rebuildItem(it);obstDirty=true;saveSoon();render();return}
-    if((d.nudge||d.rot||d.hset!=null||d.delitem||(d.ask==='delitem'))&&isFixed(it))return;
+    if((d.nudge||d.rot||d.tilt||d.hset!=null||d.delitem||(d.ask==='delitem'))&&isFixed(it))return;
     if(d.nudge){nudgeItem(it,d.nudge);return}
+    if(d.tilt){if(d.tilt==='0'){it.rx=0;it.rz=0}else{const [ax,dg]=d.tilt.split(':');it.rx=ax==='x'?(+dg)*Math.PI/180:0;it.rz=ax==='z'?(+dg)*Math.PI/180:0}const o2=itemObjs[it.id];if(o2)placeItem(o2,it);syncSliders(it);saveSoon();return}
     if(d.rot){it.ry=(it.ry||0)+(+d.rot)*Math.PI/180;if(o)placeItem(o,it);syncSliders(it);saveSoon();return}
     if(d.hset!=null){it.y=+d.hset;if(o)placeItem(o,it);syncSliders(it);saveSoon();return}
     if(d.dupitem){const c=JSON.parse(JSON.stringify(it));c.id=uid();c.unlocked=true;c.x=+(c.x+0.8).toFixed(2);c.z=+(c.z+0.4).toFixed(2);S.items.push(c);save();addItemObj(c);selectItem(c.id);toast('📄 複製好了，拖曳到想要的位置');return}
@@ -2592,7 +2599,7 @@ sBody.addEventListener('input',e=>{
   if(mode==='item'){const it=S.items.find(x=>x.id===arg);if(it){if(!it.c)it.c={};if(cpInput(sBody,e.target,it.c,()=>{rebuildItem(it);saveSoon()}))return;const k=e.target.dataset.isl;
     if(k&&isLocked(it)){isFixed(it);syncSliders(it);return}
     if(k&&k.startsWith('d_')){const v=+e.target.value;it.d=Object.assign({},it.d,{[k.slice(2)]:v});const lb=sBody.querySelector('[data-isv="'+k+'"]');if(lb)lb.textContent=v.toFixed(2)+' m';rebuildItem(it);obstDirty=true;saveSoon();return}
-    if(k){const v=+e.target.value;if(k==='iy')it.y=v;else if(k==='iry')it.ry=v*Math.PI/180;else if(k==='is')it.s=v;const o=itemObjs[it.id];if(o)placeItem(o,it);syncSliders(it);if(k==='is')measureSel();saveSoon();return}}}
+    if(k){const v=+e.target.value;if(k==='iy')it.y=v;else if(k==='iry')it.ry=v*Math.PI/180;else if(k==='irx')it.rx=v*Math.PI/180;else if(k==='irz')it.rz=v*Math.PI/180;else if(k==='is')it.s=v;const o=itemObjs[it.id];if(o)placeItem(o,it);syncSliders(it);if(k==='is')measureSel();saveSoon();return}}}
   if(mode==='iform'&&draft&&cpInput(sBody,e.target,draft,null))return;
 if(e.target.id==='tSlider'){S.ui.timeMode='manual';S.ui.hour=+e.target.value;save();sBody.querySelectorAll('[data-tm]').forEach(x=>x.classList.toggle('on',x.dataset.tm==='manual'))}});
 
