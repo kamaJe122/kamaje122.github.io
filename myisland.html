@@ -351,9 +351,9 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.2.0';
-const APP_NOTES=['🆕 新物件：電視、電視櫃、衣櫃、衣帽架','💪 身材：島民和動物可以選 很瘦／一般／胖胖肉肉／健身肌肉','💇 男生中分更清楚，🧢 棒球帽可以朝前或反戴','🔔 更新通知變簡單，按鈕一定按得到'];
-const APP_OLD=['✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
+const APP_VERSION='1.2.1';
+const APP_NOTES=['👖 吊嘎、阿伯上衣、T恤都看得出褲子了：有褲頭，還能選 長褲／短褲／阿伯西裝褲（皮帶）'];
+const APP_OLD=['🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -699,16 +699,17 @@ function makeChar(o){
   const accs=Array.isArray(o.accs)?o.accs:(o.acc&&o.acc!=='none'?[o.acc]:[]),AC=o.ac||{},has=k=>accs.includes(k),aC=k=>AC[k]||ACC_DEF[k];
   const nakedTop=out==='boxers'||out==='towel'||out==='towelWrap';
   const topC=(out==='basic'||out==='uniform')?o.shirt:oc,slvC=(nakedTop||out==='tank')?skin:topC;
-  const legC=PANTS_OUT[out]?o.pants:out==='pajama'?oc:skin;
+  const hasP=!!PANTS_OUT[out],legC=hasP?(o.pants||'#3a4252'):out==='pajama'?oc:skin,pst=hasP?(o.pantsStyle||(out==='uncle'?'slacks':'long')):'';
   const T=y=>0.44-(y-0.51)*0.1026; /* 身體在高度 y 的半徑 */
   const g=new THREE.Group();
   const legL=new THREE.Group(),legR=new THREE.Group();legL.position.set(-0.14,0.52,0);legR.position.set(0.14,0.52,0);
-  [legL,legR].forEach((L,i)=>{box(0.23,0.52,0.25,legC,0,-0.26,0,L);box(0.26,0.12,0.34,nakedTop?'#f4a3a0':'#2b2421',0,-0.5,0.04,L);
+  [legL,legR].forEach((L,i)=>{if(pst==='shorts'){box(0.25,0.27,0.27,legC,0,-0.13,0,L);box(0.2,0.27,0.22,skin,0,-0.39,0,L)}else if(pst==='slacks'){box(0.26,0.52,0.27,legC,0,-0.26,0,L);box(0.012,0.4,0.005,shade(legC,-0.12),0,-0.3,0.137,L)}else box(0.23,0.52,0.25,legC,0,-0.26,0,L);box(0.26,0.12,0.34,nakedTop?'#f4a3a0':'#2b2421',0,-0.5,0.04,L);
     if(out==='boxers'){box(0.27,0.22,0.29,oc,0,-0.09,0,L)}
     if(out==='pajama')[[-0.12,0.05],[-0.32,-0.05]].forEach(([y,x])=>sph(0.04,oc2,x*(i?1:-1),y,0.128,L,null,6));
     g.add(L)});
   if(out==='boxers'){box(0.6,0.17,0.32,oc,0,0.56,0,g);box(0.61,0.05,0.33,oc2,0,0.62,0,g)}
   const torso=cyl(0.36,0.44,0.78,10,nakedTop?skin:topC,0,0.9,0,g);
+  if(hasP){const wr=out==='uncle'?0.505:0.452,wy=out==='uncle'?0.6:0.56;cyl(wr,wr,out==='uncle'?0.2:0.13,12,legC,0,wy,0,g);if(pst==='slacks'){cyl(wr+0.006,wr+0.006,0.05,12,'#4a2c1c',0,wy+0.06,0,g);box(0.09,0.065,0.03,'#d9b45f',0,wy+0.06,wr+0.005,g,{metalness:0.5,roughness:0.3})}}
   if(out==='pajama'){for(let i=0;i<16;i++){const a=i*2.399,y=0.6+((i*0.37)%0.62),r=T(y)+0.004;sph(0.042,oc2,Math.sin(a)*r,y,Math.cos(a)*r,g,null,6)}
     const col=new THREE.Mesh(new THREE.TorusGeometry(0.21,0.04,6,14),mat(oc2));col.rotation.x=Math.PI/2;col.position.y=1.29;g.add(col)}
   if(out==='towel'||out==='towelWrap'){cyl(0.47,0.5,0.86,12,oc,0,0.8,0,g);box(0.16,0.22,0.05,shade(oc,-0.06),0.2,1.08,0.44,g)}
@@ -756,9 +757,9 @@ function makeChar(o){
    if(BT){const keep=new Set([legL,legR,armL,armR,head]),bg=new THREE.Group();g.children.slice().forEach(ch=>{if(!keep.has(ch)){g.remove(ch);bg.add(ch)}});g.add(bg);bg.scale.set(BT.fx,1,BT.fz);
      const topCol=nakedTop?skin:topC;
      if(o.body==='chubby'){const b=sph(0.36,topCol,0,0.76,0.12,bg,null,12);b.scale.set(1.08,0.92,1);if(nakedTop)sph(0.025,shade(skin,-0.12),0,0.78,0.48,bg,null,6)}
-     if(o.body==='muscle'){[-1,1].forEach(s2=>{const pc=sph(0.16,topCol,s2*0.15,1.06,0.27,bg,null,10);pc.scale.set(1.2,0.8,0.6)});
+     if(o.body==='muscle'&&out!=='tank'){[-1,1].forEach(s2=>{const pc=sph(0.16,topCol,s2*0.15,1.06,0.27,bg,null,10);pc.scale.set(1.2,0.8,0.6)});
        if(nakedTop)[0.95,0.83,0.71].forEach(y=>[-0.07,0.07].forEach(x=>box(0.11,0.09,0.03,shade(skin,-0.05),x,y,T(y)+0.005,bg)))}
-     [[armL,-1],[armR,1]].forEach(([A,s2])=>{A.position.x=s2*BT.ax;A.scale.set(BT.af,1,BT.af);if(o.body==='muscle'){sph(0.16,slvC,0,-0.03,0,A,null,10).scale.set(1.05,0.95,1.05);sph(0.12,slvC,0,-0.3,0.02,A,null,10).scale.set(1,1.1,1)}
+     [[armL,-1],[armR,1]].forEach(([A,s2])=>{A.position.x=s2*BT.ax;A.scale.set(BT.af,1,BT.af);if(o.body==='muscle'){sph(0.135,slvC,0,-0.04,0,A,null,10).scale.set(1.05,0.95,1.05);sph(0.12,slvC,0,-0.3,0.02,A,null,10).scale.set(1,1.1,1)}
        Object.values(held).forEach(h=>{if(h.parent===A)h.scale.set(h.scale.x/BT.af,h.scale.y,h.scale.z/BT.af)})});
      [[legL,-1],[legR,1]].forEach(([L,s2])=>{L.position.x=s2*BT.lx;L.scale.set(BT.lf,1,BT.lf)})}}
   const hit=new THREE.Mesh(new THREE.CylinderGeometry(0.75,0.75,2.3,8),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));hit.position.y=1.15;g.add(hit);
@@ -1770,7 +1771,7 @@ function lookEditor(host,look,onChange,opts){opts=opts||{};normLook(look);if(!lo
     if(look.style==='clawclip')h+=cpRow('clipC','鯊魚夾顏色',look.clipC||'#e8a25a',['#e8a25a','#6b4a2f']);
     h+=tabRow('衣服','outfit',OUTFITS.filter(o=>opts.resident||o[0]!=='uniform'),look.outfit);
     (OUT_COL[look.outfit]||[]).forEach(([k,l,d])=>h+=cpRow(k,l,look[k]||d,k==='shirt'?SHIRT_C:null));
-    if(PANTS_OUT[look.outfit])h+=cpRow('pants','褲子顏色',look.pants,PANTS_C);
+    if(PANTS_OUT[look.outfit]){h+=tabRow('褲子','pantsStyle',[['long','長褲'],['shorts','短褲'],['slacks','阿伯西裝褲（皮帶）']],look.pantsStyle||(look.outfit==='uncle'?'slacks':'long'));h+=cpRow('pants','褲子顏色',look.pants||'#3a4252',PANTS_C)}
     h+='<div class="opt-row"><div class="ol">配件（可以同時戴好幾個）</div><div class="opts">'+ACCS.map(([k,l])=>'<button type="button" class="opt" data-acc="'+k+'" aria-pressed="'+look.accs.includes(k)+'">'+l+'</button>').join('')+'</div></div>';
     look.accs.forEach(k=>{const a=ACCS.find(x=>x[0]===k);if(a)h+=cpRow('ac.'+k,a[1]+' 顏色',look.ac[k]||a[2])});
     h+='<div class="opt-row"><div class="ol">✋ 手上拿的東西（左右手各一樣）</div><div class="holdrow"><label>🫲 左手<select data-hold="L" aria-label="左手拿的東西">'+holdOptions(look.hL||'')+'</select></label><label>🫱 右手<select data-hold="R" aria-label="右手拿的東西">'+holdOptions(look.hR||'')+'</select></label></div></div>';
