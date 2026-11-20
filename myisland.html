@@ -200,9 +200,9 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
 .warn2{background:#fff4d6;border:1.5px solid #f2b705;border-radius:12px;padding:8px 10px;font-size:12.5px;margin:0 0 8px}
 /* 擺設：選取框與鎖頭 */
 .selbox{position:absolute;left:0;top:0;border:2.5px dashed var(--orange);border-radius:12px;pointer-events:none;z-index:4;box-shadow:0 0 0 2px #fff8}
-.selbox.locked{border:3px solid #f2b705;box-shadow:0 0 0 3px #f2b70555,0 0 18px #f2b70599}
+.selbox.locked{border:3px solid #8f847c;box-shadow:0 0 0 3px #f2b70555,0 0 18px #f2b70599}
 .lockbtn{position:absolute;right:-24px;bottom:-24px;width:48px;height:48px;border-radius:50%;border:2.5px solid var(--orange);background:#fff;font-size:22px;line-height:1;display:grid;place-items:center;cursor:pointer;pointer-events:auto;box-shadow:0 3px 10px #0003;padding:0}
-.selbox.locked .lockbtn{border-color:#c99400;background:#f2b705}
+.selbox.locked .lockbtn{border-color:#6b5f58;background:#e9e4da}
 .lockbar{display:flex;align-items:center;gap:8px;background:#fff6d6;border:2px solid #f2b705;border-radius:14px;padding:8px 10px;margin:0 0 10px;font-size:13.5px}
 .lockbar span{flex:1;min-width:0}
 .lockbar .btn{min-height:40px}
@@ -349,8 +349,8 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.1.2';
-const APP_NOTES=['修正：島民會在整座島上走來走去；暫停中時按鈕會變橘色提醒，指揮島民走路會自動取消暫停','作息更細：可以設到幾點幾分、選定點／小範圍／大範圍／整座島、在地圖上點位置','新增「🏠 回家」（走回小屋進門休息）和「沒排到的時間到每座島串門子」','App 版可以開「新版本通知」了：第一次會先問你要不要開，之後可在 設定 →「🔔 新版本通知」開關','島民可以排作息了：點島民 →「🗓️ 作息與工作」，設定幾點到幾點散步（或去各島串門子）、待在哪裡、在哪裡做什麼工作','新增 32 種職業和 21 種工作動作：拉花、送餐、炒菜、切菜、挖土、拔雜草、倒土、澆水、掃地…（可複選，輪流做）','可以安裝成 App 了：設定 →「📲 安裝成 App」，有桌面圖示、全螢幕、沒網路也能開','建島畫面多了「📥 我有備份，把島搬過來」，App 版可以直接匯入瀏覽器的島','新增物件：冰滴咖啡組（木盤、湯匙、紅糖、牛奶、冰磚山形杯、木腰帶玻璃壺），在「咖啡・裝飾」','匯出島嶼：可以下載備份檔、分享到 LINE／檔案，或一鍵複製（複製不了會自動幫你全選）','匯入島嶼：可以選備份檔或貼上文字，先預覽內容再匯入，匯入後還能還原','新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
+const APP_VERSION='1.1.3';
+const APP_NOTES=['島民、島主和動物走路會繞過家具，不會再穿過去','🔒 鎖定改成「固定」：固定的物件拖不動、不會被移動，其他物件照樣能選','新增：雙門大冰箱、煎台、油鍋（炸物）、電鍋、大型烤箱、蛋糕展示櫃、禮品架（蛋糕・冰滴）、冰滴咖啡塔','修正：島民會在整座島上走來走去；暫停中時按鈕會變橘色提醒，指揮島民走路會自動取消暫停','作息更細：可以設到幾點幾分、選定點／小範圍／大範圍／整座島、在地圖上點位置','新增「🏠 回家」（走回小屋進門休息）和「沒排到的時間到每座島串門子」','App 版可以開「新版本通知」了：第一次會先問你要不要開，之後可在 設定 →「🔔 新版本通知」開關','島民可以排作息了：點島民 →「🗓️ 作息與工作」，設定幾點到幾點散步（或去各島串門子）、待在哪裡、在哪裡做什麼工作','新增 32 種職業和 21 種工作動作：拉花、送餐、炒菜、切菜、挖土、拔雜草、倒土、澆水、掃地…（可複選，輪流做）','可以安裝成 App 了：設定 →「📲 安裝成 App」，有桌面圖示、全螢幕、沒網路也能開','建島畫面多了「📥 我有備份，把島搬過來」，App 版可以直接匯入瀏覽器的島','新增物件：冰滴咖啡組（木盤、湯匙、紅糖、牛奶、冰磚山形杯、木腰帶玻璃壺），在「咖啡・裝飾」','匯出島嶼：可以下載備份檔、分享到 LINE／檔案，或一鍵複製（複製不了會自動幫你全選）','匯入島嶼：可以選備份檔或貼上文字，先預覽內容再匯入，匯入後還能還原','新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -427,6 +427,14 @@ const ITEMS={
   espresso:{n:'半自動熱吧機',e:'☕',cat:'cafe',small:1,cols:[['body','機身','#d9dde3'],['panel','面板','#2b2421'],['handle','把手','#8b5a34']]},
   register:{n:'收銀台',e:'🧾',cat:'cafe',cols:[['main','櫃身','#c9a27a'],['top','檯面','#f4efe6'],['machine','收銀機','#3a3a3e']]},
   colddrip:{n:'冰滴咖啡組',e:'🧊',cat:'cafe',small:1,cols:[['tray','木盤','#e2bf8f'],['sleeve','木質腰帶','#a0784f'],['coffee','冰滴咖啡','#3b2414'],['sugar','紅糖','#c98a3a'],['milk','牛奶','#fbf8f0']]},
+  fridge:{n:'雙門大冰箱',e:'🧊',cat:'kitchen',cols:[['main','機身','#d9dde3'],['handle','把手','#8f847c']]},
+  griddle:{n:'煎台',e:'🍳',cat:'kitchen',cols:[['main','檯身','#d9dde3'],['plate','煎板','#2b2421']]},
+  fryer:{n:'油鍋（炸物）',e:'🍟',cat:'kitchen',cols:[['main','機身','#d9dde3'],['oil','炸油','#e8b04a'],['food','炸物','#d98c2b']]},
+  ricecooker:{n:'電鍋',e:'🍚',cat:'kitchen',small:1,cols:[['main','鍋身','#9ccfa4'],['lid','鍋蓋','#e9e4da']]},
+  bigoven:{n:'大型烤箱',e:'🔥',cat:'bake',cols:[['main','機身','#c9ced6'],['panel','面板','#2b2421'],['glass','烤箱窗','#ffcf6b']]},
+  cakecase:{n:'蛋糕展示櫃',e:'🍰',cat:'cafe',cols:[['main','櫃身','#f4efe6'],['trim','木紋邊','#c9a27a'],['cakeA','蛋糕 1','#ff9fb8'],['cakeB','蛋糕 2','#6b3e22']]},
+  giftshelf:{n:'禮品架（蛋糕・冰滴）',e:'🎁',cat:'cafe',cols:[['wood','層架','#c9a27a'],['box','禮盒','#f4efe6'],['ribbon','緞帶','#e5534b']]},
+  driptower:{n:'冰滴咖啡塔',e:'⏳',cat:'cafe',small:1,cols:[['wood','木架','#8b5a34'],['coffee','咖啡','#3b2414']]},
   vase:{n:'插花',e:'💐',cat:'cafe',small:1,cols:[['vase','花瓶','#9cc3e6'],['flower','花','#ff8fb3'],['center','花心','#f2c94c'],['leaf','葉子','#5bb85d']]},
   bed:{n:'雙人床',e:'🛏️',cat:'bed',cols:[['frame','床架','#c9a27a'],['blanket','被子','#9cc3e6'],['pillow','枕頭','#ffffff'],['sheet','床單','#f6efe4']]},
   vanity:{n:'梳妝台',e:'🪞',cat:'bed',cols:[['main','桌椅','#f4efe6'],['frame','鏡框','#e8a25a'],['seat','椅墊','#ff8fb3']]},
@@ -886,6 +894,50 @@ let PAY_MAT=null;function payMat(){if(PAY_MAT)return PAY_MAT;const c=document.cr
   x.fillStyle='#2a2421';x.font='900 44px "Zen Maru Gothic","Noto Sans TC",sans-serif';x.textBaseline='middle';x.fillText('結帳',30,38);x.font='700 22px sans-serif';x.fillStyle='#6b5f58';x.fillText('CHECKOUT',32,74);
   PAY_MAT=new THREE.MeshStandardMaterial({map:new THREE.CanvasTexture(c),roughness:0.7});return PAY_MAT}
 Object.assign(BUILD,{
+  fridge(g,C){const m={metalness:0.2,roughness:0.35};box(1.1,2.0,0.75,C.main,0,1.02,0,g,m);box(1.12,0.06,0.77,shade(C.main,-0.15),0,0.03,0,g);
+    [-1,1].forEach(s=>{box(0.53,1.86,0.03,shade(C.main,0.04),s*0.275,1.03,0.385,g,m);box(0.04,0.7,0.05,C.handle,s*0.04,1.25,0.42,g,m)});
+    box(0.3,0.1,0.01,'#9fd3ff',-0.275,1.75,0.402,g,{emissive:'#5aa9e6',emissiveIntensity:0.4});box(1.1,0.05,0.04,shade(C.main,-0.1),0,2.0,0.39,g)},
+  griddle(g,C){const m={metalness:0.2,roughness:0.4};box(1.3,0.82,0.75,C.main,0,0.41,0,g,m);box(1.32,0.06,0.77,shade(C.main,-0.05),0,0.85,0,g,m);
+    box(1.2,0.05,0.62,C.plate,0,0.9,0.02,g,{roughness:0.3});[[-1,0],[1,0]].forEach(([s])=>box(0.03,0.08,0.62,shade(C.main,-0.1),s*0.61,0.92,0.02,g));box(1.25,0.1,0.03,shade(C.main,-0.1),0,0.94,-0.3,g);
+    [[-0.35,0.05],[-0.12,-0.1]].forEach(([x,z])=>{const e=sph(0.08,'#ffffff',x,0.93,z,g,null,10);e.scale.y=0.15;sph(0.03,'#f2a33c',x,0.945,z,g,null,8)});
+    [[0.15,0.08],[0.38,-0.05]].forEach(([x,z])=>cyl(0.09,0.09,0.02,14,'#e0a75e',x,0.935,z,g));const sp=box(0.1,0.005,0.14,'#c9ced6',0.25,0.94,0.22,g,m);sp.rotation.y=0.4;cyl(0.012,0.012,0.2,6,'#2b2421',0.31,0.95,0.32,g).rotation.set(Math.PI/2,0,0.4);
+    [-0.4,-0.15,0.1,0.35].forEach(x=>{const k=cyl(0.03,0.03,0.04,10,'#2b2421',x,0.7,0.39,g);k.rotation.x=Math.PI/2})},
+  fryer(g,C){const m={metalness:0.2,roughness:0.4};box(0.7,0.88,0.7,C.main,0,0.44,0,g,m);box(0.6,0.03,0.5,shade(C.main,-0.2),0,0.89,0.02,g);
+    const oil=new THREE.Mesh(new THREE.BoxGeometry(0.56,0.02,0.46),mat(C.oil,{roughness:0.15,transparent:true,opacity:0.9,emissive:C.oil,emissiveIntensity:0.15}));oil.position.set(0,0.875,0.02);g.add(oil);
+    [-0.14,0.14].forEach((x,i)=>{const b=new THREE.Group();b.position.set(x,0.9,0.02);g.add(b);[[0.24,0.006,0.34,0,-0.08,0],[0.006,0.16,0.34,-0.12,0,0],[0.006,0.16,0.34,0.12,0,0],[0.24,0.16,0.006,0,0,0.17],[0.24,0.16,0.006,0,0,-0.17]].forEach(([w,h,d,px,py,pz])=>box(w,h,d,'#8f847c',px,py,pz,b));
+      cyl(0.012,0.012,0.3,6,'#2b2421',0,0.05,0.3,b).rotation.x=Math.PI/2;for(let k=0;k<6;k++){const f=box(0.025,0.025,0.12,C.food,-0.08+(k%3)*0.08,0.0+Math.floor(k/3)*0.03,-0.05+(k%2)*0.06,b);f.rotation.y=k}
+      const ph=i*2;A(t=>{b.position.y=0.9+Math.max(0,Math.sin(t*0.6+ph))*0.12})});
+    const bubbles=[];for(let i=0;i<6;i++){const bb=sph(0.012,'#fff3c4',(Math.random()-0.5)*0.5,0.89,(Math.random()-0.5)*0.4,g,{transparent:true,opacity:0.7},6);bb.userData.noShadow=true;bubbles.push(bb)}A(t=>bubbles.forEach((bb,i)=>{bb.scale.setScalar(0.5+((t*2+i*0.37)%1))}));
+    const k=cyl(0.035,0.035,0.04,10,'#2b2421',0.22,0.7,0.36,g);k.rotation.x=Math.PI/2;box(0.12,0.05,0.01,'#ff6b3b',-0.15,0.72,0.355,g,{emissive:'#ff3b30',emissiveIntensity:0.6})},
+  ricecooker(g,C){cyl(0.17,0.16,0.2,20,C.main,0,0.1,0,g);const l=new THREE.Mesh(new THREE.SphereGeometry(0.175,20,10,0,Math.PI*2,0,Math.PI/2),mat(C.lid,{flatShading:false,metalness:0.2,roughness:0.3}));l.scale.y=0.4;l.position.y=0.2;g.add(l);
+    cyl(0.03,0.04,0.04,10,'#2b2421',0,0.29,0,g);[-1,1].forEach(s=>{const h=box(0.06,0.03,0.05,'#2b2421',s*0.19,0.17,0,g);h.rotation.z=s*0.2});box(0.05,0.07,0.02,'#2b2421',0,0.06,0.165,g);sph(0.012,'#e5534b',0.05,0.08,0.163,g,{emissive:'#ff3b30',emissiveIntensity:0.8},6);
+    cyl(0.17,0.17,0.015,20,shade(C.main,-0.15),0,0.2,0,g);const st=sph(0.05,'#ffffff',0,0.35,0,g,{transparent:true,opacity:0.5,depthWrite:false},8);st.userData.noShadow=true;A(t=>{const k=(t*0.5)%1;st.position.y=0.32+k*0.25;st.scale.setScalar(0.6+k*1.4);st.material.opacity=0.45*(1-k)})},
+  bigoven(g,C){const m={metalness:0.2,roughness:0.4};[[-0.6,-0.3],[0.6,-0.3],[-0.6,0.3],[0.6,0.3]].forEach(([x,z])=>cyl(0.035,0.035,0.35,6,'#8f847c',x,0.175,z,g));box(1.45,0.06,0.8,shade(C.main,-0.1),0,0.36,0,g);
+    [0,1,2].forEach(i=>{const y=0.62+i*0.44;box(1.4,0.42,0.8,C.main,0,y,0,g,m);const w=box(0.8,0.2,0.01,C.glass,-0.15,y,0.405,g,{emissive:C.glass,emissiveIntensity:0.55});box(0.9,0.04,0.05,'#2b2421',-0.15,y+0.16,0.43,g);
+      box(0.3,0.32,0.01,C.panel,0.5,y,0.403,g);[0.07,-0.07].forEach(dy=>{const d=cyl(0.03,0.03,0.02,10,'#c9ced6',0.5,y+dy,0.415,g);d.rotation.x=Math.PI/2});[[-0.4,0],[-0.15,0],[0.1,0]].forEach(([x])=>{const b=sph(0.05,'#c98a4b',x-0.15+0.15,y-0.04,0,g,null,8);b.scale.set(1.3,0.6,1)})});
+    box(1.42,0.06,0.82,shade(C.main,-0.1),0,1.92,0,g);cyl(0.08,0.08,0.3,10,'#8f847c',0.45,2.1,-0.2,g)},
+  cakecase(g,C){box(1.6,0.85,0.75,C.main,0,0.425,0,g);box(1.62,0.06,0.77,C.trim,0,0.03,0,g);box(1.62,0.05,0.77,C.trim,0,0.86,0,g);
+    const gl=new THREE.Mesh(new THREE.BoxGeometry(1.56,0.5,0.7),glass('#dff1f7',{side:THREE.DoubleSide,opacity:0.25}));gl.position.set(0,1.13,0);gl.userData.noShadow=true;g.add(gl);box(1.6,0.03,0.74,C.trim,0,1.395,0,g);
+    box(1.5,0.015,0.6,'#ffffff',0,1.12,0,g,{transparent:true,opacity:0.6});box(1.5,0.02,0.05,'#fff3c4',0,1.37,0.3,g,{emissive:'#fff3c4',emissiveIntensity:0.8});
+    [[-0.55,C.cakeA],[-0.18,C.cakeB],[0.2,'#fff3e0'],[0.56,C.cakeA]].forEach(([x,col],i)=>{const y=0.89;cyl(0.13,0.13,0.012,16,'#ffffff',x,y+0.006,-0.05,g);cyl(0.1,0.1,0.11,16,col,x,y+0.07,-0.05,g);
+      if(i===2){[0,1,2,3].forEach(k=>sph(0.02,'#e5534b',x+Math.cos(k*1.6)*0.06,y+0.135,-0.05+Math.sin(k*1.6)*0.06,g,null,6))}else sph(0.025,'#ffffff',x,y+0.14,-0.05,g,null,8)});
+    [[-0.45,C.cakeB],[-0.15,C.cakeA],[0.15,'#f2c94c'],[0.45,C.cakeB]].forEach(([x,col])=>{const y=1.13;const sl=box(0.12,0.08,0.09,col,x,y+0.05,0.05,g);sl.rotation.y=0.5;box(0.121,0.015,0.091,'#ffffff',x,y+0.095,0.05,g).rotation.y=0.5});
+    [-0.5,0,0.5].forEach(x=>box(0.18,0.07,0.01,'#ffffff',x,0.7,0.38,g))},
+  giftshelf(g,C){[-0.7,0.7].forEach(x=>box(0.05,1.6,0.45,C.wood,x,0.8,0,g));box(1.45,1.6,0.03,shade(C.wood,-0.08),0,0.8,-0.21,g);[0.05,0.55,1.05,1.55].forEach(y=>box(1.42,0.04,0.45,C.wood,0,y,0,g));
+    const gift=(x,y,w,h,col,rib)=>{box(w,h,0.22,col,x,y+h/2,0.02,g);box(w+0.005,h+0.005,0.03,rib,x,y+h/2,0.02,g);box(0.03,h+0.005,0.225,rib,x,y+h/2,0.02,g);const b=sph(0.035,rib,x,y+h+0.02,0.02,g,null,8);b.scale.set(1.4,0.6,1)};
+    gift(-0.45,0.57,0.3,0.2,C.box,C.ribbon);gift(-0.1,0.57,0.22,0.28,'#ff9fb8',C.ribbon);
+    [0.22,0.48].forEach(x=>{box(0.22,0.18,0.2,C.box,x,0.66,0.02,g);box(0.14,0.1,0.005,'#dff1f7',x,0.67,0.125,g,{transparent:true,opacity:0.5});cyl(0.06,0.06,0.07,12,'#ff9fb8',x,0.64,0.04,g)});
+    [-0.5,-0.35,-0.2].forEach(x=>{cyl(0.04,0.045,0.24,10,'#3b2414',x,1.19,0.02,g,{roughness:0.2});cyl(0.02,0.02,0.05,8,'#2b2421',x,1.33,0.02,g);box(0.07,0.08,0.005,'#f4efe6',x,1.19,0.065,g)});
+    box(0.42,0.3,0.22,'#2b2421',0.25,1.22,0.02,g);box(0.3,0.12,0.005,'#c9a27a',0.25,1.25,0.135,g);
+    [[-0.5,1.57,0.25,0.16,'#5bb85d'],[-0.15,1.57,0.2,0.2,C.box],[0.25,1.57,0.3,0.14,'#3f84cf']].forEach(([x,y,w,h,col])=>gift(x,y,w,h,col,C.ribbon));
+    gift(-0.4,0.07,0.4,0.25,'#f2c94c',C.ribbon);gift(0.2,0.07,0.35,0.3,C.box,'#3f84cf')},
+  driptower(g,C){box(0.36,0.03,0.3,C.wood,0,0.015,0,g);[-0.15,0.15].forEach(x=>box(0.03,0.8,0.03,C.wood,x,0.415,-0.1,g));box(0.36,0.03,0.12,C.wood,0,0.81,-0.06,g);box(0.36,0.03,0.12,C.wood,0,0.5,-0.06,g);
+    const gw=new THREE.Mesh(new THREE.SphereGeometry(0.1,16,12),glass('#dff1f7',{opacity:0.4}));gw.position.set(0,0.72,0.02);gw.userData.noShadow=true;g.add(gw);sph(0.085,'#cfe9f3',0,0.7,0.02,g,{transparent:true,opacity:0.6},10);
+    cyl(0.008,0.008,0.07,6,'#8f847c',0,0.6,0.02,g);sph(0.012,'#e5534b',0.015,0.6,0.02,g,null,6);
+    const ch=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.04,0.14,14,1,true),glass('#dff1f7',{side:THREE.DoubleSide,opacity:0.4}));ch.position.set(0,0.42,0.02);g.add(ch);cyl(0.055,0.04,0.08,14,C.coffee,0,0.4,0.02,g);
+    const coil=new THREE.Mesh(new THREE.TorusGeometry(0.05,0.008,6,20),glass('#dff1f7',{opacity:0.6}));coil.rotation.x=Math.PI/2;coil.position.set(0,0.3,0.02);g.add(coil);const coil2=coil.clone();coil2.position.y=0.26;g.add(coil2);
+    const cf=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.065,0.14,14,1,true),glass('#dff1f7',{side:THREE.DoubleSide,opacity:0.4}));cf.position.set(0,0.1,0.02);g.add(cf);cyl(0.058,0.062,0.07,14,C.coffee,0,0.065,0.02,g);
+    const dr=sph(0.01,C.coffee,0,0.57,0.02,g,null,6);dr.userData.noShadow=true;A(t=>{const k=(t*0.8)%1;dr.position.y=0.57-k*0.08;dr.visible=k<0.9})},
   colddrip(g,C){const gl=o=>glass('#eaf6fb',Object.assign({side:THREE.DoubleSide,opacity:0.3},o||{})),lq=(c,op)=>mat(c,{transparent:true,opacity:op||0.85,flatShading:false,roughness:0.15});
     /* 木盤：底板＋四邊矮邊 */
     box(0.92,0.03,0.62,C.tray,0,0.015,0,g);[[0.92,0.04,0.03,0,0.3],[0.92,0.04,0.03,0,-0.3],[0.03,0.04,0.62,-0.45,0],[0.03,0.04,0.62,0.45,0]].forEach(([w,h,d,x,z])=>box(w,h,d,shade(C.tray,-0.04),x,0.045,z,g));
@@ -1179,7 +1231,7 @@ function applyBlock(v,b){endWork(v);v.sched=null;v.block=b||null;
   v.sched={type:'work',ax:pl.x,az:pl.z,face:pl.face,tasks:tasks.length?tasks:['talk'],ti:-1,until:0,rr:rg==='spot'?null:rangeRect(pl,rg)};goTo(v,pl.x,pl.z)}
 function homeTick(v,dt){const w=v.sched,c=v.c,P=S.ui.paused;if(!w||w.type!=='home'||v.path)return false;if(v.inside)return true;
   const dx=w.dx-v.x,dz=w.dz-v.zz,d=Math.hypot(dx,dz);
-  if(d>0.15){resetPose(c);if(!P){const st=Math.min(d,1.6*dt);v.x+=dx/d*st;v.zz+=dz/d*st;v.face=Math.atan2(dx,dz)}let dr=v.face-c.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));c.g.rotation.y+=dr*Math.min(1,dt*8);
+  if(d>0.15){resetPose(c);if(!P){const a=step2(v,'x','zz',w.dx,w.dz,1.6*dt,null);if(a!=null)v.face=a}let dr=v.face-c.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));c.g.rotation.y+=dr*Math.min(1,dt*8);
     const sw=P?0:Math.sin(v.t*9)*0.6;c.legL.rotation.x=sw;c.legR.rotation.x=-sw;c.armL.rotation.x=-sw*0.8;c.armR.rotation.x=sw*0.8;c.g.position.set(v.x,TOP+0.17+bridgeY(v.x,v.zz)+(P?0:Math.abs(Math.sin(v.t*9))*0.06),v.zz);return true}
   v.inside=true;c.g.visible=false;setActTag(v,'🏠');return true}
 function visitNext(v){const here=isleAt(v.x,v.zz)||'hub',ids=['hub'].concat(S.isles.map(i=>i.id)).filter(k=>k!==here);if(!ids.length)return;const k=pick(ids),r=isleArea(k);
@@ -1189,8 +1241,8 @@ function workTick(v,dt){const w=v.sched,c=v.c,P=S.ui.paused;if(!w||w.type!=='wor
   const A=ACTIONS[w.cur],G=actGroups(c,w.cur);resetPose(c);c.g.rotation.order='XYZ';c.g.rotation.x=0;let walking=false;
   if(A.walk){if(w.bx==null){let tries=0;do{const a=Math.random()*Math.PI*2;w.bx=w.ax+Math.cos(a)*2.6;w.bz=w.az+Math.sin(a)*2.6;tries++}while(tries<8&&isleAt(w.bx,w.bz)!==isleAt(w.ax,w.az));if(isleAt(w.bx,w.bz)!==isleAt(w.ax,w.az)){w.bx=w.ax;w.bz=w.az}}
     const tx=w.leg?w.bx:w.ax,tz=w.leg?w.bz:w.az,dx=tx-v.x,dz=tz-v.zz,d=Math.hypot(dx,dz);
-    if(d<0.15){w.leg=1-w.leg}else if(!P){const s=Math.min(d,1.3*dt);v.x+=dx/d*s;v.zz+=dz/d*s;v.face=Math.atan2(dx,dz);walking=true}}
-  else{const dx=w.ax-v.x,dz=w.az-v.zz,d=Math.hypot(dx,dz);if(d>0.12&&!P){const s=Math.min(d,1.5*dt);v.x+=dx/d*s;v.zz+=dz/d*s;v.face=Math.atan2(dx,dz);walking=true}else if(w.face!=null)v.face=w.face}
+    if(d<0.15){w.leg=1-w.leg}else if(!P){const a=step2(v,'x','zz',tx,tz,1.3*dt,null);if(a!=null)v.face=a;walking=true}}
+  else{const dx=w.ax-v.x,dz=w.az-v.zz,d=Math.hypot(dx,dz);if(d>0.12&&!P){const a=step2(v,'x','zz',w.ax,w.az,1.5*dt,null);if(a!=null)v.face=a;walking=true}else if(w.face!=null)v.face=w.face}
   let dr=v.face-c.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));c.g.rotation.y+=dr*Math.min(1,dt*8);
   const r=A.pose(c,P?0:v.t-w.t0,G)||{};
   if(walking){const sw=P?0:Math.sin(v.t*9)*0.5;c.legL.rotation.x=sw;c.legR.rotation.x=-sw}
@@ -1225,7 +1277,7 @@ function animRest(v,dt){const c=v.c,P=S.ui.paused,it=S.items.find(x=>x.id===v.R.
   if(!sp){if(!v.R.auto){v.p.rest=null;save()}standUp(v);return false}
   const w=restWorld(it,sp);
   if(!v.arrived){const dx=w.x-v.x,dz=w.z-v.zz,d=Math.hypot(dx,dz);
-    if(d<0.15){v.arrived=true}else{if(!P){const st=Math.min(d,1.8*dt);v.x+=dx/d*st;v.zz+=dz/d*st;v.face=Math.atan2(dx,dz)}
+    if(d<0.15){v.arrived=true}else{if(!P){const a=step2(v,'x','zz',w.x,w.z,1.8*dt,v.R.id);if(a!=null)v.face=a}
       c.g.rotation.order='XYZ';c.g.rotation.x=0;c.g.position.set(v.x,TOP+0.17+(P?0:Math.abs(Math.sin(v.t*9))*0.08),v.zz);let dr=v.face-c.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));c.g.rotation.y+=dr*Math.min(1,dt*8);
       const sw=P?0:Math.sin(v.t*9)*0.6;c.legL.rotation.x=sw;c.legR.rotation.x=-sw;c.armL.rotation.set(-sw*0.8,0,0);c.armR.rotation.set(sw*0.8,0,0);c.cup.visible=false;return true}}
   restPose(v,w,sp.k);if(!P&&sp.k==='sit')c.head.rotation.y=Math.sin(v.t*0.6)*0.25;
@@ -1236,7 +1288,7 @@ function animChar(v,dt){const c=v.c,P=S.ui.paused;v.t+=dt;
   if(v.path&&v.path.length){let wp=v.path[0];if(v.path.length>1&&Math.hypot(wp.x-v.x,wp.z-v.zz)<0.15){v.path.shift();wp=v.path[0]}
     const dx=wp.x-v.x,dz=wp.z-v.zz,d=Math.hypot(dx,dz);
     if(d<0.15&&v.path.length<=1){v.path=null;v.rect=(v.sched&&v.sched.rect)||homeRect(v.p);v.tx=v.x;v.tz=v.zz;v.wait=2.5}
-    else{if(!P){const st=Math.min(d,2.4*dt);v.x+=dx/d*st;v.zz+=dz/d*st;v.face=Math.atan2(dx,dz)}
+    else{if(!P){const a=step2(v,'x','zz',wp.x,wp.z,2.4*dt,null);if(a!=null)v.face=a}
       c.g.position.set(v.x,TOP+0.17+bridgeY(v.x,v.zz)+(P?0:Math.abs(Math.sin(v.t*10))*0.08),v.zz);let dr=v.face-c.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));c.g.rotation.y+=dr*Math.min(1,dt*10);
       const sw=P?0:Math.sin(v.t*10)*0.6;c.legL.rotation.x=sw;c.legR.rotation.x=-sw;c.armL.rotation.x=-sw*0.8;if(v.p.status==='待辦'){if(!P)c.armR.rotation.z=2.65+Math.sin(v.t*5)*0.25}else c.armR.rotation.x=sw*0.8;c.cup.visible=false;return}}
   if(homeTick(v,dt))return;
@@ -1247,8 +1299,8 @@ function animChar(v,dt){const c=v.c,P=S.ui.paused;v.t+=dt;
   if(!P&&v.speed){
     if(v.wait>0)v.wait-=dt;
     else{const dx=v.tx-v.x,dz=v.tz-v.zz,d=Math.hypot(dx,dz);
-      if(d<0.2){v.wait=1.5+Math.random()*3;v.tx=v.rect.x0+Math.random()*(v.rect.x1-v.rect.x0);v.tz=v.rect.z0+Math.random()*(v.rect.z1-v.rect.z0);if(v.sched&&v.sched.visit&&Math.random()<0.35)visitNext(v);else if(Math.random()<0.18)tryAutoRest(v)}
-      else{const s=Math.min(d,v.speed*dt);v.x+=dx/d*s;v.zz+=dz/d*s;v.face=Math.atan2(dx,dz)}}}
+      if(d<0.2){v.wait=1.5+Math.random()*3;{const q=pickFree(v.rect);v.tx=q.x;v.tz=q.z}if(v.sched&&v.sched.visit&&Math.random()<0.35)visitNext(v);else if(Math.random()<0.18)tryAutoRest(v)}
+      else{const a=step2(v,'x','zz',v.tx,v.tz,v.speed*dt,null);if(a!=null)v.face=a;else if(!v._ghost){v.tx=v.x;v.tz=v.zz}}}}
   const walking=!P&&v.speed&&v.wait<=0;
   c.g.position.x=v.x;c.g.position.z=v.zz;let dr=v.face-c.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));c.g.rotation.y+=dr*Math.min(1,dt*8);
   const sw=walking?Math.sin(v.t*9)*0.6:0;c.legL.rotation.x=sw;c.legR.rotation.x=-sw;c.armL.rotation.x=-sw*0.8;
@@ -1275,14 +1327,14 @@ function spawnPets(){pets.forEach(v=>v.tagWrap.remove());pets=[];petById={};
     const v={p,m,kind:p.kind,rect:r,x,z,tx:x,tz:z,wait:Math.random()*3,t:Math.random()*9,face:Math.random()*6,fy:0,jump:0};
     v.tagWrap=div('lbl','');v.tag=div('tag pet',PET_KIND[p.kind].emoji+' '+esc(p.name),v.tagWrap);v.tag.addEventListener('click',()=>selectPet(p.id));
     pets.push(v);petById[p.id]=v})}
-function pickPetTarget(v){const r=v.rect;v.tx=r.x0+Math.random()*(r.x1-r.x0);v.tz=r.z0+Math.random()*(r.z1-r.z0);
+function pickPetTarget(v){const r=v.rect,q=pickFree(r);v.tx=q.x;v.tz=q.z;
   if(me&&Math.random()<0.25&&isleAt(meState.x,meState.z)===v.p.isle){v.tx=meState.x+0.9;v.tz=meState.z+0.7}
   v.fly=v.kind==='parrot'&&Math.random()<0.4}
 function animPet(v,dt){const m=v.m,P=S.ui.paused;v.t+=dt;
   if(!P){if(v.wait>0)v.wait-=dt;
     else{const dx=v.tx-v.x,dz=v.tz-v.z,d=Math.hypot(dx,dz);
       if(d<0.15){v.wait=(v.kind==='cat'?3:1.5)+Math.random()*4;v.fly=false;pickPetTarget(v)}
-      else{const sp=v.fly?2.6:v.kind==='dog'?1.4:v.kind==='cat'?0.9:0.55;const s=Math.min(d,sp*dt);v.x+=dx/d*s;v.z+=dz/d*s;v.face=Math.atan2(dx,dz)}}}
+      else{const sp=v.fly?2.6:v.kind==='dog'?1.4:v.kind==='cat'?0.9:0.55;if(v.fly){const s=Math.min(d,sp*dt);v.x+=dx/d*s;v.z+=dz/d*s;v.face=Math.atan2(dx,dz)}else{const a=step2(v,'x','z',v.tx,v.tz,sp*dt,null);if(a!=null)v.face=a;else if(!v._ghost){v.tx=v.x;v.tz=v.z}}}}}
   const walking=!P&&v.wait<=0;v.jump=Math.max(0,v.jump-dt*1.8);
   let y=TOP+0.17+bridgeY(v.x,v.z);
   if(v.kind==='parrot'){v.fy=v.fly&&!P?Math.min(2.2,v.fy+dt*3):Math.max(0,v.fy-dt*3);y+=v.fy+(walking&&!v.fly?Math.abs(Math.sin(v.t*10))*0.12:0)}
@@ -1488,11 +1540,35 @@ function lookEditor(host,look,onChange,opts){opts=opts||{};normLook(look);if(!lo
    ========================================================= */
 let itemObjs={},selItem=null,selR=1,drag=null,buildCat='kitchen',saveT=0;
 function saveSoon(){clearTimeout(saveT);saveT=setTimeout(save,400)}
-function placeItem(g,it){g.position.set(it.x,TOP+(it.y||0),it.z);g.rotation.y=it.ry||0;g.scale.setScalar(it.s||1)}
-function addItemObj(it){if(!ITEMS[it.type])return;const g=makeItem(it);g.userData.item=it.id;placeItem(g,it);world.add(g);itemObjs[it.id]=g}
-function buildItems(){itemObjs={};S.items.forEach(addItemObj)}
+function placeItem(g,it){g.position.set(it.x,TOP+(it.y||0),it.z);g.rotation.y=it.ry||0;g.scale.setScalar(it.s||1);obstDirty=true}
+/* 不穿過家具：每個大型物件有一個「腳印」方框，人物和動物走路會繞開 */
+let OBST=[],obstDirty=true;const BODY=0.3,NOCOLL={balcony:1},TRUNK={tree:1,ptree:1,pine:1};
+function footprint(g,type){if(NOCOLL[type]||(ITEMS[type]&&ITEMS[type].small))return null;if(TRUNK[type])return {cx:0,cz:0,hx:0.35,hz:0.35};
+  const b=new THREE.Box3().setFromObject(g);if(b.isEmpty())return null;return {cx:(b.min.x+b.max.x)/2,cz:(b.min.z+b.max.z)/2,hx:(b.max.x-b.min.x)/2,hz:(b.max.z-b.min.z)/2}}
+function obstRebuild(){OBST=[];for(const id in itemObjs){const fp=itemObjs[id].userData.fp;if(!fp)continue;const it=S.items.find(x=>x.id===id);if(!it||(it.y||0)>0.6)continue;const k=it.s||1,ry=it.ry||0;
+  OBST.push({id,x:it.x,z:it.z,c:Math.cos(ry),s:Math.sin(ry),cx:fp.cx*k,cz:fp.cz*k,hx:fp.hx*k,hz:fp.hz*k})}obstDirty=false}
+function blockedAt(x,z,pad,ign){if(obstDirty)obstRebuild();for(const o of OBST){if(o.id===ign)continue;const dx=x-o.x,dz=z-o.z,lx=dx*o.c-dz*o.s-o.cx,lz=dx*o.s+dz*o.c-o.cz;if(Math.abs(lx)<o.hx+pad&&Math.abs(lz)<o.hz+pad)return o}return null}
+/* 往目標走一步；前面有家具就試著往左右偏，真的卡住太久才暫時穿過去（避免永遠卡住） */
+function segFree(x0,z0,x1,z1,ign){const d=Math.hypot(x1-x0,z1-z0),n=Math.max(1,Math.ceil(d/0.2));for(let i=1;i<=n;i++){const t=i/n;if(blockedAt(x0+(x1-x0)*t,z0+(z1-z0)*t,BODY*0.9,ign))return false}return true}
+function cornersOf(o,m){return [[-1,-1],[1,-1],[1,1],[-1,1]].map(([sx,sz])=>{const lx=o.cx+sx*(o.hx+m),lz=o.cz+sz*(o.hz+m);return {x:o.x+lx*o.c+lz*o.s,z:o.z-lx*o.s+lz*o.c}})}
+/* 往目標走一步：前面擋到家具，就先走到那件家具最近、走得到的「角落」，再繼續往目標走（長的家具會一個角一個角繞過去） */
+function step2(o,kx,kz,tx,tz,dist,ign){const x=o[kx],z=o[kz],key=tx.toFixed(2)+','+tz.toFixed(2);
+  if(o._tgt!==key){o._tgt=key;o._via=null;o._np=0;o._best=1e9}
+  if(o._via&&Math.hypot(o._via.x-x,o._via.z-z)<0.2)o._via=null;
+  const gx=o._via?o._via.x:tx,gz=o._via?o._via.z:tz,dx=gx-x,dz=gz-z,d=Math.hypot(dx,dz);if(d<1e-6)return null;const s=Math.min(d,dist),a0=Math.atan2(dx,dz);
+  const D=Math.hypot(tx-x,tz-z);if(D<o._best-0.05){o._best=D;o._np=0}else o._np+=s;if(o._np>7){o._ghost=1.6;o._np=0;o._via=null}
+  if(o._ghost>0||blockedAt(x,z,BODY*0.5,ign)){o._ghost=(o._ghost||0)-s;const e=Math.hypot(tx-x,tz-z)||1;o[kx]=x+(tx-x)/e*s;o[kz]=z+(tz-z)/e*s;return Math.atan2(tx-x,tz-z)}
+  const nx=x+dx/d*s,nz=z+dz/d*s,ob=blockedAt(nx,nz,BODY,ign);
+  if(!ob){o[kx]=nx;o[kz]=nz;return a0}
+  const here=isleAt(x,z);const cs=cornersOf(ob,BODY+0.3).filter(c=>!here||isleAt(c.x,c.z)).map(c=>({c,cost:Math.hypot(c.x-x,c.z-z)+Math.hypot(tx-c.x,tz-c.z)})).sort((a,b)=>a.cost-b.cost);
+  for(const k of cs){if(Math.hypot(k.c.x-x,k.c.z-z)>0.2&&segFree(x,z,k.c.x,k.c.z,ign)){o._via=k.c;const e=Math.hypot(k.c.x-x,k.c.z-z),m=Math.min(e,s);o[kx]=x+(k.c.x-x)/e*m;o[kz]=z+(k.c.z-z)/e*m;return Math.atan2(k.c.x-x,k.c.z-z)}}
+  for(const a of [0.4,0.8,1.2,1.57,1.95,2.4])for(const da of [a,-a]){const ang=a0+da,qx=x+Math.sin(ang)*s,qz=z+Math.cos(ang)*s;if(!blockedAt(qx,qz,BODY,ign)){o[kx]=qx;o[kz]=qz;return ang}}
+  o._np+=s;return null}
+function pickFree(r){for(let i=0;i<8;i++){const x=r.x0+Math.random()*(r.x1-r.x0),z=r.z0+Math.random()*(r.z1-r.z0);if(!blockedAt(x,z,BODY+0.2,null))return {x,z}}return {x:r.x0+Math.random()*(r.x1-r.x0),z:r.z0+Math.random()*(r.z1-r.z0)}}
+function addItemObj(it){if(!ITEMS[it.type])return;const g=makeItem(it);g.userData.item=it.id;g.userData.fp=footprint(g,it.type);placeItem(g,it);world.add(g);itemObjs[it.id]=g}
+function buildItems(){itemObjs={};obstDirty=true;S.items.forEach(addItemObj)}
 function rebuildItem(it){const o=itemObjs[it.id];if(o){world.remove(o);disposeObj(o)}addItemObj(it);if(selItem===it.id)measureSel()}
-function removeItemObj(id){const o=itemObjs[id];if(o){world.remove(o);disposeObj(o)}delete itemObjs[id]}
+function removeItemObj(id){obstDirty=true;const o=itemObjs[id];if(o){world.remove(o);disposeObj(o)}delete itemObjs[id]}
 function measureSel(){const o=itemObjs[selItem];if(!o){selLB.makeEmpty();return}const b=new THREE.Box3().setFromObject(o),s=b.getSize(new THREE.Vector3());selR=Math.max(0.5,Math.hypot(s.x,s.z)/2);
   const P=o.position.clone(),R=o.rotation.y,K=o.scale.x;o.position.set(0,0,0);o.rotation.y=0;o.scale.setScalar(1);o.updateMatrixWorld(true);selLB.setFromObject(o);o.position.copy(P);o.rotation.y=R;o.scale.setScalar(K);o.updateMatrixWorld(true)}
 function surfaceAt(x,z,skip){const rc=new THREE.Raycaster(new THREE.Vector3(x,TOP+12,z),new THREE.Vector3(0,-1,0));const objs=Object.keys(itemObjs).filter(k=>k!==skip).map(k=>itemObjs[k]);
@@ -1515,8 +1591,9 @@ function selectItem(id){openSheet('item',id);measureSel()}
 let lockItem=null,pendingGo=null,buildQ='',buildOpen={};const selLB=new THREE.Box3(),_c3=new THREE.Vector3(),_f3=new THREE.Vector3();
 function itemIsle(it){return isleAt(it.x,it.z)}
 function itemIsleName(it){const k=itemIsle(it);return k?isleName(k):'未擺放'}
-function setLock(id,quiet){lockItem=id||null;controls.enablePan=!lockItem;if(lockItem){selItem=lockItem;measureSel()}if(!quiet&&editOn())render()}
-function toggleLock(id){const it=S.items.find(x=>x.id===id);if(!it)return;if(lockItem===id){setLock(null);toast('🔓 已解除鎖定')}else{setLock(id);toast('🔒 已鎖定「'+ITEMS[it.type].n+'」：固定不動，手指拖曳只會轉畫面')}}
+function setLock(id,quiet){return;lockItem=id||null;controls.enablePan=!lockItem;if(lockItem){selItem=lockItem;measureSel()}if(!quiet&&editOn())render()}
+function toggleLock(id){const it=S.items.find(x=>x.id===id);if(!it)return;it.locked=!it.locked;save();toast(it.locked?'🔒 「'+ITEMS[it.type].n+'」固定好了，拖不動、也不會被移動':'🔓 已解除固定，可以移動了');if(editOn()){const st=sBody.scrollTop;render();sBody.scrollTop=st}}
+function isFixed(it){if(it&&it.locked){toast('🔒 這個物件已固定，先按 🔓 解除才能移動');return true}return false}
 function pickItem(id,fly){if(!itemObjs[id])return;selItem=id;measureSel();if(fly)flyToItem(id);if(editOn())render()}
 document.getElementById('lockBtn').addEventListener('click',e=>{e.stopPropagation();if(selItem)toggleLock(selItem)});
 function updateSelBox(){const sb=document.getElementById('selBox'),o=editOn()&&selItem&&itemObjs[selItem];if(!o||selLB.isEmpty()){sb.hidden=true;return}
@@ -1525,16 +1602,16 @@ function updateSelBox(){const sb=document.getElementById('selBox'),o=editOn()&&s
     const sx=(_c3.x+1)/2*W,sy=(1-_c3.y)/2*H;x0=Math.min(x0,sx);y0=Math.min(y0,sy);x1=Math.max(x1,sx);y1=Math.max(y1,sy)}
   if(!ok||x1<0||y1<0||x0>W||y0>H){sb.hidden=true;return}
   const pad=8;sb.hidden=false;sb.style.transform='translate('+(x0-pad).toFixed(1)+'px,'+(y0-pad).toFixed(1)+'px)';sb.style.width=(x1-x0+pad*2).toFixed(1)+'px';sb.style.height=(y1-y0+pad*2).toFixed(1)+'px';
-  const lk=lockItem===selItem;sb.classList.toggle('locked',lk);const b=document.getElementById('lockBtn');if(b.textContent!==(lk?'🔒':'🔓')){b.textContent=lk?'🔒':'🔓';b.setAttribute('aria-pressed',String(lk));b.setAttribute('aria-label',lk?'解除鎖定':'鎖定這個物件')}}
-function followLock(dt){if(!lockItem)return;const o=itemObjs[lockItem];if(!o){setLock(null,true);return}if(drag||tw)return;
+  const sit=S.items.find(x=>x.id===selItem),lk=!!(sit&&sit.locked);sb.classList.toggle('locked',lk);const b=document.getElementById('lockBtn');if(b.textContent!==(lk?'🔒':'🔓')){b.textContent=lk?'🔒':'🔓';b.setAttribute('aria-pressed',String(lk));b.setAttribute('aria-label',lk?'解除固定':'固定這個物件')}}
+function followLock(dt){return;const o=itemObjs[lockItem];if(!o){setLock(null,true);return}if(drag||tw)return;
   _f3.set(o.position.x,o.position.y+0.8,o.position.z).sub(controls.target);if(_f3.lengthSq()<1e-6)return;_f3.multiplyScalar(Math.min(1,dt*6));controls.target.add(_f3);camera.position.add(_f3)}
 function refreshPlaceUI(){if(!editOn())return;const it=lockItem&&S.items.find(x=>x.id===lockItem);const lb=sBody.querySelector('.lockbar span');if(lb&&it)lb.innerHTML='🔒 目前鎖定：<b>'+esc(ITEMS[it.type].n)+'</b>（'+esc(itemIsleName(it))+'）';
   const cur=mode==='item'&&S.items.find(x=>x.id===arg),tg=sBody.querySelector('#itIsle');if(cur&&tg)tg.textContent='📍 '+itemIsleName(cur);const l=document.getElementById('iList');if(l)l.innerHTML=itemListHTML()}
-function lockBarHTML(){if(!lockItem)return '';const it=S.items.find(x=>x.id===lockItem);if(!it)return '';
+function lockBarHTML(){return '';const it=S.items.find(x=>x.id===lockItem);if(!it)return '';
   return '<div class="lockbar"><span>🔒 目前鎖定：<b>'+esc(ITEMS[it.type].n)+'</b>（'+esc(itemIsleName(it))+'）</span><button type="button" class="btn" data-unlock="1">解除</button></div>'}
-function itemRow(it){const D=ITEMS[it.type];if(!D)return '';const lk=lockItem===it.id,sl=selItem===it.id;
+function itemRow(it){const D=ITEMS[it.type];if(!D)return '';const lk=!!it.locked,sl=selItem===it.id;
   return '<div class="irow'+(lk?' locked':'')+(sl?' sel':'')+'"><button type="button" class="iname" data-selitem="'+it.id+'">'+(lk?'🔒 ':'')+D.e+' '+esc(D.n)+(it.type==='sign'?' '+esc(signText(it)):'')+'<span class="ptag">📍 '+esc(itemIsleName(it))+'</span></button>'+
-    (sl||lk?'<button type="button" class="ilock'+(lk?' on':'')+'" data-lockitem="'+it.id+'" aria-label="'+(lk?'解除鎖定':'鎖定')+'">'+(lk?'🔒':'🔓')+'</button><button type="button" class="iedit" data-edititem="'+it.id+'" aria-label="調整位置和顏色">✏️</button>':'')+'</div>'}
+    (sl?'<button type="button" class="ilock'+(lk?' on':'')+'" data-lockitem="'+it.id+'" aria-label="'+(lk?'解除鎖定':'鎖定')+'">'+(lk?'🔒':'🔓')+'</button><button type="button" class="iedit" data-edititem="'+it.id+'" aria-label="調整位置和顏色">✏️</button>':'')+'</div>'}
 function curIsle(){return isleAt(controls.target.x,controls.target.z)||isleAt(meState.x,meState.z)||'hub'}
 function itemListHTML(){const q=buildQ.trim().toLowerCase();
   if(q){const hit=S.items.filter(it=>ITEMS[it.type]&&(ITEMS[it.type].n.toLowerCase().includes(q)||(it.type==='sign'&&signText(it).toLowerCase().includes(q))));
@@ -1544,7 +1621,7 @@ function itemListHTML(){const q=buildQ.trim().toLowerCase();
   S.items.forEach(it=>{if(!ITEMS[it.type])return;const k=itemIsle(it)||'none';(by[k]=by[k]||[]).push(it)});
   return keys.filter(k=>by[k]&&by[k].length).map(k=>{const open=buildOpen[k]!=null?buildOpen[k]:k===cur;const nm=k==='none'?'📦 未擺放':(k==='hub'?'👑 ':'🏝️ ')+esc(isleName(k));
     return '<div class="igrp"><button type="button" data-grp="'+k+'" aria-expanded="'+open+'">'+nm+'（'+by[k].length+'）'+(k===cur?'<span class="ptag">你在這裡</span>':'')+'<span class="cv">'+(open?'▲ 收合':'▼ 展開')+'</span></button>'+(open?'<div class="ibody">'+by[k].map(itemRow).join('')+'</div>':'')+'</div>'}).join('')}
-function confirmGoHTML(){if(!pendingGo||!lockItem)return '';const a=S.items.find(x=>x.id===lockItem),b=S.items.find(x=>x.id===pendingGo);if(!a||!b)return '';
+function confirmGoHTML(){return '';const a=S.items.find(x=>x.id===lockItem),b=S.items.find(x=>x.id===pendingGo);if(!a||!b)return '';
   return '<div class="confirm"><span>目前鎖定在「'+esc(ITEMS[a.type].n)+'」，要解除並前往「'+esc(ITEMS[b.type].n)+'」嗎？</span><button class="btn" type="button" data-gocancel="1">取消</button><button class="btn redfill" type="button" data-gounlock="1">解除並前往</button></div>'}
 function nudgeItem(it,dir){const f=new THREE.Vector3();camera.getWorldDirection(f);f.y=0;f.normalize();const r=new THREE.Vector3(-f.z,0,f.x),st=0.25;
   const v={f:f,b:f.clone().negate(),l:r.clone().negate(),r:r}[dir];it.x=+(it.x+v.x*st).toFixed(2);it.z=+(it.z+v.z*st).toFixed(2);if(ITEMS[it.type].small){it.y=surfaceAt(it.x,it.z,it.id);syncSliders(it)}placeItem(itemObjs[it.id],it);saveSoon();refreshPlaceUI()}
@@ -1553,7 +1630,7 @@ function sliderRow(label,key,min,max,step,val,txt){return '<label class="srow"><
 function syncSliders(it){const set=(k,v,t)=>{const i=sBody.querySelector('[data-isl="'+k+'"]');if(i)i.value=v;const b=sBody.querySelector('[data-isv="'+k+'"]');if(b)b.textContent=t};
   set('iy',it.y||0,(it.y||0).toFixed(2));set('iry',degOf(it),degOf(it)+'°');set('is',it.s||1,(it.s||1).toFixed(2)+'×')}
 const editOn=()=>mode==='build'||mode==='item';
-renderer.domElement.addEventListener('pointerdown',e=>{if(!editOn()||lockItem)return;const id=itemHit(e);if(!id)return;const it=S.items.find(x=>x.id===id);if(!it)return;
+renderer.domElement.addEventListener('pointerdown',e=>{if(!editOn())return;const id=itemHit(e);if(!id)return;const it=S.items.find(x=>x.id===id);if(!it)return;if(it.locked){if(selItem!==id)selectItem(id);return}
   controls.enabled=false;const pl=new THREE.Plane(new THREE.Vector3(0,1,0),-(TOP+(it.y||0))),p=new THREE.Vector3();
   if(!ray.ray.intersectPlane(pl,p)){controls.enabled=true;return}
   drag={id,pl,ox:it.x-p.x,oz:it.z-p.z,pid:e.pointerId};if(selItem!==id)selectItem(id)},{capture:true});
@@ -1727,9 +1804,9 @@ function render(){
     h+='<div class="grp">🎨 地板顏色</div><div class="tabs">'+[{id:'hub',name:'主島'}].concat(S.isles).map(is=>'<button type="button" class="tab" data-editisle="'+is.id+'">'+esc(is.name)+'</button>').join('')+'</div>';
     h+='<button class="go ghost" type="button" data-endedit="1">✅ 完成擺設</button>'}
   else if(mode==='item'){const it=S.items.find(x=>x.id===arg);if(!it){mode='build';render();return}const D=ITEMS[it.type];
-    sTitle.textContent=D.e+' '+D.n;const lk=lockItem===it.id;
-    h+=lockBarHTML()+'<div class="btnrow" style="margin-top:0"><button type="button" class="btn'+(lk?' on':'')+'" data-lockitem="'+it.id+'" style="min-height:44px">'+(lk?'🔒 解除鎖定':'🔓 鎖定這個物件')+'</button><span class="ptag" id="itIsle">📍 '+esc(itemIsleName(it))+'</span></div>';
-    h+='<div class="meta">按住島上的「'+D.n+'」可以直接拖曳；方向鍵會照你現在看的角度移動。'+(lk?'<b>🔒 鎖定中：物件固定不動</b>，手指拖曳只會轉動畫面、不會移動任何東西；真的要移動，請用下面的方向鍵和滑桿。':'')+'</div>';
+    sTitle.textContent=D.e+' '+D.n;const lk=!!it.locked;
+    h+=lockBarHTML()+'<div class="btnrow" style="margin-top:0"><button type="button" class="btn'+(lk?' on':'')+'" data-lockitem="'+it.id+'" style="min-height:44px">'+(lk?'🔒 已固定（點我解除）':'🔓 固定這個物件')+'</button><span class="ptag" id="itIsle">📍 '+esc(itemIsleName(it))+'</span></div>';
+    h+='<div class="meta">按住島上的「'+D.n+'」可以直接拖曳；方向鍵會照你現在看的角度移動。'+(lk?'<b>🔒 已固定：拖不動，方向鍵、高度、角度、大小也不能改。</b>想移動請先按上面的「已固定」解除。（顏色還是可以換）':'')+'</div>';
     h+='<div class="mv"><div class="pad"><span></span><button type="button" class="btn" data-nudge="f" aria-label="往前">▲</button><span></span><button type="button" class="btn" data-nudge="l" aria-label="往左">◀</button><button type="button" class="btn" data-nudge="b" aria-label="往後">▼</button><button type="button" class="btn" data-nudge="r" aria-label="往右">▶</button></div>';
     h+='<div>'+sliderRow('高度','iy',0,5,0.01,it.y||0,(it.y||0).toFixed(2))+'<div class="tabs hq">'+HEIGHTS.map(([l,v])=>'<button type="button" class="tab" data-hset="'+v+'">'+l+'</button>').join('')+'</div>'+
       sliderRow('方向角度','iry',0,359,1,degOf(it),degOf(it)+'°')+'<div class="tabs hq"><button type="button" class="tab" data-rot="-45">↺ 45°</button><button type="button" class="tab" data-rot="45">↻ 45°</button><button type="button" class="tab" data-rot="180">轉 180°</button></div>'+
@@ -1793,6 +1870,7 @@ function floorRow(){if(arg==='hub')return cpRow('floor','🎨 地板顏色（調
 sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=checkbox]');if(!b)return;const d=b.dataset;
   if(mode==='item'){const it=S.items.find(x=>x.id===arg);if(it){if(!it.c)it.c={};const o=itemObjs[it.id];
     if(cpClick(sBody,b,it.c,()=>{rebuildItem(it);saveSoon()}))return;
+    if((d.nudge||d.rot||d.hset!=null||d.delitem||(d.ask==='delitem'))&&isFixed(it))return;
     if(d.nudge){nudgeItem(it,d.nudge);return}
     if(d.rot){it.ry=(it.ry||0)+(+d.rot)*Math.PI/180;if(o)placeItem(o,it);syncSliders(it);saveSoon();return}
     if(d.hset!=null){it.y=+d.hset;if(o)placeItem(o,it);syncSliders(it);saveSoon();return}
@@ -1801,7 +1879,7 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
   if(mode==='iform'&&draft&&cpClick(sBody,b,draft,null))return;
   if(d.icat){buildCat=d.icat;render();return}
   if(d.additem){addItem(d.additem);return}
-  if(d.selitem){if(lockItem&&lockItem!==d.selitem){pendingGo=d.selitem;render();sBody.scrollTop=0;return}pickItem(d.selitem,true);return}
+  if(d.selitem){pickItem(d.selitem,true);return}
   if(d.edititem){selectItem(d.edititem);return}
   if(d.lockitem){if(selItem!==d.lockitem){selItem=d.lockitem;measureSel()}toggleLock(d.lockitem);return}
   if(d.unlock){setLock(null);toast('🔓 已解除鎖定');return}
@@ -1884,6 +1962,7 @@ sBody.addEventListener('input',e=>{
   if(e.target.id==='iSearch'){buildQ=e.target.value;const l=document.getElementById('iList');if(l)l.innerHTML=itemListHTML();return}
   if(mode==='item'&&e.target.id==='fSign'){const it=S.items.find(x=>x.id===arg);if(it){it.text=e.target.value.trim();rebuildItem(it);saveSoon()}return}
   if(mode==='item'){const it=S.items.find(x=>x.id===arg);if(it){if(!it.c)it.c={};if(cpInput(sBody,e.target,it.c,()=>{rebuildItem(it);saveSoon()}))return;const k=e.target.dataset.isl;
+    if(k&&it.locked){isFixed(it);syncSliders(it);return}
     if(k){const v=+e.target.value;if(k==='iy')it.y=v;else if(k==='iry')it.ry=v*Math.PI/180;else if(k==='is')it.s=v;const o=itemObjs[it.id];if(o)placeItem(o,it);syncSliders(it);if(k==='is')measureSel();saveSoon();return}}}
   if(mode==='iform'&&draft&&cpInput(sBody,e.target,draft,null))return;
 if(e.target.id==='tSlider'){S.ui.timeMode='manual';S.ui.hour=+e.target.value;save();sBody.querySelectorAll('[data-tm]').forEach(x=>x.classList.toggle('on',x.dataset.tm==='manual'))}});
@@ -1982,7 +2061,7 @@ function loop(){const dt=Math.min(0.05,clock.getDelta());
   /* 島主 */
   if(me){meState.t+=dt;let wp=(meState.path&&meState.path.length)?meState.path[0]:null;
     if(wp&&meState.path.length>1&&Math.hypot(wp.x-meState.x,wp.z-meState.z)<0.15){meState.path.shift();wp=meState.path[0]}
-    let walking=false;if(wp){const dx=wp.x-meState.x,dz=wp.z-meState.z,d=Math.hypot(dx,dz);walking=d>0.15;if(walking){const s=Math.min(d,3.2*dt);meState.x+=dx/d*s;meState.z+=dz/d*s;meState.face=Math.atan2(dx,dz)}else meState.path=null}
+    let walking=false;if(wp){const dx=wp.x-meState.x,dz=wp.z-meState.z,d=Math.hypot(dx,dz);walking=d>0.15;if(walking){const a=step2(meState,'x','z',wp.x,wp.z,3.2*dt,null);if(a!=null)meState.face=a}else meState.path=null}
     if(!walking)meMark.material.opacity=Math.max(0,meMark.material.opacity-dt*1.5);
     me.g.position.set(meState.x,TOP+0.17+bridgeY(meState.x,meState.z)+(walking?Math.abs(Math.sin(meState.t*10))*0.08:0),meState.z);
     let dr=meState.face-me.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));me.g.rotation.y+=dr*Math.min(1,dt*10);
