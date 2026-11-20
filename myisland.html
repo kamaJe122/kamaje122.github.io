@@ -226,6 +226,7 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
 .ncard{background:var(--paper);border-radius:22px;padding:20px 18px 16px;max-width:360px;width:100%;text-align:center;box-shadow:0 12px 40px #0005}.ncard b{font-family:var(--font-display);font-size:18px}.ncard p{font-size:14px;margin:8px 0 6px}.nbell{font-size:40px;line-height:1;margin-bottom:6px}
 .upnote b{font-family:var(--font-display);font-size:16px}
 .upnote ul{margin:6px 0 8px;padding-left:20px}
+.upnote:not([hidden]){display:flex;flex-direction:column;max-height:calc(100dvh - env(safe-area-inset-top,0px) - 110px)}.upnote .unhead{display:flex;align-items:center;gap:8px;flex:none}.upnote .unhead b{flex:1}.upnote .unx{width:40px;height:40px;border:0;border-radius:12px;background:#f1ebe0;font-size:16px;cursor:pointer;flex:none}.upnote .unbody{overflow:auto;flex:1;min-height:0;font-size:14.5px}.upnote details{margin-top:4px;color:#6b625b}.upnote summary{cursor:pointer;font-weight:700;min-height:36px;display:flex;align-items:center}.upnote .unfoot{flex:none;padding-top:8px}.upnote .unfoot .btn{width:100%;min-height:48px}
 /* 擺設模式 */
 #app{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #app input,#app textarea{-webkit-user-select:text;user-select:text}
@@ -350,8 +351,9 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.1.8';
-const APP_NOTES=['✋ 島民和島主可以設定左手、右手各拿一樣東西：70 多種（咖啡、甜筒、鍋鏟、掃把、雨傘、氣球…），擺設裡的小東西也能拿','新增「堆滿髒碗盤的洗手槽」：可以設定水龍頭、過濾水出水口在左邊還是右邊','碰撞照真實規則：大家不會穿過任何擺在地上的東西（小東西也算），身體寬度照實際算；人跟人、人跟動物也不會疊在一起；家具擺到人身上會把人推開','冰滴咖啡站換新造型：左右兩根圓頂木柱、上面玻璃漏斗裝冰塊、金屬滴速閥、中間燒杯放在三根小木樁上、下面長頸圓底瓶放在橘色杯墊上','冰滴咖啡站改成單座：深色木架、圓頂背板，上面玻璃水球、中間咖啡粉管、下面圓底瓶，前面還有菜單小卡（想要一排就多放幾座）','🔒 鎖定改版：每個物件平常都是鎖定的，不會被不小心拖走；按 🔓 解鎖才能移動，選別的物件或離開擺設會自動鎖回去（新放的物件會先解鎖，方便擺位置）','廚房新增：鍋鏟、炒鍋、歐姆蛋拼盤、義大利麵盤、紅色電鍋、藍色工業用電扇（會轉）、雙門直立冰箱、調味料貨架','外場新增：切片蛋糕展示櫃、冰滴咖啡站（三座一起滴）、收餐具推車','島民、島主和動物走路會繞過家具，不會再穿過去','🔒 鎖定改成「固定」：固定的物件拖不動、不會被移動，其他物件照樣能選','新增：雙門大冰箱、煎台、油鍋（炸物）、電鍋、大型烤箱、蛋糕展示櫃、禮品架（蛋糕・冰滴）、冰滴咖啡塔','修正：島民會在整座島上走來走去；暫停中時按鈕會變橘色提醒，指揮島民走路會自動取消暫停','作息更細：可以設到幾點幾分、選定點／小範圍／大範圍／整座島、在地圖上點位置','新增「🏠 回家」（走回小屋進門休息）和「沒排到的時間到每座島串門子」','App 版可以開「新版本通知」了：第一次會先問你要不要開，之後可在 設定 →「🔔 新版本通知」開關','島民可以排作息了：點島民 →「🗓️ 作息與工作」，設定幾點到幾點散步（或去各島串門子）、待在哪裡、在哪裡做什麼工作','新增 32 種職業和 21 種工作動作：拉花、送餐、炒菜、切菜、挖土、拔雜草、倒土、澆水、掃地…（可複選，輪流做）','可以安裝成 App 了：設定 →「📲 安裝成 App」，有桌面圖示、全螢幕、沒網路也能開','建島畫面多了「📥 我有備份，把島搬過來」，App 版可以直接匯入瀏覽器的島','新增物件：冰滴咖啡組（木盤、湯匙、紅糖、牛奶、冰磚山形杯、木腰帶玻璃壺），在「咖啡・裝飾」','匯出島嶼：可以下載備份檔、分享到 LINE／檔案，或一鍵複製（複製不了會自動幫你全選）','匯入島嶼：可以選備份檔或貼上文字，先預覽內容再匯入，匯入後還能還原','新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
+const APP_VERSION='1.2.0';
+const APP_NOTES=['🆕 新物件：電視、電視櫃、衣櫃、衣帽架','💪 身材：島民和動物可以選 很瘦／一般／胖胖肉肉／健身肌肉','💇 男生中分更清楚，🧢 棒球帽可以朝前或反戴','🔔 更新通知變簡單，按鈕一定按得到'];
+const APP_OLD=['✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -537,7 +539,11 @@ const ITEMS={
   bed:{n:'雙人床',e:'🛏️',cat:'bed',cols:[['frame','床架','#c9a27a'],['blanket','被子','#9cc3e6'],['pillow','枕頭','#ffffff'],['sheet','床單','#f6efe4']]},
   vanity:{n:'梳妝台',e:'🪞',cat:'bed',cols:[['main','桌椅','#f4efe6'],['frame','鏡框','#e8a25a'],['seat','椅墊','#ff8fb3']]},
   sofa:{n:'沙發',e:'🛋️',cat:'living',cols:[['main','沙發','#e8a25a'],['cushion','坐墊','#f6d1a3'],['pillow','抱枕','#3f84cf'],['legs','腳','#6b4a2f']]},
-  tv:{n:'電視',e:'📺',cat:'living',cols:[['frame','邊框','#2b2421'],['screen','畫面','#7cc8e6'],['cab','電視櫃','#c9a27a']]},
+  flattv:{n:'電視（單獨一台）',e:'📺',cat:'living',cols:[['frame','邊框','#2b2421'],['screen','畫面','#7cc8e6']]},
+  tvstand:{n:'電視櫃',e:'🗄️',cat:'living',cols:[['cab','櫃子','#c9a27a'],['front','抽屜面板','#f4efe6'],['knob','把手','#2b2421']]},
+  wardrobe:{n:'衣櫃',e:'🚪',cat:'bed',cols:[['main','櫃體','#f4efe6'],['trim','上下飾條','#c9a27a'],['knob','把手','#c9a27a'],['mirror','鏡子','#cfe3ea']]},
+  coattree:{n:'衣帽架（樹幹款）',e:'🧥',cat:'bed',cols:[['wood','樹幹','#8b5a34'],['coat','外套','#5e7fa8'],['bag','包包','#c9782f'],['hat','帽子','#2b2421']]},
+  tv:{n:'電視＋電視櫃',e:'📺',cat:'living',cols:[['frame','邊框','#2b2421'],['screen','畫面','#7cc8e6'],['cab','電視櫃','#c9a27a']]},
   table:{n:'方桌',e:'🟫',cat:'living',cols:[['top','桌面','#c9a27a'],['legs','桌腳','#6b4a2f']]},
   ctable:{n:'小茶几',e:'🫖',cat:'living',cols:[['top','桌面','#f4efe6'],['legs','桌腳','#c9a27a']]},
   balcony:{n:'陽台',e:'🏡',cat:'outdoor',cols:[['floor','地板','#d9c3a5'],['rail','欄杆','#ffffff'],['plant','盆栽','#5bb85d']]},
@@ -745,6 +751,16 @@ function makeChar(o){
   if(has('lego')){const c=aC('lego'),lg=new THREE.Group();lg.position.set(0,-0.68,0.1);lg.rotation.y=0.3;armR.add(lg);box(0.2,0.12,0.14,c,0,0,0,lg);[[-0.05,-0.035],[0.05,-0.035],[-0.05,0.035],[0.05,0.035]].forEach(([x,z])=>cyl(0.028,0.028,0.04,10,c,x,0.08,z,lg))}
   if(has('phone')){const c=aC('phone'),ph=new THREE.Group();ph.position.set(0.02,-0.66,0.12);ph.rotation.x=-0.7;armL.add(ph);box(0.11,0.2,0.025,c,0,0,0,ph);box(0.09,0.16,0.005,'#9fd3ff',0,0.005,0.014,ph,{emissive:'#5aa9e6',emissiveIntensity:0.5})}
   const held={};['L','R'].forEach(k=>{const key=o['h'+k];if(!key)return;const hg=makeHeld(key,o['h'+k+'c']);if(!hg)return;hg.position.set(0,-0.62,0.08);(k==='L'?armL:armR).add(hg);held[k]=hg});
+  /* 身材：很瘦／一般／胖胖肉肉／健身肌肉（身體、手、腳一起變，頭不變） */
+  {const BT={slim:{fx:0.7,fz:0.78,af:0.7,ax:0.36,lf:0.72,lx:0.105},chubby:{fx:1.3,fz:1.28,af:1.22,ax:0.6,lf:1.25,lx:0.17},muscle:{fx:1.22,fz:1.08,af:1.45,ax:0.6,lf:1.2,lx:0.155}}[o.body];
+   if(BT){const keep=new Set([legL,legR,armL,armR,head]),bg=new THREE.Group();g.children.slice().forEach(ch=>{if(!keep.has(ch)){g.remove(ch);bg.add(ch)}});g.add(bg);bg.scale.set(BT.fx,1,BT.fz);
+     const topCol=nakedTop?skin:topC;
+     if(o.body==='chubby'){const b=sph(0.36,topCol,0,0.76,0.12,bg,null,12);b.scale.set(1.08,0.92,1);if(nakedTop)sph(0.025,shade(skin,-0.12),0,0.78,0.48,bg,null,6)}
+     if(o.body==='muscle'){[-1,1].forEach(s2=>{const pc=sph(0.16,topCol,s2*0.15,1.06,0.27,bg,null,10);pc.scale.set(1.2,0.8,0.6)});
+       if(nakedTop)[0.95,0.83,0.71].forEach(y=>[-0.07,0.07].forEach(x=>box(0.11,0.09,0.03,shade(skin,-0.05),x,y,T(y)+0.005,bg)))}
+     [[armL,-1],[armR,1]].forEach(([A,s2])=>{A.position.x=s2*BT.ax;A.scale.set(BT.af,1,BT.af);if(o.body==='muscle'){sph(0.16,slvC,0,-0.03,0,A,null,10).scale.set(1.05,0.95,1.05);sph(0.12,slvC,0,-0.3,0.02,A,null,10).scale.set(1,1.1,1)}
+       Object.values(held).forEach(h=>{if(h.parent===A)h.scale.set(h.scale.x/BT.af,h.scale.y,h.scale.z/BT.af)})});
+     [[legL,-1],[legR,1]].forEach(([L,s2])=>{L.position.x=s2*BT.lx;L.scale.set(BT.lf,1,BT.lf)})}}
   const hit=new THREE.Mesh(new THREE.CylinderGeometry(0.75,0.75,2.3,8),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));hit.position.y=1.15;g.add(hit);
   const cup=new THREE.Group();cup.position.set(0,-0.6,0.12);cyl(0.075,0.06,0.17,8,'#ffffff',0,0,0,cup);cyl(0.073,0.073,0.02,8,'#6b3e22',0,0.08,0,cup);cup.visible=false;armR.add(cup);
   {const H=(GENDER_H[o.gender]||1)*(+o.height||1),W=1+(H-1)*0.4,K=o.kid?0.72:1,hx=(1+(H-1)*0.25)*(o.kid?1.2:1);g.scale.set(K*W,K*H,K*W);head.scale.set(hx/W,hx/H,hx/W)}
@@ -773,7 +789,7 @@ function hairFor(head,o){const st=o.style||'short',hc=o.hair,G=o.gender==='m'?'m
     if(G==='f'){bangs(st==='long');if(L)strands(0.62);else[-1,1].forEach(s=>B(0.12,0.4,0.12,s*0.39,-0.08,0.12))}
     if(m){if(st==='bob')bangs(false);else sideburns()}}
   if(st==='cap'){const cc=o.capColor||'#f2c94c';const c=new THREE.Mesh(new THREE.SphereGeometry(0.47,16,10,0,Math.PI*2,0,Math.PI*0.42),mat(cc));c.position.y=0.05;head.add(c);
-    const br=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.05,12),mat(cc));br.scale.set(1,1,0.8);br.position.set(0,0.12,G==='m'?-0.36:0.36);head.add(br);
+    const br=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.05,12),mat(cc));br.scale.set(1,1,0.8);const fwd=o.capDir?o.capDir==='f':G!=='m';br.position.set(0,fwd?0.155:0.17,fwd?0.44:-0.44);br.rotation.x=fwd?0.14:-0.1;head.add(br);if(!fwd){S(0.09,0,0.07,0.38,1.5,0.7,0.6);const sn=box(0.24,0.03,0.03,shade(cc,-0.15),0,0.13,0.4,head);sn.rotation.x=-0.35}else{const bt=box(0.2,0.08,0.02,shade(cc,-0.15),0,0.02,-0.43,head);bt.rotation.x=0.3}
     if(G==='f'){S(0.13,0,-0.12,-0.5,0.75,1.9,0.75).rotation.x=0.3;[-1,1].forEach(s=>B(0.05,0.32,0.06,s*0.36,-0.12,0.22))}if(G==='m')sideburns()}
   if(st==='curly')curls(G==='m'?0.095:G==='f'?0.125:0.115,G==='m'?48:40,G==='f'?1.32:1.22);
   if(st==='curlyMid'){curls(G==='m'?0.1:0.115,40,1.22);ring(G==='m'?[-0.08,-0.22]:G==='f'?[-0.08,-0.22,-0.36,-0.48,-0.6]:[-0.08,-0.22,-0.36,-0.48],G==='f'?0.125:0.12);
@@ -784,9 +800,14 @@ function hairFor(head,o){const st=o.style||'short',hc=o.hair,G=o.gender==='m'?'m
   if(st==='clawclip'){const k=G==='m'?0.75:1;S(0.19*k,0,0.1+(1-k)*0.15,-0.42,1.35,0.85,0.8);if(G!=='m')[-1,1].forEach(s=>S(0.07,s*0.27,0.2,-0.42));
     const cc=o.clipC||'#e8a25a',cl=new THREE.Group();cl.position.set(0,0.12+(1-k)*0.15,-0.58+(1-k)*0.08);cl.scale.setScalar(k);head.add(cl);box(0.4,0.09,0.07,cc,0,0,0,cl,{roughness:0.35});for(let i=0;i<6;i++)box(0.03,0.15,0.04,cc,-0.15+i*0.06,-0.08,0.03,cl,{roughness:0.35});
     if(G==='f'){bangs(true);[-1,1].forEach(s=>B(0.04,0.28,0.05,s*0.36,-0.1,0.24))}if(G==='m')sideburns()}
-  if(st==='middle'){const pg=new THREE.Group();pg.rotation.x=-0.28;pg.position.y=0.02;head.add(pg);
-    const pt=new THREE.Mesh(new THREE.TorusGeometry(0.452,0.016,4,14,0.85),mat(o.skin||'#efc39f'));pt.rotation.set(0,-Math.PI/2,Math.PI/2-0.85);pg.add(pt);
-    [-1,1].forEach(s=>{const a=B(0.28,0.075,0.09,s*0.15,0.25,0.355);a.rotation.set(-0.25,s*0.35,-s*0.42);const b=B(0.12,0.2,0.09,s*0.34,0.1,0.27);b.rotation.set(0,s*0.6,-s*0.12)});
+  if(st==='middle'){const pg=new THREE.Group();pg.rotation.x=-0.28;pg.position.y=0.02;head.add(pg);const skM=mat(o.skin||'#efc39f');
+    /* 頭頂中間一條分線（膚色，貼著頭髮） */
+    const pt=new THREE.Mesh(new THREE.TorusGeometry(0.44,0.022,5,18,0.95),skM);pt.rotation.set(0,-Math.PI/2,Math.PI/2-0.95);pg.add(pt);
+    /* 額頭中間露出一塊倒 V 的皮膚（髮線分開的地方） */
+    const th=Math.PI*0.43,v=new THREE.Mesh(new THREE.CircleGeometry(0.2,3),skM);v.rotation.set(-(Math.PI/2-th),0,Math.PI/2);v.position.set(0,0.452*Math.cos(th),0.452*Math.sin(th));pg.add(v);
+    /* 左右兩片圓圓的窗簾瀏海，往兩邊撥開 */
+    [-1,1].forEach(s=>{const b=new THREE.Mesh(new THREE.SphereGeometry(0.17,14,10),hairM);b.scale.set(1.25,0.62,0.55);b.position.set(s*0.2,0.1,0.36);b.rotation.set(-0.25,s*0.45,-s*0.55);pg.add(b);
+      const t=new THREE.Mesh(new THREE.SphereGeometry(0.09,10,8),hairM);t.scale.set(0.9,1.4,0.7);t.position.set(s*0.36,-0.02,0.25);pg.add(t)});
     if(G==='f'){B(0.86,0.7,0.36,0,-0.2,-0.2);strands(0.55)}else{B(0.7,0.16,0.2,0,-0.1,-0.32);if(G==='m')sideburns()}}
   if(st==='slick'){if(G==='f'){S(0.16,0,-0.16,-0.42,1.1,0.9,0.9);sph(0.04,'#e8a25a',0,-0.05,-0.5,head,null,6)}
     else{S(0.3,0,0.3,-0.05,1.3,0.55,1.3);if(G==='m')sideburns()}}}
@@ -880,7 +901,12 @@ function makePet(o){normPet(o);const k=o.kind,c=o.color,a=o.accent,bc=o.belly,P=
     tail.rotation.x=0.55;
     [-1,1].forEach(s=>{const L=new THREE.Group();L.position.set(s*0.1,0.26,0.02);g.add(L);cyl(0.025,0.025,0.2,5,'#e8a25a',0,-0.08,0,L);box(0.1,0.03,0.14,'#e8a25a',0,-0.18,0.03,L);legs.push(L)})}
   const hit=new THREE.Mesh(new THREE.SphereGeometry(0.8,8,6),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));hit.position.y=0.6;g.add(hit);
-  return {g,legs,tail,head,wings,hit}}
+  const RP={g,legs,tail,head,wings,hit};petBody(RP,o);return RP}
+function petBody(r,o){const f={slim:0.74,chubby:1.45,muscle:1.25}[o.body],fy={slim:0.88,chubby:1.18,muscle:1.08}[o.body];if(!f)return;const keep=new Set([r.head,r.tail,r.hit].concat(r.legs||[],r.wings||[]));
+  const bg=new THREE.Group();r.g.children.slice().forEach(c=>{if(!keep.has(c)){r.g.remove(c);bg.add(c)}});r.g.add(bg);const bb=new THREE.Box3().setFromObject(bg),w=bb.max.x-bb.min.x,cy=(bb.min.y+bb.max.y)/2,h=bb.max.y-bb.min.y,cz=(bb.min.z+bb.max.z)/2,L=bb.max.z-bb.min.z;
+  if(o.body==='chubby'){const b=sph(w*0.55,o.belly||o.color,0,bb.min.y+h*0.12,cz,bg,null,12);b.scale.set(1,0.7,Math.max(1,L/w)*0.8)}
+  if(o.body==='muscle')[-1,1].forEach(s=>{const m=sph(w*0.32,o.color,s*w*0.42,cy+h*0.05,bb.max.z-L*0.22,bg,null,10);m.scale.set(0.8,1.1,1.2)});
+  bg.scale.set(f,fy,1);bg.position.y=cy*(1-fy);(r.legs||[]).forEach(Lg=>Lg.position.x*=f);(r.wings||[]).forEach(W=>W.position.x*=f)}
 
 /* =========================================================
    5b. 擺設物件（23 種，臉朝 +z，底部在 y=0）
@@ -984,6 +1010,35 @@ const BUILD={
   sofa(g,C){box(2.1,0.36,0.9,C.main,0,0.3,0,g);[-0.48,0.48].forEach(x=>{box(0.94,0.14,0.74,C.cushion,x,0.55,0.06,g);const b=box(0.92,0.42,0.12,C.cushion,x,0.8,-0.25,g);b.rotation.x=-0.12});
     box(2.1,0.64,0.24,C.main,0,0.62,-0.36,g);[-1,1].forEach(s=>box(0.22,0.6,0.9,C.main,s*1.0,0.42,0,g));
     [[-0.9,-0.35],[0.9,-0.35],[-0.9,0.35],[0.9,0.35]].forEach(([x,z])=>cyl(0.04,0.03,0.12,6,C.legs,x,0.06,z,g));const p=box(0.34,0.32,0.12,C.pillow,0.66,0.8,-0.08,g);p.rotation.set(-0.2,0,0.15)},
+  flattv(g,C){box(0.6,0.03,0.28,C.frame,0,0.015,0,g);box(0.08,0.24,0.06,C.frame,0,0.14,-0.05,g);box(1.62,0.96,0.06,C.frame,0,0.73,-0.05,g);
+    box(1.52,0.86,0.01,C.screen,0,0.73,-0.015,g,{emissive:C.screen,emissiveIntensity:0.35,roughness:0.3});const sn=sph(0.12,'#fff3c4',0.45,0.93,-0.01,g,{emissive:'#ffd27a',emissiveIntensity:0.6},10);sn.scale.z=0.1;
+    [[-0.3,0.55,1.2],[0.25,0.5,0.9]].forEach(([x,y,w])=>{const h=box(w*0.5,0.18,0.005,'#7fbf6a',x,y,-0.008,g);h.userData.noShadow=true})},
+  tvstand(g,C){box(2.0,0.5,0.5,C.cab,0,0.31,0,g);[[-0.92,-0.2],[0.92,-0.2],[-0.92,0.2],[0.92,0.2]].forEach(([x,z])=>cyl(0.025,0.02,0.06,8,shade(C.cab,-0.2),x,0.03,z,g));
+    [-0.66,0.66].forEach(x=>[0.42,0.2].forEach(y=>{box(0.6,0.19,0.02,C.front,x,y,0.255,g);box(0.18,0.025,0.025,C.knob,x,y,0.275,g)}));
+    box(0.66,0.42,0.02,shade(C.cab,-0.25),0,0.31,0.235,g);box(0.66,0.02,0.44,shade(C.cab,-0.1),0,0.3,0.02,g);
+    box(0.34,0.06,0.22,'#2b2421',0,0.35,0.05,g);sph(0.012,'#3fb34f',0.14,0.35,0.165,g,{emissive:'#3fb34f',emissiveIntensity:0.8},6);box(0.26,0.12,0.2,'#f4f4f4',0,0.16,0.05,g);
+    box(0.9,0.07,0.1,'#2b2421',0,0.6,0.15,g)},
+  wardrobe(g,C){box(1.3,2.0,0.62,C.main,0,1.1,0,g);box(1.38,0.07,0.68,C.trim,0,2.135,0,g);box(1.34,0.1,0.66,C.trim,0,0.05,0,g);
+    [-0.32,0.32].forEach(x=>{door(0.62,1.62,C.main,x,1.27,0.315,g);box(0.025,0.42,0.03,C.knob,x+(x<0?0.26:-0.26),1.3,0.345,g,{metalness:0.4,roughness:0.4})});
+    box(0.4,1.1,0.008,C.mirror,0.32,1.32,0.338,g,{metalness:0.6,roughness:0.1});
+    door(1.24,0.3,C.main,0,0.27,0.315,g);box(0.3,0.025,0.03,C.knob,0,0.27,0.345,g,{metalness:0.4,roughness:0.4})},
+  coattree(g,C){const W=C.wood;cyl(0.26,0.3,0.05,16,shade(W,-0.08),0,0.025,0,g);
+    [0,1,2,3].forEach(i=>{const r=new THREE.Group();r.rotation.y=i*Math.PI/2+Math.PI/4;g.add(r);const f=box(0.3,0.05,0.07,W,0.18,0.06,0,r);f.rotation.z=0.25});
+    cyl(0.035,0.05,1.85,10,W,0,0.95,0,g);[0.5,1.1].forEach(y=>{const k=cyl(0.055,0.05,0.05,10,shade(W,-0.1),0,y,0,g)});sph(0.065,shade(W,-0.05),0,1.9,0,g,null,10);
+    /* 像樹枝的掛勾：上面 4 根、下面 3 根 */
+    const hook=(y,a,L)=>{const r=new THREE.Group();r.position.y=y;r.rotation.y=a;g.add(r);const c=cyl(0.016,0.022,L,8,W,0.08*L/0.24,0.06,0,r);c.rotation.z=-0.95;sph(0.03,shade(W,-0.1),0.19*L/0.24,0.13,0,r,null,8);return r};
+    [0,1,2,3].forEach(i=>hook(1.72,i*Math.PI/2+Math.PI/4,0.26));[0,1,2].forEach(i=>hook(1.4,i*Math.PI*2/3,0.22));
+    /* 掛著的外套（前右的勾子） */
+    const ct=new THREE.Group();ct.rotation.y=Math.PI/4;g.add(ct);const cp=new THREE.Group();cp.position.set(0.2,1.82,0);ct.add(cp);
+    const body=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.24,0.85,4),mat(C.coat));body.rotation.y=Math.PI/4;body.scale.z=0.45;body.position.set(0.06,-0.5,0);cp.add(body);
+    box(0.3,0.08,0.12,shade(C.coat,-0.08),0.06,-0.08,0,cp);[-1,1].forEach(s=>{const sl=box(0.08,0.6,0.09,C.coat,0.06,-0.4,s*0.14,cp);sl.rotation.x=s*0.06});
+    box(0.02,0.6,0.004,shade(C.coat,-0.15),0.06+0.11,-0.5,0,cp);[0,1,2].forEach(i=>sph(0.012,'#2b2421',0.18,-0.32-i*0.15,0.012,cp,null,6));
+    /* 掛著的包包（後左的勾子） */
+    const bg=new THREE.Group();bg.rotation.y=Math.PI/4+Math.PI;g.add(bg);const bp=new THREE.Group();bp.position.set(0.19,1.84,0);bg.add(bp);
+    const st=new THREE.Mesh(new THREE.TorusGeometry(0.13,0.012,6,16,Math.PI),mat(shade(C.bag,-0.15)));st.rotation.set(Math.PI,Math.PI/2,0);st.position.set(0.02,-0.12,0);bp.add(st);
+    box(0.1,0.24,0.3,C.bag,0.02,-0.36,0,bp);box(0.105,0.08,0.3,shade(C.bag,-0.1),0.02,-0.26,0,bp);sph(0.018,'#f2c230',0.075,-0.29,0,bp,null,6);
+    /* 頂端掛一頂帽子 */
+    cyl(0.17,0.17,0.015,16,C.hat,0,1.94,0,g);cyl(0.1,0.11,0.12,14,C.hat,0,2.0,0,g);cyl(0.112,0.112,0.03,14,'#c9a27a',0,1.96,0,g)},
   tv(g,C){box(1.9,0.45,0.48,C.cab,0,0.26,0,g);[-0.48,0.48].forEach(x=>{door(0.86,0.32,C.cab,x,0.26,0.245,g);sph(0.022,'#2b2421',x+(x<0?0.35:-0.35),0.26,0.27,g,null,6)});
     [[-0.85,-0.18],[0.85,-0.18],[-0.85,0.18],[0.85,0.18]].forEach(([x,z])=>box(0.06,0.04,0.06,shade(C.cab,-0.2),x,0.02,z,g));
     box(0.5,0.03,0.25,C.frame,0,0.5,-0.05,g);box(0.08,0.2,0.06,C.frame,0,0.6,-0.08,g);box(1.62,0.96,0.06,C.frame,0,1.18,-0.08,g);
@@ -1680,6 +1735,7 @@ function tabRow(label,k,list,cur,attr){attr=attr||'lk';return '<div class="opt-r
 function petEditor(host,p){normPet(p);
   const draw=()=>{const K=PET_KIND[p.kind],dog=p.kind==='dog',bird=p.kind==='parrot';let h='<div class="editor"><div class="pv" id="pvBox"></div><div>';
     if(dog){h+=tabRow('品種','breed',Object.keys(BREEDS).map(k=>[k,BREEDS[k].label]),p.breed,'pk');h+=tabRow('毛長','longHair',[['0','短毛'],['1','長毛']],p.longHair?'1':'0','pk');h+=tabRow('耳朵','ears',[['prick','立耳'],['drop','垂耳']],p.ears,'pk')}
+    h+=tabRow('身材','body',[['slim','很瘦'],['normal','一般'],['chubby','胖胖肉肉'],['muscle','健身肌肉']],p.body||'normal','pk');
     h+=cpRow('color',bird?'羽毛顏色（主體）':'主體顏色',p.color,bird?FEATHER:FUR);
     h+=cpRow('belly','腹部顏色',p.belly,BELLY_C);
     h+=tabRow('花紋','pattern',K.pats,p.pattern,'pk');
@@ -1706,10 +1762,11 @@ function lookEditor(host,look,onChange,opts){opts=opts||{};normLook(look);if(!lo
   const draw=()=>{let h='<div class="editor"><div class="pv" id="pvBox"></div><div>';
     h+=tabRow('性別','gender',[['m','男生'],['f','女生']],look.gender||'');if(look.gender==='f'){h+=tabRow('腮紅','blush',[['1','要'],['0','不要']],look.blush===false?'0':'1');if(look.blush!==false)h+=cpRow('blushC','腮紅顏色',look.blushC||'#f4a3a0',['#f4a3a0','#ff8fb3','#f7b6a3','#e98a8a'])}h+=tabRow('島民類型','kid',[['0','大人'],['1','小孩']],look.kid?'1':'0');
     h+='<label class="srow"><span>身高</span><input type="range" min="85" max="115" step="1" value="'+Math.round((+look.height||1)*100)+'" data-lh="1" aria-label="身高"><b data-lhv>'+cmOf(look)+' cm</b></label><div class="hint" style="margin:-2px 0 8px">男生預設比女生高，滑桿可以再調高或調矮。髮型會依性別有不同設計；女生可以選腮紅，男生沒有腮紅。</div>';
+    h+=tabRow('身材','body',[['slim','很瘦'],['normal','一般'],['chubby','胖胖肉肉'],['muscle','健身肌肉']],look.body||'normal');
     h+=cpRow('skin','膚色',look.skin,SKIN_C);
     h+=tabRow('髮型','style',STYLES,look.style||'short');
     h+=cpRow('hair','髮色',look.hair,HAIR_C);
-    if(look.style==='cap')h+=cpRow('capC','帽子顏色',look.capC||look.shirt,SHIRT_C);
+    if(look.style==='cap'){h+=tabRow('帽簷方向','capDir',[['f','🧢 朝前面'],['b','🔄 往後反戴']],look.capDir||(look.gender==='m'?'b':'f'));h+=cpRow('capC','帽子顏色',look.capC||look.shirt,SHIRT_C)}
     if(look.style==='clawclip')h+=cpRow('clipC','鯊魚夾顏色',look.clipC||'#e8a25a',['#e8a25a','#6b4a2f']);
     h+=tabRow('衣服','outfit',OUTFITS.filter(o=>opts.resident||o[0]!=='uniform'),look.outfit);
     (OUT_COL[look.outfit]||[]).forEach(([k,l,d])=>h+=cpRow(k,l,look[k]||d,k==='shirt'?SHIRT_C:null));
@@ -2314,16 +2371,16 @@ let upSnooze=0,upRemote=null;
 function cmpVer(a,b){a=String(a).split('.').map(Number);b=String(b).split('.').map(Number);for(let i=0;i<3;i++){const d=(a[i]||0)-(b[i]||0);if(d)return d}return 0}
 function checkVersion(){if(!window.fetch)return;fetch(VERSION_URL+'?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(v=>{if(!v||!v.version)return;upRemote=v;
   if(cmpVer(v.version,APP_VERSION)>0&&document.visibilityState!=='visible'&&notifState()==='on'&&lsGet(NLAST)!==v.version){lsSet(NLAST,v.version);writeMeta();showSysNotif('🎉 我的小島有新版本 '+v.version,(Array.isArray(v.notes)&&v.notes[0])||'打開小島就能更新到最新版。')}
-  if(cmpVer(v.version,APP_VERSION)>0&&Date.now()>=upSnooze){document.getElementById('upText').textContent=isFile?'🎉 有新版本 '+v.version+' 了！到下載頁下載最新版。':'🎉 有新版本了！重新整理就能使用最新功能。';document.getElementById('upNow').textContent=isFile?'前往下載':'立即更新';document.getElementById('upBar').hidden=false}}).catch(()=>{})}
+  if(cmpVer(v.version,APP_VERSION)>0&&Date.now()>=upSnooze){const hl=(Array.isArray(v.notes)&&v.notes[0])?'：'+v.notes[0]:'';document.getElementById('upText').textContent=(isFile?'🎉 新版本 '+v.version+hl+'（到下載頁下載）':'🎉 新版本'+hl);document.getElementById('upNow').textContent=isFile?'前往下載':'立即更新';document.getElementById('upBar').hidden=false}}).catch(()=>{})}
 document.getElementById('upLater').addEventListener('click',()=>{document.getElementById('upBar').hidden=true;upSnooze=Date.now()+30*60*1000});
 document.getElementById('upNow').addEventListener('click',()=>{if(isFile){window.open('https://kamaje122.github.io/myisland-download.html','_blank');return}
   if(lockItem)setLock(null,true);drag=null;save();try{localStorage.setItem('island-updated',JSON.stringify(upRemote||{}))}catch(e){}
   location.replace(location.pathname+'?v='+encodeURIComponent((upRemote&&upRemote.version)||Date.now())+location.hash)});
 setInterval(checkVersion,10*60*1000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkVersion()});
 function showUpdated(){let info=null;try{info=JSON.parse(localStorage.getItem('island-updated')||'null');localStorage.removeItem('island-updated')}catch(e){}
-  const old=S.appVer;if(S.islandName&&!fresh&&(info||old!==APP_VERSION)){const notes=(info&&info.version===APP_VERSION&&Array.isArray(info.notes)&&info.notes.length)?info.notes:APP_NOTES;
-    const el=document.getElementById('upNote');el.innerHTML='<b>✅ 已更新到 '+APP_VERSION+' 版</b><div class="meta">你的島嶼、物件、島民和動物都還在。這次更新了：</div><ul>'+notes.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul><button type="button" class="btn on" id="upOk">好</button>';
-    el.hidden=false;document.getElementById('upOk').addEventListener('click',()=>el.hidden=true);setTimeout(()=>{el.hidden=true},15000)}
+  const old=S.appVer;if(S.islandName&&!fresh&&(info||old!==APP_VERSION)){const notes=APP_NOTES;
+    const el=document.getElementById('upNote');el.innerHTML='<div class="unhead"><b>✅ 已更新到 '+APP_VERSION+' 版</b><button type="button" class="unx" id="upX" aria-label="關閉">✕</button></div><div class="unbody"><div class="meta">島嶼和資料都還在。這次新增：</div><ul>'+notes.slice(0,5).map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul><details><summary>之前的更新</summary><ul>'+APP_OLD.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul></details></div><div class="unfoot"><button type="button" class="btn on" id="upOk">好，我知道了</button></div>';
+    el.hidden=false;['upOk','upX'].forEach(id=>document.getElementById(id).addEventListener('click',()=>el.hidden=true));setTimeout(()=>{if(!el.querySelector('details[open]'))el.hidden=true},20000)}
   if(S.appVer!==APP_VERSION){S.appVer=APP_VERSION;save()}
   if(/[?&]v=/.test(location.search))history.replaceState(null,'',location.pathname+location.hash)}
 document.getElementById('btnSetupImport').addEventListener('click',()=>{document.getElementById('setup').hidden=true;openSheet('import')});
