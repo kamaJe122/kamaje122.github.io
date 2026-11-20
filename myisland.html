@@ -264,6 +264,7 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
 .guide .gbtn small{margin-right:auto;color:var(--ink-soft);font-size:12px}
 .toast{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 96px);transform:translateX(-50%);background:#2a2421;color:#fff;font-family:var(--font-display);font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px;box-shadow:0 4px 14px #0003;pointer-events:none;max-width:86%;text-align:center;z-index:9}
 .loading{position:absolute;inset:0;display:grid;place-items:center;background:#bfe3ef;font-family:var(--font-display);font-weight:700;color:var(--ink);transition:opacity .6s;z-index:10}
+.holdrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.holdrow label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}.holdrow select{min-height:44px;border-radius:12px;border:1.5px solid #e6dccb;padding:0 8px;font:inherit;font-weight:500;background:#fff;color:#2b2421;width:100%}
 </style></head><body>
 <div id="app">
   <div id="stage"></div>
@@ -349,8 +350,8 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.1.7';
-const APP_NOTES=['冰滴咖啡站換新造型：左右兩根圓頂木柱、上面玻璃漏斗裝冰塊、金屬滴速閥、中間燒杯放在三根小木樁上、下面長頸圓底瓶放在橘色杯墊上','冰滴咖啡站改成單座：深色木架、圓頂背板，上面玻璃水球、中間咖啡粉管、下面圓底瓶，前面還有菜單小卡（想要一排就多放幾座）','🔒 鎖定改版：每個物件平常都是鎖定的，不會被不小心拖走；按 🔓 解鎖才能移動，選別的物件或離開擺設會自動鎖回去（新放的物件會先解鎖，方便擺位置）','廚房新增：鍋鏟、炒鍋、歐姆蛋拼盤、義大利麵盤、紅色電鍋、藍色工業用電扇（會轉）、雙門直立冰箱、調味料貨架','外場新增：切片蛋糕展示櫃、冰滴咖啡站（三座一起滴）、收餐具推車','島民、島主和動物走路會繞過家具，不會再穿過去','🔒 鎖定改成「固定」：固定的物件拖不動、不會被移動，其他物件照樣能選','新增：雙門大冰箱、煎台、油鍋（炸物）、電鍋、大型烤箱、蛋糕展示櫃、禮品架（蛋糕・冰滴）、冰滴咖啡塔','修正：島民會在整座島上走來走去；暫停中時按鈕會變橘色提醒，指揮島民走路會自動取消暫停','作息更細：可以設到幾點幾分、選定點／小範圍／大範圍／整座島、在地圖上點位置','新增「🏠 回家」（走回小屋進門休息）和「沒排到的時間到每座島串門子」','App 版可以開「新版本通知」了：第一次會先問你要不要開，之後可在 設定 →「🔔 新版本通知」開關','島民可以排作息了：點島民 →「🗓️ 作息與工作」，設定幾點到幾點散步（或去各島串門子）、待在哪裡、在哪裡做什麼工作','新增 32 種職業和 21 種工作動作：拉花、送餐、炒菜、切菜、挖土、拔雜草、倒土、澆水、掃地…（可複選，輪流做）','可以安裝成 App 了：設定 →「📲 安裝成 App」，有桌面圖示、全螢幕、沒網路也能開','建島畫面多了「📥 我有備份，把島搬過來」，App 版可以直接匯入瀏覽器的島','新增物件：冰滴咖啡組（木盤、湯匙、紅糖、牛奶、冰磚山形杯、木腰帶玻璃壺），在「咖啡・裝飾」','匯出島嶼：可以下載備份檔、分享到 LINE／檔案，或一鍵複製（複製不了會自動幫你全選）','匯入島嶼：可以選備份檔或貼上文字，先預覽內容再匯入，匯入後還能還原','新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
+const APP_VERSION='1.1.8';
+const APP_NOTES=['✋ 島民和島主可以設定左手、右手各拿一樣東西：70 多種（咖啡、甜筒、鍋鏟、掃把、雨傘、氣球…），擺設裡的小東西也能拿','新增「堆滿髒碗盤的洗手槽」：可以設定水龍頭、過濾水出水口在左邊還是右邊','碰撞照真實規則：大家不會穿過任何擺在地上的東西（小東西也算），身體寬度照實際算；人跟人、人跟動物也不會疊在一起；家具擺到人身上會把人推開','冰滴咖啡站換新造型：左右兩根圓頂木柱、上面玻璃漏斗裝冰塊、金屬滴速閥、中間燒杯放在三根小木樁上、下面長頸圓底瓶放在橘色杯墊上','冰滴咖啡站改成單座：深色木架、圓頂背板，上面玻璃水球、中間咖啡粉管、下面圓底瓶，前面還有菜單小卡（想要一排就多放幾座）','🔒 鎖定改版：每個物件平常都是鎖定的，不會被不小心拖走；按 🔓 解鎖才能移動，選別的物件或離開擺設會自動鎖回去（新放的物件會先解鎖，方便擺位置）','廚房新增：鍋鏟、炒鍋、歐姆蛋拼盤、義大利麵盤、紅色電鍋、藍色工業用電扇（會轉）、雙門直立冰箱、調味料貨架','外場新增：切片蛋糕展示櫃、冰滴咖啡站（三座一起滴）、收餐具推車','島民、島主和動物走路會繞過家具，不會再穿過去','🔒 鎖定改成「固定」：固定的物件拖不動、不會被移動，其他物件照樣能選','新增：雙門大冰箱、煎台、油鍋（炸物）、電鍋、大型烤箱、蛋糕展示櫃、禮品架（蛋糕・冰滴）、冰滴咖啡塔','修正：島民會在整座島上走來走去；暫停中時按鈕會變橘色提醒，指揮島民走路會自動取消暫停','作息更細：可以設到幾點幾分、選定點／小範圍／大範圍／整座島、在地圖上點位置','新增「🏠 回家」（走回小屋進門休息）和「沒排到的時間到每座島串門子」','App 版可以開「新版本通知」了：第一次會先問你要不要開，之後可在 設定 →「🔔 新版本通知」開關','島民可以排作息了：點島民 →「🗓️ 作息與工作」，設定幾點到幾點散步（或去各島串門子）、待在哪裡、在哪裡做什麼工作','新增 32 種職業和 21 種工作動作：拉花、送餐、炒菜、切菜、挖土、拔雜草、倒土、澆水、掃地…（可複選，輪流做）','可以安裝成 App 了：設定 →「📲 安裝成 App」，有桌面圖示、全螢幕、沒網路也能開','建島畫面多了「📥 我有備份，把島搬過來」，App 版可以直接匯入瀏覽器的島','新增物件：冰滴咖啡組（木盤、湯匙、紅糖、牛奶、冰磚山形杯、木腰帶玻璃壺），在「咖啡・裝飾」','匯出島嶼：可以下載備份檔、分享到 LINE／檔案，或一鍵複製（複製不了會自動幫你全選）','匯入島嶼：可以選備份檔或貼上文字，先預覽內容再匯入，匯入後還能還原','新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -385,6 +386,91 @@ const PANTS_OUT={uniform:1,basic:1,chef:1,tank:1,uncle:1};
 const ACCS=[['glasses','黑框眼鏡','#2b2421'],['silver','銀框眼鏡','#c9ced6'],['crown','皇冠','#f2c230'],['flower','小花','#ff8fb3'],['bag','斜背包','#2b2421'],['spider','蜘蛛髮夾','#2b2421'],
   ['apron','金茂宜圍裙（正職）','#8b5a34'],['apronPT','金茂宜 PT 圍裙（兼職）','#5e3a20'],['lego','樂高積木','#e5534b'],['phone','手機','#2b2421']];
 const ACC_DEF={};ACCS.forEach(a=>ACC_DEF[a[0]]=a[2]);
+/* 手上拿的東西：左手、右手各一樣（原點＝手掌，往上是 +y） */
+const HOLD_GRP=[['drink','☕ 飲料'],['food','🍰 食物'],['kitchen','🍳 廚房用具'],['clean','🧹 打掃'],['garden','🌱 園藝'],['daily','👜 生活用品'],['play','🎈 玩具・運動']];
+function hRot(m,x,y,z){m.rotation.set(x||0,y||0,z||0);return m}
+function hArc(r,t,arc,col,g,o){const m=new THREE.Mesh(new THREE.TorusGeometry(r,t,8,16,arc),mat(col,o));g.add(m);return m}
+const HOLD={
+  papercup:['drink','外帶咖啡杯','#ffffff',(g,c)=>{cyl(0.075,0.058,0.18,12,c,0,0.06,0,g);cyl(0.079,0.079,0.03,12,'#6b3e22',0,0.165,0,g);cyl(0.078,0.07,0.06,12,'#c9a27a',0,0.06,0,g)}],
+  latte:['drink','拿鐵杯（附杯碟）','#ffffff',(g,c)=>{cyl(0.12,0.1,0.015,16,c,0,0,0,g);cyl(0.08,0.055,0.1,14,c,0,0.06,0,g);cyl(0.075,0.075,0.005,14,'#e8d3b0',0,0.11,0,g);sph(0.02,'#fff8ee',0,0.114,0,g,null,6).scale.set(1.4,0.2,1);hArc(0.03,0.01,Math.PI*2,c,g).position.set(0.09,0.06,0)}],
+  mug:['drink','馬克杯','#f2c230',(g,c)=>{cyl(0.07,0.07,0.15,14,c,0,0.06,0,g);cyl(0.064,0.064,0.005,14,'#4a2c1c',0,0.133,0,g);hArc(0.04,0.012,Math.PI*2,c,g).position.set(0.08,0.06,0)}],
+  boba:['drink','珍珠奶茶','#c9a27a',(g,c)=>{cyl(0.075,0.06,0.22,12,'#ffffff',0,0.08,0,g,{transparent:true,opacity:0.35});cyl(0.07,0.056,0.18,12,c,0,0.06,0,g);[[0.03,0],[-0.03,0.02],[0,-0.03],[0.02,0.03]].forEach(([x,z])=>sph(0.016,'#2b1a10',x,-0.01,z,g,null,6));cyl(0.012,0.012,0.3,6,'#e5534b',0.02,0.22,0,g)}],
+  bottle:['drink','水瓶','#7fc4e8',(g,c)=>{cyl(0.05,0.05,0.24,12,c,0,0.08,0,g,{transparent:true,opacity:0.6});cyl(0.03,0.045,0.04,12,c,0,0.22,0,g,{transparent:true,opacity:0.6});cyl(0.03,0.03,0.035,12,'#2f8fd8',0,0.255,0,g)}],
+  icedrip:['drink','冰滴咖啡杯','#3b2414',(g,c)=>{cyl(0.07,0.06,0.16,14,'#e4f3f8',0,0.06,0,g,{transparent:true,opacity:0.35});cyl(0.064,0.056,0.1,14,c,0,0.03,0,g);[[0.02,0.1,0.01],[-0.02,0.11,-0.015]].forEach(([x,y,z])=>box(0.04,0.04,0.04,'#f4fbff',x,y,z,g,{transparent:true,opacity:0.8}))}],
+  juice:['drink','柳橙汁','#f39a2b',(g,c)=>{cyl(0.065,0.055,0.18,12,'#ffffff',0,0.07,0,g,{transparent:true,opacity:0.35});cyl(0.06,0.05,0.14,12,c,0,0.05,0,g);hRot(cyl(0.035,0.035,0.01,10,'#f2c230',0.05,0.16,0,g),0,0,1.2);cyl(0.01,0.01,0.26,6,'#3fb34f',-0.02,0.18,0,g)}],
+  icecream:['food','甜筒冰淇淋','#ff8fb3',(g,c)=>{cyl(0.07,0.008,0.2,12,'#d9a35f',0,0.02,0,g);sph(0.075,c,0,0.15,0,g,null,12);sph(0.02,'#e5534b',0,0.23,0,g,null,8)}],
+  baguette:['food','法國麵包','#d9a35f',(g,c)=>{hRot(cyl(0.05,0.045,0.48,12,c,0,0.12,0,g),0.25,0,0);[-0.1,0,0.1].forEach(y=>box(0.06,0.008,0.03,'#f4e2b8',0,0.14+y,0.045+y*0.25,g))}],
+  croissant:['food','可頌','#d9933f',(g,c)=>{const m=hArc(0.07,0.035,Math.PI*1.2,c,g);m.rotation.x=Math.PI/2;m.position.y=0.04}],
+  donut:['food','甜甜圈','#ff8fb3',(g,c)=>{const a=hArc(0.06,0.032,Math.PI*2,'#d9a35f',g),b=hArc(0.06,0.026,Math.PI*2,c,g);a.rotation.x=b.rotation.x=Math.PI/2;a.position.y=0.03;b.position.y=0.045}],
+  apple:['food','蘋果','#e5534b',(g,c)=>{sph(0.075,c,0,0.07,0,g,null,14);cyl(0.006,0.006,0.04,6,'#6b4a2f',0,0.155,0,g);sph(0.02,'#3fb34f',0.02,0.16,0,g,null,6).scale.set(1,0.4,0.6)}],
+  banana:['food','香蕉','#f2d23c',(g,c)=>{const m=hArc(0.12,0.025,Math.PI*0.7,c,g);m.rotation.z=Math.PI*0.65;m.position.set(0.06,0.02,0)}],
+  cakeplate:['food','切片蛋糕（盤子）','#f7d6e0',(g,c)=>{cyl(0.13,0.11,0.015,16,'#ffffff',0,0,0,g);const w=new THREE.Mesh(new THREE.CylinderGeometry(0.11,0.11,0.1,12,1,false,0,0.9),mat(c));w.position.set(-0.04,0.06,-0.04);g.add(w);sph(0.02,'#e5534b',0,0.12,0,g,null,8)}],
+  sandwich:['food','三明治','#f4e2b8',(g,c)=>{[[0,c],[0.02,'#3fb34f'],[0.035,'#e5534b'],[0.055,c]].forEach(([y,cc])=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,0.02,3),mat(cc));m.position.set(0,0.02+y,0);g.add(m)})}],
+  drumstick:['food','炸雞腿','#c9782f',(g,c)=>{sph(0.07,c,0,0.13,0,g,null,10).scale.set(1,1.3,1);cyl(0.015,0.015,0.12,6,'#fbf3e4',0,0.02,0,g);sph(0.022,'#fbf3e4',0,-0.04,0,g,null,6)}],
+  lollipop:['food','棒棒糖','#ff8fb3',(g,c)=>{cyl(0.008,0.008,0.22,6,'#ffffff',0,0.08,0,g);hRot(cyl(0.07,0.07,0.02,16,c,0,0.22,0,g),Math.PI/2,0,0)}],
+  spatula:['kitchen','鍋鏟','#2b2421',(g,c)=>{cyl(0.018,0.018,0.32,8,c,0,0.08,0,g);cyl(0.008,0.008,0.14,6,'#c9ced6',0,-0.15,0,g);box(0.12,0.1,0.01,'#c9ced6',0,-0.25,0.02,g)}],
+  wok:['kitchen','炒鍋','#3a3a3a',(g,c)=>{const b=new THREE.Mesh(new THREE.SphereGeometry(0.2,16,8,0,Math.PI*2,Math.PI/2,Math.PI/2),mat(c,{side:THREE.DoubleSide}));b.scale.y=0.45;b.position.set(0,0.06,0.3);g.add(b);hRot(cyl(0.02,0.02,0.24,8,'#6b4a2f',0,0.04,0.1,g),Math.PI/2,0,0)}],
+  ladle:['kitchen','湯杓','#c9ced6',(g,c)=>{cyl(0.012,0.012,0.36,8,c,0,0.06,0,g);const b=new THREE.Mesh(new THREE.SphereGeometry(0.05,12,6,0,Math.PI*2,Math.PI/2,Math.PI/2),mat(c,{side:THREE.DoubleSide}));b.position.set(0,-0.12,0.04);g.add(b)}],
+  cleaver:['kitchen','菜刀','#2b2421',(g,c)=>{cyl(0.02,0.02,0.12,8,c,0,0,0,g);box(0.012,0.1,0.2,'#c9ced6',0,0.03,0.15,g)}],
+  whisk2:['kitchen','打蛋器','#c9ced6',(g,c)=>{cyl(0.018,0.018,0.14,8,'#e5534b',0,0,0,g);[0,1,2].forEach(i=>{const m=hArc(0.045,0.004,Math.PI*2,c,g);m.scale.y=2.2;m.rotation.y=i*Math.PI/3;m.position.y=0.17})}],
+  tray:['kitchen','托盤（放咖啡）','#8b5a34',(g,c)=>{cyl(0.24,0.24,0.02,20,c,0,0.04,0.12,g);const r=hArc(0.24,0.012,Math.PI*2,c,g);r.rotation.x=Math.PI/2;r.position.set(0,0.06,0.12);cyl(0.06,0.045,0.09,12,'#ffffff',-0.08,0.095,0.1,g);cyl(0.06,0.045,0.09,12,'#ffffff',0.09,0.095,0.16,g)}],
+  plate:['kitchen','盤子','#ffffff',(g,c)=>{cyl(0.15,0.12,0.02,20,c,0,0.02,0.05,g)}],
+  dishes:['kitchen','一疊碗盤','#ffffff',(g,c)=>{for(let i=0;i<5;i++)cyl(0.14,0.11,0.02,18,c,0,0.02+i*0.025,0.05,g);const b=new THREE.Mesh(new THREE.SphereGeometry(0.09,14,6,0,Math.PI*2,Math.PI/2,Math.PI/2),mat(c,{side:THREE.DoubleSide}));b.position.set(0,0.23,0.05);g.add(b)}],
+  pitcher:['kitchen','拉花鋼杯','#c9ced6',(g,c)=>{cyl(0.06,0.065,0.16,14,c,0,0.06,0.03,g,{metalness:0.6,roughness:0.3});hRot(box(0.03,0.02,0.05,c,0,0.14,0.1,g),0.4,0,0);hArc(0.04,0.01,Math.PI,c,g).position.set(0,0.07,-0.04)}],
+  kettle:['kitchen','手沖細口壺','#c9ced6',(g,c)=>{cyl(0.07,0.08,0.14,14,c,0,0.06,0,g,{metalness:0.6,roughness:0.3});cyl(0.03,0.03,0.02,10,c,0,0.14,0,g);const s=hArc(0.1,0.008,Math.PI*0.7,c,g);s.rotation.set(0,Math.PI/2,0.3);s.position.set(0,0.04,0.12);hArc(0.05,0.012,Math.PI,'#2b2421',g).position.set(0,0.07,-0.09)}],
+  broom:['clean','掃把','#c9a27a',(g,c)=>{cyl(0.018,0.018,1.3,8,c,0,0.15,0,g);box(0.3,0.16,0.06,'#d9b45f',0,-0.55,0.02,g);box(0.32,0.03,0.07,'#e5534b',0,-0.46,0.02,g)}],
+  mop:['clean','拖把','#2f8fd8',(g,c)=>{cyl(0.018,0.018,1.3,8,c,0,0.15,0,g);for(let i=0;i<8;i++){const a=i/8*Math.PI*2;cyl(0.02,0.015,0.2,6,'#f4efe6',Math.cos(a)*0.06,-0.58,Math.sin(a)*0.06,g)}}],
+  rag:['clean','抹布','#7fc4e8',(g,c)=>{const m=box(0.16,0.03,0.12,c,0,0.01,0.04,g);m.rotation.z=0.2}],
+  duster:['clean','雞毛撢子','#e5534b',(g,c)=>{cyl(0.015,0.015,0.4,8,'#c9a27a',0,0.05,0,g);[0,1,2,3,4,5].forEach(i=>{const a=i*1.05;sph(0.06,c,Math.cos(a)*0.04,0.33+(i%2)*0.04,Math.sin(a)*0.04,g,null,8).scale.set(1,1.8,1)})}],
+  spray:['clean','噴霧瓶','#3fb34f',(g,c)=>{cyl(0.05,0.055,0.18,12,c,0,0.07,0,g,{transparent:true,opacity:0.8});box(0.05,0.05,0.09,'#ffffff',0,0.19,0.02,g);box(0.02,0.06,0.02,'#ffffff',0,0.15,0.06,g)}],
+  bucket:['clean','水桶','#2f8fd8',(g,c)=>{cyl(0.13,0.1,0.22,16,c,0,-0.2,0.03,g);cyl(0.12,0.12,0.01,16,'#9fd3ff',0,-0.1,0.03,g);const h=hArc(0.13,0.008,Math.PI,'#c9ced6',g);h.position.set(0,-0.1,0.03)}],
+  shovel:['garden','鏟子','#8b5a34',(g,c)=>{cyl(0.018,0.018,1.05,8,c,0,0.05,0,g);box(0.14,0.04,0.02,'#2b2421',0,0.58,0,g);box(0.18,0.24,0.025,'#8f847c',0,-0.56,0.02,g)}],
+  watercan:['garden','澆水壺','#3fb34f',(g,c)=>{cyl(0.1,0.11,0.2,14,c,0,-0.14,0.04,g);hArc(0.08,0.012,Math.PI,c,g).position.set(0,-0.04,0.04);hRot(cyl(0.012,0.02,0.24,8,c,0,-0.1,0.2,g),1.0,0,0);cyl(0.035,0.02,0.03,10,c,0,-0.02,0.3,g)}],
+  bouquet:['garden','花束','#ff8fb3',(g,c)=>{cyl(0.09,0.03,0.24,10,'#f4efe6',0,0.06,0,g);[[0,0.24,0],[0.06,0.22,0.03],[-0.06,0.22,0.02],[0.02,0.23,-0.06],[-0.03,0.26,0.05]].forEach(([x,y,z],i)=>sph(0.045,i%2?'#f2c230':c,x,y,z,g,null,8));[[0.07,0.17],[-0.07,0.17]].forEach(([x,y])=>sph(0.03,'#3fb34f',x,y,0,g,null,6).scale.set(1,0.5,1.6))}],
+  rake:['garden','耙子','#8b5a34',(g,c)=>{cyl(0.018,0.018,1.2,8,c,0,0.1,0,g);box(0.3,0.03,0.03,'#8f847c',0,-0.5,0.02,g);for(let i=0;i<7;i++)box(0.012,0.08,0.012,'#8f847c',-0.13+i*0.043,-0.55,0.04,g)}],
+  basket:['garden','菜籃（裝蔬菜）','#c9a27a',(g,c)=>{cyl(0.16,0.12,0.14,14,c,0,-0.2,0.03,g);hArc(0.15,0.012,Math.PI,c,g).position.set(0,-0.13,0.03);sph(0.05,'#e5534b',-0.05,-0.12,0.03,g,null,8);sph(0.05,'#3fb34f',0.05,-0.11,0.06,g,null,8);hRot(cyl(0.025,0.01,0.14,8,'#f39a2b',0.02,-0.1,-0.03,g),0.8,0,0.3)}],
+  potplant:['garden','小盆栽','#c9782f',(g,c)=>{cyl(0.08,0.06,0.12,12,c,0,0.04,0.04,g);sph(0.09,'#3fb34f',0,0.15,0.04,g,null,10)}],
+  shears:['garden','園藝剪刀','#e5534b',(g,c)=>{[-0.03,0.03].forEach((x,i)=>{hRot(cyl(0.015,0.015,0.12,8,c,x,0,0,g),0,0,i?-0.2:0.2);hRot(box(0.02,0.14,0.008,'#c9ced6',x*0.3,0.12,0,g),0,0,i?0.12:-0.12)})}],
+  phone:['daily','手機','#2b2421',(g,c)=>{const p=new THREE.Group();p.position.set(0,0.06,0.03);p.rotation.x=-0.6;g.add(p);box(0.11,0.2,0.025,c,0,0,0,p);box(0.09,0.16,0.005,'#9fd3ff',0,0.005,0.014,p,{emissive:'#5aa9e6',emissiveIntensity:0.5})}],
+  book:['daily','書','#2f8fd8',(g,c)=>{box(0.05,0.26,0.19,c,0,0.08,0.03,g);box(0.045,0.25,0.18,'#fbf8f0',0.004,0.08,0.03,g)}],
+  umbrella:['daily','雨傘（打開）','#e5534b',(g,c)=>{cyl(0.012,0.012,1.75,8,'#2b2421',0,0.85,0,g);const t=new THREE.Mesh(new THREE.ConeGeometry(0.62,0.25,10,1,true),mat(c,{side:THREE.DoubleSide}));t.position.y=1.7;g.add(t);hArc(0.04,0.012,Math.PI,'#2b2421',g).position.set(0.04,-0.02,0)}],
+  handbag:['daily','手提包','#c9782f',(g,c)=>{box(0.28,0.2,0.1,c,0,-0.22,0.03,g);hArc(0.09,0.012,Math.PI,c,g).position.set(0,-0.12,0.03);box(0.05,0.04,0.012,'#f2c230',0,-0.17,0.085,g)}],
+  shopbag:['daily','購物紙袋','#e8d3b0',(g,c)=>{box(0.26,0.32,0.12,c,0,-0.27,0.03,g);[-0.06,0.06].forEach(x=>hArc(0.05,0.008,Math.PI,'#8b5a34',g).position.set(x,-0.11,0.03));box(0.12,0.08,0.005,'#e5534b',0,-0.25,0.093,g)}],
+  wallet:['daily','錢包','#6b4a2f',(g,c)=>{box(0.16,0.1,0.03,c,0,0.02,0.04,g);box(0.03,0.04,0.034,'#f2c230',0.06,0.02,0.04,g)}],
+  keys:['daily','鑰匙圈','#f2c230',(g,c)=>{const r=hArc(0.03,0.006,Math.PI*2,'#c9ced6',g);r.position.y=-0.02;[[-0.02,0.3],[0.02,-0.3]].forEach(([x,a])=>hRot(box(0.015,0.08,0.006,c,x,-0.08,0,g),0,0,a))}],
+  tablet:['daily','平板','#2b2421',(g,c)=>{const p=new THREE.Group();p.position.set(0,0.08,0.06);p.rotation.x=-0.9;g.add(p);box(0.22,0.3,0.02,c,0,0,0,p);box(0.2,0.27,0.004,'#9fd3ff',0,0,0.012,p,{emissive:'#5aa9e6',emissiveIntensity:0.4})}],
+  camera:['daily','相機','#2b2421',(g,c)=>{box(0.2,0.12,0.08,c,0,0.04,0.05,g);hRot(cyl(0.045,0.045,0.07,14,'#555',0,0.04,0.12,g),Math.PI/2,0,0);box(0.04,0.02,0.03,'#c9ced6',0.06,0.11,0.05,g)}],
+  pen:['daily','原子筆','#2f8fd8',(g,c)=>{hRot(cyl(0.01,0.01,0.16,6,c,0,0.04,0.02,g),0.4,0,0)}],
+  notebook:['daily','筆記本','#f2c230',(g,c)=>{box(0.18,0.24,0.025,c,0,0.08,0.05,g);box(0.17,0.23,0.02,'#fbf8f0',0.004,0.08,0.05,g)}],
+  clipboard:['daily','寫字板','#8b5a34',(g,c)=>{box(0.2,0.28,0.012,c,0,0.1,0.06,g);box(0.17,0.22,0.004,'#ffffff',0,0.09,0.067,g);box(0.07,0.03,0.02,'#c9ced6',0,0.23,0.065,g)}],
+  mic:['daily','麥克風','#2b2421',(g,c)=>{cyl(0.025,0.018,0.18,10,c,0,0.06,0,g);sph(0.045,'#c9ced6',0,0.18,0,g,null,10)}],
+  remote:['daily','遙控器','#2b2421',(g,c)=>{box(0.05,0.18,0.025,c,0,0.06,0.02,g);sph(0.01,'#e5534b',0,0.13,0.035,g,null,6)}],
+  flashlight:['daily','手電筒','#f2c230',(g,c)=>{hRot(cyl(0.03,0.025,0.2,10,c,0,0.03,0.06,g),Math.PI/2,0,0);hRot(cyl(0.04,0.04,0.02,10,'#fff6c8',0,0.03,0.17,g,{emissive:'#fff2a0',emissiveIntensity:0.6}),Math.PI/2,0,0)}],
+  toothbrush:['daily','牙刷','#2f8fd8',(g,c)=>{cyl(0.01,0.012,0.2,6,c,0,0.06,0,g);box(0.02,0.04,0.025,'#ffffff',0,0.17,0.015,g)}],
+  handfan:['daily','扇子','#ff8fb3',(g,c)=>{const f=new THREE.Mesh(new THREE.CircleGeometry(0.16,12,Math.PI*0.2,Math.PI*0.6),mat(c,{side:THREE.DoubleSide}));f.position.set(0,0.0,0.02);g.add(f);cyl(0.01,0.01,0.08,6,'#8b5a34',0,0,0.02,g)}],
+  newspaper:['daily','報紙','#ece6d8',(g,c)=>{box(0.03,0.3,0.22,c,0,0.08,0.04,g);box(0.032,0.06,0.18,'#2b2421',0,0.18,0.04,g,{transparent:true,opacity:0.3})}],
+  letter:['daily','信封','#fbf8f0',(g,c)=>{box(0.2,0.12,0.01,c,0,0.04,0.05,g);sph(0.015,'#e5534b',0,0.04,0.056,g,null,6)}],
+  gift:['daily','禮物盒','#e5534b',(g,c)=>{box(0.18,0.16,0.18,c,0,0.06,0.04,g);box(0.19,0.17,0.04,'#f2c230',0,0.06,0.04,g);box(0.04,0.17,0.19,'#f2c230',0,0.06,0.04,g)}],
+  beanbag:['daily','咖啡豆袋','#8b5a34',(g,c)=>{box(0.16,0.24,0.08,c,0,0.08,0.04,g);box(0.1,0.08,0.005,'#f4efe6',0,0.08,0.083,g);box(0.16,0.03,0.08,'#2b2421',0,0.21,0.04,g)}],
+  balloon:['play','氣球','#e5534b',(g,c)=>{cyl(0.003,0.003,1.4,4,'#ffffff',0,0.7,0,g);sph(0.2,c,0,1.55,0,g,null,14).scale.set(1,1.2,1)}],
+  teddy:['play','小熊玩偶','#c9894f',(g,c)=>{sph(0.1,c,0,0.02,0.06,g,null,10);sph(0.08,c,0,0.17,0.06,g,null,10);[-0.06,0.06].forEach(x=>sph(0.03,c,x,0.24,0.06,g,null,8));sph(0.03,'#f4e2c8',0,0.15,0.13,g,null,8)}],
+  ball:['play','球','#f39a2b',(g,c)=>{sph(0.12,c,0,0.08,0.06,g,null,14)}],
+  racket:['play','網球拍','#2f8fd8',(g,c)=>{cyl(0.02,0.02,0.2,8,'#2b2421',0,0.06,0,g);const r=hArc(0.12,0.012,Math.PI*2,c,g);r.scale.y=1.3;r.position.y=0.32;const n=new THREE.Mesh(new THREE.CircleGeometry(0.11,14),mat('#ffffff',{transparent:true,opacity:0.4,side:THREE.DoubleSide}));n.scale.y=1.3;n.position.y=0.32;g.add(n)}],
+  wand:['play','魔法棒','#f2c230',(g,c)=>{cyl(0.01,0.01,0.34,6,'#2b2421',0,0.12,0,g);const s=new THREE.Mesh(new THREE.OctahedronGeometry(0.06),mat(c,{emissive:c,emissiveIntensity:0.3}));s.position.y=0.31;g.add(s)}],
+  flag:['play','小旗子','#e5534b',(g,c)=>{cyl(0.008,0.008,0.5,6,'#8b5a34',0,0.2,0,g);box(0.005,0.14,0.2,c,0,0.38,0.1,g)}],
+  lego:['play','樂高積木','#e5534b',(g,c)=>{box(0.2,0.12,0.14,c,0,0.02,0.06,g);[[-0.05,-0.035],[0.05,-0.035],[-0.05,0.035],[0.05,0.035]].forEach(([x,z])=>cyl(0.028,0.028,0.04,10,c,x,0.1,0.06+z,g))}],
+  fishrod:['play','釣竿','#2b2421',(g,c)=>{hRot(cyl(0.008,0.018,1.3,6,c,0,0.55,0.35,g),0.55,0,0);sph(0.03,'#c9ced6',0,0.0,0.06,g,null,8)}],
+  pinwheel:['play','風車玩具','#3fb34f',(g,c)=>{cyl(0.008,0.008,0.4,6,'#ffffff',0,0.15,0,g);[0,1,2,3].forEach(i=>{const b=box(0.1,0.03,0.005,i%2?c:'#f2c230',0,0.36,0.02,g);b.rotation.z=i*Math.PI/2;b.geometry.translate(0.05,0,0)})}]
+};
+/* 擺設裡的小東西也能拿在手上（自動縮小到手掌大小） */
+function makeHeld(key,col){const g=new THREE.Group();
+  if(key.startsWith('it:')){const t=key.slice(3);if(!ITEMS[t]||!BUILD[t])return null;const o=makeItem({type:t,c:{}}),b=new THREE.Box3().setFromObject(o),sz=b.getSize(new THREE.Vector3());const k=0.3/Math.max(sz.x,sz.y,sz.z,0.01);o.scale.setScalar(k);o.position.set(-(b.min.x+b.max.x)/2*k,-b.min.y*k-0.02,-(b.min.z+b.max.z)/2*k+0.06);g.add(o)}
+  else{const H=HOLD[key];if(!H)return null;H[3](g,col||H[2]);const sz=new THREE.Box3().setFromObject(g).getSize(new THREE.Vector3());if(Math.max(sz.x,sz.y,sz.z)<0.5)g.scale.setScalar(1.4)}
+  g.traverse(m=>{if(m.isMesh){m.castShadow=true}});return g}
+function holdName(key){if(!key)return '';if(key.startsWith('it:')){const D=ITEMS[key.slice(3)];return D?D.n:''}return HOLD[key]?HOLD[key][1]:''}
+function holdOptions(cur){let o='<option value="">（空手）</option>';HOLD_GRP.forEach(([g,l])=>{o+='<optgroup label="'+l+'">';for(const k in HOLD)if(HOLD[k][0]===g)o+='<option value="'+k+'"'+(cur===k?' selected':'')+'>'+HOLD[k][1]+'</option>';o+='</optgroup>'});
+  o+='<optgroup label="🧺 擺設裡的小東西">';for(const t in ITEMS)if(ITEMS[t].small)o+='<option value="it:'+t+'"'+(cur==='it:'+t?' selected':'')+'>'+ITEMS[t].e+' '+ITEMS[t].n+'</option>';return o+'</optgroup>'}
+
 /* 島嶼小動物 */
 const FUR=['#f4efe6','#2b2421','#e8a25a','#8f847c','#c9a27a','#6b4a2f','#f3d9a4','#5a5f6b'];
 const FEATHER=['#3fb34f','#2f8fd8','#f2c230','#e04a3a','#f4efe6','#8a6bbf','#ff8fb3','#2b2421'];
@@ -414,6 +500,7 @@ const ITEMS={
   island:{n:'中島櫃',e:'🍳',cat:'kitchen',cols:[['main','櫃體','#f4efe6'],['top','檯面','#c9a27a'],['knob','把手','#c9a27a']]},
   stove:{n:'爐台',e:'🔥',cat:'kitchen',cols:[['main','櫃體','#f4efe6'],['top','檯面','#8f847c']]},
   gas:{n:'瓦斯爐',e:'🍲',cat:'kitchen',small:1,cols:[['main','爐身','#d9dde3'],['grate','爐架','#2b2421'],['flame','火焰','#4fa3ff']]},
+  dishsink:{n:'堆滿髒碗盤的洗手槽',e:'🍽️',cat:'kitchen',cols:[['main','櫃體','#c9ced6'],['tap','水龍頭','#c9ced6'],['filt','過濾水龍頭','#2f8fd8'],['dish','碗盤','#ffffff'],['dirt','髒污（醬汁）','#a0602a']],opts:[['tap','水龍頭（出水口）在',[['L','左邊'],['R','右邊']],'R'],['filt','過濾水出水口在',[['L','左邊'],['R','右邊']],'L']]},
   sink:{n:'洗手台',e:'🚰',cat:'kitchen',cols:[['main','櫃體','#ffffff'],['top','檯面','#c9ced6'],['tap','水龍頭','#c9ced6']]},
   counter:{n:'櫃台',e:'🛎️',cat:'kitchen',cols:[['main','櫃身','#c9a27a'],['top','檯面','#f4efe6'],['accent','裝飾條','#e8673a']]},
   knife:{n:'刀子＋砧板',e:'🔪',cat:'kitchen',small:1,cols:[['board','砧板','#e2bf8f'],['blade','刀身','#d9dde3'],['handle','刀柄','#2b2421']]},
@@ -657,10 +744,11 @@ function makeChar(o){
     else{pk(0.16,0.12,0.1,1.0,bz);[-0.22,0,0.22].forEach(x=>pk(0.19,0.15,x,0.6,kz));cyl(0.014,0.014,0.13,6,'#2b2421',0.06,1.06,bz+0.04,g);cyl(0.014,0.014,0.13,6,'#e5534b',-0.2,0.7,kz+0.04,g)}}
   if(has('lego')){const c=aC('lego'),lg=new THREE.Group();lg.position.set(0,-0.68,0.1);lg.rotation.y=0.3;armR.add(lg);box(0.2,0.12,0.14,c,0,0,0,lg);[[-0.05,-0.035],[0.05,-0.035],[-0.05,0.035],[0.05,0.035]].forEach(([x,z])=>cyl(0.028,0.028,0.04,10,c,x,0.08,z,lg))}
   if(has('phone')){const c=aC('phone'),ph=new THREE.Group();ph.position.set(0.02,-0.66,0.12);ph.rotation.x=-0.7;armL.add(ph);box(0.11,0.2,0.025,c,0,0,0,ph);box(0.09,0.16,0.005,'#9fd3ff',0,0.005,0.014,ph,{emissive:'#5aa9e6',emissiveIntensity:0.5})}
+  const held={};['L','R'].forEach(k=>{const key=o['h'+k];if(!key)return;const hg=makeHeld(key,o['h'+k+'c']);if(!hg)return;hg.position.set(0,-0.62,0.08);(k==='L'?armL:armR).add(hg);held[k]=hg});
   const hit=new THREE.Mesh(new THREE.CylinderGeometry(0.75,0.75,2.3,8),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));hit.position.y=1.15;g.add(hit);
   const cup=new THREE.Group();cup.position.set(0,-0.6,0.12);cyl(0.075,0.06,0.17,8,'#ffffff',0,0,0,cup);cyl(0.073,0.073,0.02,8,'#6b3e22',0,0.08,0,cup);cup.visible=false;armR.add(cup);
   {const H=(GENDER_H[o.gender]||1)*(+o.height||1),W=1+(H-1)*0.4,K=o.kid?0.72:1,hx=(1+(H-1)*0.25)*(o.kid?1.2:1);g.scale.set(K*W,K*H,K*W);head.scale.set(hx/W,hx/H,hx/W)}
-  return {g,legL,legR,armL,armR,head,eyes,torso,hit,cup}}
+  return {g,legL,legR,armL,armR,head,eyes,torso,hit,cup,held}}
 /* 髮型：同一個髮型，男生、女生各有不同設計（沒選性別就用中性版） */
 function hairFor(head,o){const st=o.style||'short',hc=o.hair,G=o.gender==='m'?'m':o.gender==='f'?'f':'n',gloss=st==='slick';
   const hairM=mat(hc,gloss?{flatShading:false,roughness:0.15,metalness:0.3}:{flatShading:false,roughness:0.6});
@@ -812,6 +900,30 @@ const BUILD={
       for(let i=0;i<8;i++){const q=i/8*Math.PI*2,ph=i*0.8+x*9,f=new THREE.Mesh(new THREE.ConeGeometry(0.026,0.09,6),mat(C.flame,{emissive:C.flame,emissiveIntensity:0.9,transparent:true,opacity:0.85,flatShading:false}));
         f.position.set(x+Math.cos(q)*0.09,0.2,-0.03+Math.sin(q)*0.09);f.userData.noShadow=true;g.add(f);A(t=>{f.scale.y=0.8+Math.sin(t*14+ph)*0.25;f.scale.x=f.scale.z=1+Math.sin(t*11+ph)*0.1})}
       const k=cyl(0.035,0.035,0.05,10,'#2b2421',x,0.07,0.33,g);k.rotation.x=Math.PI/2})},
+  dishsink(g,C,it){const o=Object.assign({tap:'R',filt:'L'},it&&it.o),SX={L:-1,R:1},st={metalness:0.5,roughness:0.35};
+    /* 不鏽鋼櫃體＋檯面＋後擋板 */
+    box(1.4,0.6,0.72,C.main,0,0.3,0,g,st);[[1.4,0.24,0.02,0,0.72,0.35],[1.4,0.24,0.02,0,0.72,-0.35],[0.02,0.24,0.72,-0.69,0.72,0],[0.02,0.24,0.72,0.69,0.72,0]].forEach(([w,h,d,x,y,z])=>box(w,h,d,C.main,x,y,z,g,st));
+    /* 檯面只有框，水槽是挖空的 */[[1.46,0.05,0.11,0,0.335],[1.46,0.05,0.15,0,-0.315],[0.08,0.05,0.52,0,0.02],[0.13,0.05,0.52,-0.665,0.02],[0.13,0.05,0.52,0.665,0.02]].forEach(([w,h,d,x,z])=>box(w,h,d,C.main,x,0.845,z,g,st));box(1.46,0.3,0.04,C.main,0,1.02,-0.37,g,st);
+    [-0.35,0.35].forEach(x=>{box(0.6,0.62,0.01,'#b7bcc4',x,0.4,0.365,g,st);box(0.12,0.025,0.03,'#8f847c',x,0.66,0.38,g)});
+    /* 深水槽（兩格） */
+    [-0.32,0.32].forEach(x=>{box(0.56,0.02,0.52,'#9aa3ad',x,0.62,0.02,g,st);[[0.56,0.24,0.02,0,0.28],[0.56,0.24,0.02,0,-0.24],[0.02,0.24,0.52,-0.28,0.02],[0.02,0.24,0.52,0.28,0.02]].forEach(([w,h,d,dx,dz])=>box(w,h,d,'#aeb5bd',x+dx,0.74,dz,g,st))});
+    /* 髒碗盤：疊起來歪歪的盤子、碗、杯子、鍋子 */
+    const dirty=(m)=>{sph(0.03,C.dirt,0,0,0,m,null,6).scale.set(1.6,0.25,1.1)};
+    [[-0.42,0.08,0.2,9],[-0.22,-0.1,-0.15,11]].forEach(([x,z,tilt,n])=>{for(let i=0;i<n;i++){const pl=cyl(0.13,0.1,0.018,16,C.dish,x+Math.sin(i*1.7)*0.012,0.64+i*0.03,z,g);pl.rotation.set(tilt,0,0.04*Math.sin(i));if(i%3===2||i===n-1){const d=new THREE.Group();d.position.set(x+0.03,0.652+i*0.03,z);d.rotation.x=tilt;g.add(d);dirty(d)}}});
+    [[-0.5,-0.18,0.9],[0.05,0.2,-0.8]].forEach(([x,z,r])=>{const pl=cyl(0.13,0.1,0.018,16,C.dish,x,0.86,z,g);pl.rotation.set(r,0,0.3)});
+    [[0.2,0.05],[0.42,-0.08],[0.3,-0.02]].forEach(([x,z],i)=>{const b=new THREE.Mesh(new THREE.SphereGeometry(0.1,14,6,0,Math.PI*2,Math.PI/2,Math.PI/2),mat(C.dish,{side:THREE.DoubleSide}));b.position.set(x,0.74+i*0.06,z);b.rotation.z=i?0.5:-0.3;g.add(b);sph(0.05,C.dirt,x,0.68+i*0.05,z,g,null,8).scale.set(1.3,0.3,1.3);cyl(0.012,0.012,0.22,6,'#c9a27a',x+0.03,0.8+i*0.05,z,g).rotation.z=0.9});
+    cyl(0.05,0.04,0.1,10,C.dish,0.28,0.84,0.17,g).rotation.x=1.2;cyl(0.05,0.04,0.1,10,'#e5534b',0.5,0.69,0.15,g);
+    const pot=cyl(0.14,0.12,0.12,14,'#3a3a3a',-0.38,0.76,-0.12,g,st);pot.rotation.z=0.35;cyl(0.015,0.015,0.2,6,'#2b2421',-0.2,0.84,-0.12,g).rotation.z=1.5;
+    sph(0.04,'#f6f6f6',0.1,0.69,0.15,g,{transparent:true,opacity:0.85},8);sph(0.03,'#f6f6f6',0.14,0.7,0.12,g,{transparent:true,opacity:0.85},8);
+    /* 水龍頭（鵝頸）在左或右；兩個在同一邊時會錯開 */
+    const same=o.tap===o.filt,tx=SX[o.tap]*(same?0.32:0.32),fx=SX[o.filt]*(same?0.6:0.32);
+    const tapG=new THREE.Group();tapG.position.set(tx,0.87,-0.3);g.add(tapG);cyl(0.035,0.04,0.05,12,C.tap,0,0.025,0,tapG,st);cyl(0.022,0.022,0.36,10,C.tap,0,0.22,0,tapG,st);
+    const nk=new THREE.Mesh(new THREE.TorusGeometry(0.1,0.02,8,16,Math.PI),mat(C.tap,st));nk.rotation.y=Math.PI/2;nk.position.set(0,0.4,0.1);tapG.add(nk);cyl(0.024,0.02,0.08,10,C.tap,0,0.33,0.2,tapG,st);
+    const lv=box(0.025,0.02,0.14,C.tap,0.06,0.12,0.04,tapG,st);lv.rotation.x=-0.3;
+    const fG=new THREE.Group();fG.position.set(fx,0.87,-0.3);g.add(fG);cyl(0.03,0.032,0.04,12,C.tap,0,0.02,0,fG,st);cyl(0.012,0.012,0.26,8,C.tap,0,0.16,0,fG,st);
+    const fk=new THREE.Mesh(new THREE.TorusGeometry(0.06,0.012,8,14,Math.PI),mat(C.tap,st));fk.rotation.y=Math.PI/2;fk.position.set(0,0.29,0.06);fG.add(fk);cyl(0.035,0.035,0.03,12,C.filt,0,0.1,0,fG);sph(0.02,C.filt,0,0.31,0,fG,null,8);
+    /* 水滴（主水龍頭） */
+    const dr=sph(0.012,'#9fd3ff',tx,1.15,-0.1,g,{transparent:true,opacity:0.8},6);dr.userData.noShadow=true;A(t=>{const k=(t*0.7)%1;dr.position.y=1.15-k*0.42;dr.visible=k<0.85})},
   sink(g,C){box(1.2,0.82,0.7,C.main,0,0.43,0,g);box(1.28,0.08,0.78,C.top,0,0.88,0,g);box(0.7,0.02,0.44,'#cfe3ea',0,0.93,0.03,g);
     [[0.78,0.06,0.04,0,0.27],[0.78,0.06,0.04,0,-0.21],[0.04,0.06,0.48,-0.37,0.03],[0.04,0.06,0.48,0.37,0.03]].forEach(([w,h,d,x,z])=>box(w,h,d,C.top,x,0.95,z,g));
     const tm={metalness:0.2,roughness:0.25};cyl(0.03,0.04,0.3,8,C.tap,0,1.07,-0.3,g,tm);const sp=new THREE.Mesh(new THREE.TorusGeometry(0.1,0.025,6,12,Math.PI),mat(C.tap,tm));sp.position.set(0,1.22,-0.2);sp.rotation.y=Math.PI/2;g.add(sp);
@@ -1276,7 +1388,9 @@ function schedNow(p){if(!Array.isArray(p.sched))return null;const h=simHour;for(
 function isleArea(id){if(id==='hub'||!isleById(id))return {x0:-6.5,x1:6.5,z0:1.6,z1:7.2};const c=isleCenter(id);return {x0:c.x-6.5,x1:c.x+6.5,z0:c.z-2.5,z1:c.z+7}}
 function placePoint(p,place){place=place||'home';
   if(place.startsWith('pt:')){const q=place.slice(3).split(',').map(Number);if(isFinite(q[0])&&isFinite(q[1]))return {x:q[0],z:q[1],face:null}}
-  if(place.startsWith('item:')){const it=S.items.find(x=>x.id===place.slice(5));if(it){const k=it.s||1,d=(['bed','sofa','balcony','island','counter','register','house'].includes(it.type)?1.5:1.0)*k,ry=it.ry||0;return {x:it.x+Math.sin(ry)*d,z:it.z+Math.cos(ry)*d,face:ry+Math.PI}}}
+  if(place.startsWith('item:')){const it=S.items.find(x=>x.id===place.slice(5));if(it){const k=it.s||1,ry=it.ry||0,o=itemObjs[it.id],fp=o&&o.userData.fp;
+    if(fp){const lx=fp.cx*k,lz=(fp.cz+fp.hz)*k+BODY+0.15;return {x:it.x+lx*Math.cos(ry)+lz*Math.sin(ry),z:it.z-lx*Math.sin(ry)+lz*Math.cos(ry),face:ry+Math.PI}}
+    const d=(['bed','sofa','balcony','island','counter','register','house'].includes(it.type)?1.5:1.0)*k;return {x:it.x+Math.sin(ry)*d,z:it.z+Math.cos(ry)*d,face:ry+Math.PI}}}
   if(place.startsWith('isle:')){const r=isleArea(place.slice(5));return {x:(r.x0+r.x1)/2+(Math.random()-0.5)*4,z:(r.z0+r.z1)/2+(Math.random()-0.5)*2,face:null}}
   const r=homeRect(p);return {x:(r.x0+r.x1)/2,z:(r.z0+r.z1)/2,face:null}}
 function placeLabel(place){if(!place||place==='home')return '自己的位置';if(place.startsWith('pt:')){const q=place.slice(3).split(',').map(Number),k=isleAt(q[0],q[1]);return '地圖上點的位置（'+(k?isleName(k):'海上')+'）'}if(place.startsWith('isle:'))return isleName(place.slice(5));if(place.startsWith('item:')){const it=S.items.find(x=>x.id===place.slice(5));return it&&ITEMS[it.type]?ITEMS[it.type].n+'（'+itemIsleName(it)+'）':'（物件不見了）'}return ''}
@@ -1292,8 +1406,8 @@ function actGroups(c,name){c.acts=c.acts||{};if(c.acts[name])return c.acts[name]
   if(A.G){const g=new THREE.Group();A.G.b(g);c.g.add(g);P.G=g}
   Object.values(P).forEach(g=>g.traverse(m=>{if(m.isMesh){m.castShadow=!m.userData.noShadow}}));c.acts[name]=P;return P}
 function hideActs(c){if(c.acts)Object.values(c.acts).forEach(P=>Object.values(P).forEach(g=>g.visible=false))}
-function showAct(v,name){const c=v.c;hideActs(c);const P=actGroups(c,name);Object.values(P).forEach(g=>g.visible=true);setActTag(v,ACTIONS[name].e)}
-function endWork(v){if(v.inside){v.inside=false;v.c.g.visible=true}hideActs(v.c);resetPose(v.c);v.c.g.rotation.x=0;setActTag(v,'')}
+function showAct(v,name){const c=v.c;hideActs(c);const P=actGroups(c,name);Object.values(P).forEach(g=>g.visible=true);if(c.held)['L','R'].forEach(k=>{if(c.held[k])c.held[k].visible=!P[k]});setActTag(v,ACTIONS[name].e)}
+function endWork(v){if(v.inside){v.inside=false;v.c.g.visible=true}hideActs(v.c);if(v.c.held)Object.values(v.c.held).forEach(g=>g.visible=true);resetPose(v.c);v.c.g.rotation.x=0;setActTag(v,'')}
 function applyBlock(v,b){endWork(v);v.sched=null;v.block=b||null;
   if(!b){if(v.p.freeMode==='visit'){const r=isleArea(isleAt(v.x,v.zz)||v.p.isle);v.sched={type:'wander',rect:r,visit:true,free:true};v.rect=r}else v.rect=homeRect(v.p);
     if(v.p.rest&&!v.R){v.R={id:v.p.rest.id,i:v.p.rest.i,auto:false};v.arrived=false}return}
@@ -1355,7 +1469,7 @@ function animRest(v,dt){const c=v.c,P=S.ui.paused,it=S.items.find(x=>x.id===v.R.
   if(!sp){if(!v.R.auto){v.p.rest=null;save()}standUp(v);return false}
   const w=restWorld(it,sp);
   if(!v.arrived){const dx=w.x-v.x,dz=w.z-v.zz,d=Math.hypot(dx,dz);
-    if(d<0.15){v.arrived=true}else{if(!P){const a=step2(v,'x','zz',w.x,w.z,1.8*dt,v.R.id);if(a!=null)v.face=a}
+    if(d<0.15||(v._stuck&&d<2.2)){v.arrived=true}else{if(!P){const a=step2(v,'x','zz',w.x,w.z,1.8*dt,v.R.id);if(a!=null)v.face=a}
       c.g.rotation.order='XYZ';c.g.rotation.x=0;c.g.position.set(v.x,TOP+0.17+(P?0:Math.abs(Math.sin(v.t*9))*0.08),v.zz);let dr=v.face-c.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));c.g.rotation.y+=dr*Math.min(1,dt*8);
       const sw=P?0:Math.sin(v.t*9)*0.6;c.legL.rotation.x=sw;c.legR.rotation.x=-sw;c.armL.rotation.set(-sw*0.8,0,0);c.armR.rotation.set(sw*0.8,0,0);c.cup.visible=false;return true}}
   restPose(v,w,sp.k);if(!P&&sp.k==='sit')c.head.rotation.y=Math.sin(v.t*0.6)*0.25;
@@ -1366,7 +1480,7 @@ function animChar(v,dt){const c=v.c,P=S.ui.paused;v.t+=dt;
   if(v.path&&v.path.length){let wp=v.path[0];if(v.path.length>1&&Math.hypot(wp.x-v.x,wp.z-v.zz)<0.15){v.path.shift();wp=v.path[0]}
     const dx=wp.x-v.x,dz=wp.z-v.zz,d=Math.hypot(dx,dz);
     if(d<0.15&&v.path.length<=1){v.path=null;v.rect=(v.sched&&v.sched.rect)||homeRect(v.p);v.tx=v.x;v.tz=v.zz;v.wait=2.5}
-    else{if(!P){const a=step2(v,'x','zz',wp.x,wp.z,2.4*dt,null);if(a!=null)v.face=a}
+    else{if(!P){const a=step2(v,'x','zz',wp.x,wp.z,2.4*dt,null);if(a!=null)v.face=a;else if(v._stuck){v.path=null;v.tx=v.x;v.tz=v.zz;v.wait=1.5}}
       c.g.position.set(v.x,TOP+0.17+bridgeY(v.x,v.zz)+(P?0:Math.abs(Math.sin(v.t*10))*0.08),v.zz);let dr=v.face-c.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));c.g.rotation.y+=dr*Math.min(1,dt*10);
       const sw=P?0:Math.sin(v.t*10)*0.6;c.legL.rotation.x=sw;c.legR.rotation.x=-sw;c.armL.rotation.x=-sw*0.8;if(v.p.status==='待辦'){if(!P)c.armR.rotation.z=2.65+Math.sin(v.t*5)*0.25}else c.armR.rotation.x=sw*0.8;c.cup.visible=false;return}}
   if(homeTick(v,dt))return;
@@ -1602,6 +1716,8 @@ function lookEditor(host,look,onChange,opts){opts=opts||{};normLook(look);if(!lo
     if(PANTS_OUT[look.outfit])h+=cpRow('pants','褲子顏色',look.pants,PANTS_C);
     h+='<div class="opt-row"><div class="ol">配件（可以同時戴好幾個）</div><div class="opts">'+ACCS.map(([k,l])=>'<button type="button" class="opt" data-acc="'+k+'" aria-pressed="'+look.accs.includes(k)+'">'+l+'</button>').join('')+'</div></div>';
     look.accs.forEach(k=>{const a=ACCS.find(x=>x[0]===k);if(a)h+=cpRow('ac.'+k,a[1]+' 顏色',look.ac[k]||a[2])});
+    h+='<div class="opt-row"><div class="ol">✋ 手上拿的東西（左右手各一樣）</div><div class="holdrow"><label>🫲 左手<select data-hold="L" aria-label="左手拿的東西">'+holdOptions(look.hL||'')+'</select></label><label>🫱 右手<select data-hold="R" aria-label="右手拿的東西">'+holdOptions(look.hR||'')+'</select></label></div></div>';
+    ['L','R'].forEach(k=>{const key=look['h'+k];if(key&&HOLD[key])h+=cpRow('h'+k+'c',(k==='L'?'左手':'右手')+'「'+HOLD[key][1]+'」顏色',look['h'+k+'c']||HOLD[key][2])});
     h+='<button type="button" class="btn" data-dice="1">🎲 隨機長相</button>'+(opts.resident&&look.outfit==='uniform'?'<div class="hint">「島制服」顏色跟著他住的小島（像部門制服）；想自己配色就選其他衣服。</div>':'')+'</div></div>';
     host.innerHTML=h;pvMount(host.querySelector('#pvBox'),pvLook())};
   const upd=()=>{pvSet(pvLook());onChange&&onChange(look)};
@@ -1610,6 +1726,7 @@ function lookEditor(host,look,onChange,opts){opts=opts||{};normLook(look);if(!lo
     if(d.dice){const r=randomLook();['skin','hair','style','shirt','pants','accs'].forEach(k=>look[k]=r[k]);look.ac={};draw();upd();return}
     if(d.lk){if(d.lk==='kid')look.kid=d.v==='1';else if(d.lk==='blush')look.blush=d.v==='1';else look[d.lk]=d.v;draw();upd();return}
     if(d.acc){const k=d.acc,i=look.accs.indexOf(k);if(i>=0)look.accs.splice(i,1);else{look.accs.push(k);const pair={apron:'apronPT',apronPT:'apron',glasses:'silver',silver:'glasses'}[k];if(pair)look.accs=look.accs.filter(x=>x!==pair)}draw();upd()}};
+  host.onchange=e=>{const k=e.target.dataset.hold;if(!k)return;look['h'+k]=e.target.value;delete look['h'+k+'c'];draw();upd()};
   host.oninput=e=>{if(e.target.dataset.lh){look.height=+e.target.value/100;const b=host.querySelector('[data-lhv]');if(b)b.textContent=cmOf(look)+' cm';upd();return}cpInput(host,e.target,look,upd)};
   draw()}
 
@@ -1620,8 +1737,8 @@ let itemObjs={},selItem=null,selR=1,drag=null,buildCat='kitchen',saveT=0;
 function saveSoon(){clearTimeout(saveT);saveT=setTimeout(save,400)}
 function placeItem(g,it){g.position.set(it.x,TOP+(it.y||0),it.z);g.rotation.y=it.ry||0;g.scale.setScalar(it.s||1);obstDirty=true}
 /* 不穿過家具：每個大型物件有一個「腳印」方框，人物和動物走路會繞開 */
-let OBST=[],obstDirty=true;const BODY=0.3,NOCOLL={balcony:1},TRUNK={tree:1,ptree:1,pine:1};
-function footprint(g,type){if(NOCOLL[type]||(ITEMS[type]&&ITEMS[type].small))return null;if(TRUNK[type])return {cx:0,cz:0,hx:0.35,hz:0.35};
+let OBST=[],obstDirty=true;const BODY=0.42,NOCOLL={balcony:1},TRUNK={tree:1,ptree:1,pine:1};
+function footprint(g,type){if(NOCOLL[type])return null;if(TRUNK[type])return {cx:0,cz:0,hx:0.35,hz:0.35};
   const b=new THREE.Box3().setFromObject(g);if(b.isEmpty())return null;return {cx:(b.min.x+b.max.x)/2,cz:(b.min.z+b.max.z)/2,hx:(b.max.x-b.min.x)/2,hz:(b.max.z-b.min.z)/2}}
 function obstRebuild(){OBST=[];for(const id in itemObjs){const fp=itemObjs[id].userData.fp;if(!fp)continue;const it=S.items.find(x=>x.id===id);if(!it||(it.y||0)>0.6)continue;const k=it.s||1,ry=it.ry||0;
   OBST.push({id,x:it.x,z:it.z,c:Math.cos(ry),s:Math.sin(ry),cx:fp.cx*k,cz:fp.cz*k,hx:fp.hx*k,hz:fp.hz*k})}obstDirty=false}
@@ -1631,18 +1748,29 @@ function segFree(x0,z0,x1,z1,ign){const d=Math.hypot(x1-x0,z1-z0),n=Math.max(1,M
 function cornersOf(o,m){return [[-1,-1],[1,-1],[1,1],[-1,1]].map(([sx,sz])=>{const lx=o.cx+sx*(o.hx+m),lz=o.cz+sz*(o.hz+m);return {x:o.x+lx*o.c+lz*o.s,z:o.z-lx*o.s+lz*o.c}})}
 /* 往目標走一步：前面擋到家具，就先走到那件家具最近、走得到的「角落」，再繼續往目標走（長的家具會一個角一個角繞過去） */
 function step2(o,kx,kz,tx,tz,dist,ign){const x=o[kx],z=o[kz],key=tx.toFixed(2)+','+tz.toFixed(2);
-  if(o._tgt!==key){o._tgt=key;o._via=null;o._np=0;o._best=1e9}
+  if(o._tgt!==key){o._tgt=key;o._via=null;o._np=0;o._best=1e9;o._stuck=false}
+  if(o._stuck)return null;
+  /* 被家具壓到（例如剛把家具擺在他身上）：沿著最近的一邊被推出去，不會穿過去 */
+  const ins=blockedAt(x,z,BODY*0.6,ign);
+  if(ins){const dx0=x-ins.x,dz0=z-ins.z,lx=dx0*ins.c-dz0*ins.s-ins.cx,lz=dx0*ins.s+dz0*ins.c-ins.cz;let ex=0,ez=0;if(ins.hx-Math.abs(lx)<ins.hz-Math.abs(lz))ex=Math.sign(lx)||1;else ez=Math.sign(lz)||1;
+    const wx=ex*ins.c+ez*ins.s,wz=-ex*ins.s+ez*ins.c,m=Math.max(dist,0.04);o[kx]=x+wx*m;o[kz]=z+wz*m;return Math.atan2(wx,wz)}
   if(o._via&&Math.hypot(o._via.x-x,o._via.z-z)<0.2)o._via=null;
   const gx=o._via?o._via.x:tx,gz=o._via?o._via.z:tz,dx=gx-x,dz=gz-z,d=Math.hypot(dx,dz);if(d<1e-6)return null;const s=Math.min(d,dist),a0=Math.atan2(dx,dz);
-  const D=Math.hypot(tx-x,tz-z);if(D<o._best-0.05){o._best=D;o._np=0}else o._np+=s;if(o._np>7){o._ghost=1.6;o._np=0;o._via=null}
-  if(o._ghost>0||blockedAt(x,z,BODY*0.5,ign)){o._ghost=(o._ghost||0)-s;const e=Math.hypot(tx-x,tz-z)||1;o[kx]=x+(tx-x)/e*s;o[kz]=z+(tz-z)/e*s;return Math.atan2(tx-x,tz-z)}
+  /* 繞了很久還是過不去（目標被家具圍住）：停在原地、換別的目標，絕對不穿過家具 */
+  const D=Math.hypot(tx-x,tz-z);if(D<o._best-0.05){o._best=D;o._np=0}else o._np+=s;if(o._np>7){o._stuck=true;o._via=null;return null}
   const nx=x+dx/d*s,nz=z+dz/d*s,ob=blockedAt(nx,nz,BODY,ign);
   if(!ob){o[kx]=nx;o[kz]=nz;return a0}
-  const here=isleAt(x,z);const cs=cornersOf(ob,BODY+0.3).filter(c=>!here||isleAt(c.x,c.z)).map(c=>({c,cost:Math.hypot(c.x-x,c.z-z)+Math.hypot(tx-c.x,tz-c.z)})).sort((a,b)=>a.cost-b.cost);
+  const here=isleAt(x,z);const cs=cornersOf(ob,BODY+0.25).filter(c=>!here||isleAt(c.x,c.z)).map(c=>({c,cost:Math.hypot(c.x-x,c.z-z)+Math.hypot(tx-c.x,tz-c.z)})).sort((a,b)=>a.cost-b.cost);
   for(const k of cs){if(Math.hypot(k.c.x-x,k.c.z-z)>0.2&&segFree(x,z,k.c.x,k.c.z,ign)){o._via=k.c;const e=Math.hypot(k.c.x-x,k.c.z-z),m=Math.min(e,s);o[kx]=x+(k.c.x-x)/e*m;o[kz]=z+(k.c.z-z)/e*m;return Math.atan2(k.c.x-x,k.c.z-z)}}
   for(const a of [0.4,0.8,1.2,1.57,1.95,2.4])for(const da of [a,-a]){const ang=a0+da,qx=x+Math.sin(ang)*s,qz=z+Math.cos(ang)*s;if(!blockedAt(qx,qz,BODY,ign)){o[kx]=qx;o[kz]=qz;return ang}}
   o._np+=s;return null}
-function pickFree(r){for(let i=0;i<8;i++){const x=r.x0+Math.random()*(r.x1-r.x0),z=r.z0+Math.random()*(r.z1-r.z0);if(!blockedAt(x,z,BODY+0.2,null))return {x,z}}return {x:r.x0+Math.random()*(r.x1-r.x0),z:r.z0+Math.random()*(r.z1-r.z0)}}
+/* 人和人、人和動物也不會疊在一起：靠太近就互相輕輕推開（坐著／躺著的人不會被推動） */
+function separate(){const E=[];chars.forEach(v=>{if(v.inside)return;E.push({o:v,kz:'zz',r:0.4*(v.c.g.scale.x||1),fix:!!(v.R&&v.arrived)})});if(me)E.push({o:meState,kz:'z',r:0.4,fix:false});
+  pets.forEach(v=>{if(!v.fly)E.push({o:v,kz:'z',r:v.kind==='dog'?0.32:0.26,fix:false})});
+  const mv=(e,dx,dz)=>{const x=e.o.x+dx,z=e.o[e.kz]+dz;if(blockedAt(x,z,BODY*0.8,null))return;if(!isleAt(x,z)&&isleAt(e.o.x,e.o[e.kz]))return;e.o.x=x;e.o[e.kz]=z};
+  for(let i=0;i<E.length;i++)for(let j=i+1;j<E.length;j++){const a=E[i],b=E[j];if(a.fix&&b.fix)continue;let dx=b.o.x-a.o.x,dz=b.o[b.kz]-a.o[a.kz],d=Math.hypot(dx,dz);const m=a.r+b.r;if(d>=m)continue;if(d<1e-4){dx=Math.random()-0.5;dz=Math.random()-0.5;d=Math.hypot(dx,dz)}
+    const ov=m-d,nx=dx/d,nz=dz/d,wa=a.fix?0:b.fix?1:0.5;mv(a,-nx*ov*wa,-nz*ov*wa);mv(b,nx*ov*(1-wa),nz*ov*(1-wa))}}
+function pickFree(r){for(let i=0;i<24;i++){const x=r.x0+Math.random()*(r.x1-r.x0),z=r.z0+Math.random()*(r.z1-r.z0);if(!blockedAt(x,z,BODY+0.2,null))return {x,z}}return {x:r.x0+Math.random()*(r.x1-r.x0),z:r.z0+Math.random()*(r.z1-r.z0)}}
 function addItemObj(it){if(!ITEMS[it.type])return;const g=makeItem(it);g.userData.item=it.id;g.userData.fp=footprint(g,it.type);placeItem(g,it);world.add(g);itemObjs[it.id]=g}
 function buildItems(){itemObjs={};obstDirty=true;S.items.forEach(addItemObj)}
 function rebuildItem(it){const o=itemObjs[it.id];if(o){world.remove(o);disposeObj(o)}addItemObj(it);if(selItem===it.id)measureSel()}
@@ -1892,6 +2020,7 @@ function render(){
       sliderRow('方向角度','iry',0,359,1,degOf(it),degOf(it)+'°')+'<div class="tabs hq"><button type="button" class="tab" data-rot="-45">↺ 45°</button><button type="button" class="tab" data-rot="45">↻ 45°</button><button type="button" class="tab" data-rot="180">轉 180°</button></div>'+
       sliderRow('大小','is',0.5,2,0.05,it.s||1,(it.s||1).toFixed(2)+'×')+'</div></div>';
     if(it.type==='sign')h+='<div class="fld"><label for="fSign">招牌文字（空白＝島的名字）</label><input type="text" id="fSign" maxlength="14" value="'+esc(it.text||'')+'" placeholder="'+esc(signText(Object.assign({},it,{text:''})))+'"></div>';
+    if(D.opts)h+='<div class="grp">🔧 設定</div>'+D.opts.map(([k,l,list,dv])=>tabRow(l,k,list,(it.o&&it.o[k])||dv,'iopt')).join('');
     h+='<div class="grp">🎨 顏色</div>'+D.cols.map(([k,l,dv])=>cpRow(k,l,(it.c&&it.c[k])||dv)).join('');
     h+='<div class="btnrow"><button class="btn" type="button" data-backbuild="1">⬅️ 回物件清單</button><button class="btn" type="button" data-dupitem="1">📄 複製一個</button><button class="btn red" type="button" data-ask="delitem">🗑️ 收起來</button></div>';
     if(confirmKey==='delitem')h+='<div class="confirm"><span>確定把「'+D.n+'」收起來嗎？</span><button class="btn" data-ask="">取消</button><button class="btn redfill" data-delitem="1">確定</button></div>'}
@@ -1950,6 +2079,7 @@ function floorRow(){if(arg==='hub')return cpRow('floor','🎨 地板顏色（調
 sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=checkbox]');if(!b)return;const d=b.dataset;
   if(mode==='item'){const it=S.items.find(x=>x.id===arg);if(it){if(!it.c)it.c={};const o=itemObjs[it.id];
     if(cpClick(sBody,b,it.c,()=>{rebuildItem(it);saveSoon()}))return;
+    if(d.iopt){it.o=Object.assign({},it.o,{[d.iopt]:d.v});rebuildItem(it);obstDirty=true;saveSoon();render();return}
     if((d.nudge||d.rot||d.hset!=null||d.delitem||(d.ask==='delitem'))&&isFixed(it))return;
     if(d.nudge){nudgeItem(it,d.nudge);return}
     if(d.rot){it.ry=(it.ry||0)+(+d.rot)*Math.PI/180;if(o)placeItem(o,it);syncSliders(it);saveSoon();return}
@@ -2137,11 +2267,11 @@ function loop(){const dt=Math.min(0.05,clock.getDelta());
   simHour=S.ui.timeMode==='live'?localHour():S.ui.hour;applySky(simHour);document.getElementById('railClock').textContent=fmtHour(simHour);
   if(mode==='time'){const b=document.getElementById('tBig');if(b)b.textContent=fmtHour(simHour);const sl=document.getElementById('tSlider');if(sl&&document.activeElement!==sl)sl.value=simHour.toFixed(2)}
   dayCheck-=dt;if(dayCheck<=0){dayCheck=30;rollDay()}
-  chars.forEach(v=>animChar(v,dt));pets.forEach(v=>animPet(v,dt));
+  chars.forEach(v=>animChar(v,dt));pets.forEach(v=>animPet(v,dt));separate();
   /* 島主 */
   if(me){meState.t+=dt;let wp=(meState.path&&meState.path.length)?meState.path[0]:null;
     if(wp&&meState.path.length>1&&Math.hypot(wp.x-meState.x,wp.z-meState.z)<0.15){meState.path.shift();wp=meState.path[0]}
-    let walking=false;if(wp){const dx=wp.x-meState.x,dz=wp.z-meState.z,d=Math.hypot(dx,dz);walking=d>0.15;if(walking){const a=step2(meState,'x','z',wp.x,wp.z,3.2*dt,null);if(a!=null)meState.face=a}else meState.path=null}
+    let walking=false;if(wp){const dx=wp.x-meState.x,dz=wp.z-meState.z,d=Math.hypot(dx,dz);walking=d>0.15;if(walking){const a=step2(meState,'x','z',wp.x,wp.z,3.2*dt,null);if(a!=null)meState.face=a;else if(meState._stuck){meState.path=null;walking=false}}else meState.path=null}
     if(!walking)meMark.material.opacity=Math.max(0,meMark.material.opacity-dt*1.5);
     me.g.position.set(meState.x,TOP+0.17+bridgeY(meState.x,meState.z)+(walking?Math.abs(Math.sin(meState.t*10))*0.08:0),meState.z);
     let dr=meState.face-me.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));me.g.rotation.y+=dr*Math.min(1,dt*10);
