@@ -194,6 +194,8 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
 .sblk{border:1px solid var(--line);border-radius:14px;background:#fff;padding:10px;margin:0 0 8px}.sblk .trow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.sblk input[type=time]{font:inherit;font-size:16px;border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:#fffdf9;color:var(--ink)}
 .ssel{width:100%;font:inherit;font-size:16px;border:1px solid var(--line);border-radius:10px;padding:8px;background:#fffdf9;color:var(--ink);margin-top:8px}
 .tag .act{margin-left:2px}
+.chip.warn{background:#e8673a;color:#fff;border-color:#c94f25}
+.pickbar{position:absolute;top:calc(env(safe-area-inset-top,0px) + 74px);left:12px;right:86px;margin:0 auto;max-width:460px;display:flex;align-items:center;gap:8px;background:#e8673a;color:#fff;border-radius:16px;padding:8px 8px 8px 14px;z-index:8;font-weight:700;box-shadow:0 6px 20px #0004}.pickbar span{flex:1}
 .steps2{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:13.5px;margin:0 0 8px}.steps2 ol{margin:6px 0 4px;padding-left:20px}.steps2 li{margin:3px 0}
 .warn2{background:#fff4d6;border:1.5px solid #f2b705;border-radius:12px;padding:8px 10px;font-size:12.5px;margin:0 0 8px}
 /* 擺設：選取框與鎖頭 */
@@ -331,6 +333,7 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
   <div class="selbox" id="selBox" hidden><button type="button" class="lockbtn" id="lockBtn" aria-label="鎖定這個物件" aria-pressed="false">🔓</button></div>
   <div class="upbar" id="upBar" role="status" hidden><span id="upText"></span><button type="button" class="btn on" id="upNow">立即更新</button><button type="button" class="btn" id="upLater">稍後</button></div>
   <div class="upnote" id="upNote" role="dialog" aria-label="更新完成" hidden></div>
+  <div class="pickbar" id="pickBar" hidden><span>📍 點一下島上的位置</span><button type="button" class="btn" id="pickCancel">取消</button></div>
   <div class="nask" id="notifAsk" role="dialog" aria-label="更新通知" hidden><div class="ncard"><div class="nbell" aria-hidden="true">🔔</div><b>要開啟「新版本通知」嗎？</b>
     <p>小島有新功能時，用手機通知告訴你，不會錯過。<br><span class="meta">只會在有新版本時通知，不會亂發。之後也可以在「設定」關掉。</span></p>
     <button type="button" class="go" id="notifYes">🔔 開啟更新通知</button><button type="button" class="go ghost" id="notifNo">先不要</button></div></div>
@@ -346,8 +349,8 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.1.1';
-const APP_NOTES=['App 版可以開「新版本通知」了：第一次會先問你要不要開，之後可在 設定 →「🔔 新版本通知」開關','島民可以排作息了：點島民 →「🗓️ 作息與工作」，設定幾點到幾點散步（或去各島串門子）、待在哪裡、在哪裡做什麼工作','新增 32 種職業和 21 種工作動作：拉花、送餐、炒菜、切菜、挖土、拔雜草、倒土、澆水、掃地…（可複選，輪流做）','可以安裝成 App 了：設定 →「📲 安裝成 App」，有桌面圖示、全螢幕、沒網路也能開','建島畫面多了「📥 我有備份，把島搬過來」，App 版可以直接匯入瀏覽器的島','新增物件：冰滴咖啡組（木盤、湯匙、紅糖、牛奶、冰磚山形杯、木腰帶玻璃壺），在「咖啡・裝飾」','匯出島嶼：可以下載備份檔、分享到 LINE／檔案，或一鍵複製（複製不了會自動幫你全選）','匯入島嶼：可以選備份檔或貼上文字，先預覽內容再匯入，匯入後還能還原','新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
+const APP_VERSION='1.1.2';
+const APP_NOTES=['修正：島民會在整座島上走來走去；暫停中時按鈕會變橘色提醒，指揮島民走路會自動取消暫停','作息更細：可以設到幾點幾分、選定點／小範圍／大範圍／整座島、在地圖上點位置','新增「🏠 回家」（走回小屋進門休息）和「沒排到的時間到每座島串門子」','App 版可以開「新版本通知」了：第一次會先問你要不要開，之後可在 設定 →「🔔 新版本通知」開關','島民可以排作息了：點島民 →「🗓️ 作息與工作」，設定幾點到幾點散步（或去各島串門子）、待在哪裡、在哪裡做什麼工作','新增 32 種職業和 21 種工作動作：拉花、送餐、炒菜、切菜、挖土、拔雜草、倒土、澆水、掃地…（可複選，輪流做）','可以安裝成 App 了：設定 →「📲 安裝成 App」，有桌面圖示、全螢幕、沒網路也能開','建島畫面多了「📥 我有備份，把島搬過來」，App 版可以直接匯入瀏覽器的島','新增物件：冰滴咖啡組（木盤、湯匙、紅糖、牛奶、冰磚山形杯、木腰帶玻璃壺），在「咖啡・裝飾」','匯出島嶼：可以下載備份檔、分享到 LINE／檔案，或一鍵複製（複製不了會自動幫你全選）','匯入島嶼：可以選備份檔或貼上文字，先預覽內容再匯入，匯入後還能還原','新增物件：半自動熱吧機（會冒蒸氣）、收銀台（擺設 →「咖啡・裝飾」）','新增的島民不會再自動配一張桌子，大家都能走來走去','點島民後再點地板，他就會走過去，之後在那附近活動','修正：鎖定的物件會固定不動，手指拖曳只會轉畫面，不會再把它拖走（要移動請用方向鍵和滑桿）','擺設：選取物件後按右下角 🔓 就能鎖定，畫面會繞著它轉、跟著它走','擺設清單依「物件目前在哪座島」分組，可以收合、搜尋','從清單點物件會飛過去並選取，也能直接在清單裡鎖定','有新版本時會提醒你重新整理（資料會先自動存檔）'];
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -1037,7 +1040,7 @@ function floorPal(f){return [shade(f,0.03),f,shade(f,0.07),shade(f,-0.03)]}
    ========================================================= */
 let chars=[],byId={};
 function homeRect(p){if(p.home)return {x0:p.home.x-2.2,x1:p.home.x+2.2,z0:p.home.z-2.2,z1:p.home.z+2.2};return wanderRect(p.isle)}
-function wanderRect(id){const c=isleCenter(id);if(id==='hub'||!isleById(id))return {x0:-6.5,x1:6.5,z0:1.6,z1:7.2};return {x0:c.x-6,x1:c.x+6,z0:c.z+5.2,z1:c.z+7.3}}
+function wanderRect(id){const c=isleCenter(id);if(id==='hub'||!isleById(id))return {x0:-6.5,x1:6.5,z0:1.6,z1:7.2};return {x0:c.x-6.5,x1:c.x+6.5,z0:c.z-2.5,z1:c.z+7}}
 function spawnAll(){chars.forEach(v=>{if(v.badge)v.badge.remove();if(v.tagWrap)v.tagWrap.remove()});chars=[];byId={};S.people.forEach((p,i)=>spawn(p,i))}
 function spawn(p,i){
   if(p.isle!=='hub'&&!isleById(p.isle))p.isle='hub';
@@ -1133,19 +1136,24 @@ const JOB_LIST=[
   ['barista','咖啡師','☕',['latte','serve','wipe'],['espresso','coffee','counter']],['farmer','農夫','👩‍🌾',['dig','water','weed'],['garden','coop']],
   ['kmy_front','金茂宜外場','☕',['latte','serve','wipe','talk'],['espresso','coffee','register','counter']],['kmy_back','金茂宜內場','🍳',['stirfry','chop','wipe'],['stove','gas','island','sink']]];
 const JOBS={};JOB_LIST.forEach(([id,n,e,acts,places])=>JOBS[id]={id,n,e,acts,places});
-const SCHED_TYPES=[['wander','🚶 散步'],['stay','📍 待在'],['work','🛠️ 工作']];
+const SCHED_TYPES=[['wander','🚶 散步'],['stay','📍 待在'],['work','🛠️ 工作'],['home','🏠 回家']];
+const RANGES=[['spot','定點（就站在那一點）'],['near','附近一小圈（約 2 公尺）'],['wide','附近一大圈（約 5 公尺）'],['isle','整座島']];
+function rangeRect(pl,range){if(range==='isle')return isleArea(isleAt(pl.x,pl.z)||'hub');const r=range==='wide'?5:range==='near'?2:0.3;return {x0:pl.x-r,x1:pl.x+r,z0:pl.z-r,z1:pl.z+r}}
+function houseOf(p){if(p.homeItem==='none')return null;if(p.homeItem){const it=S.items.find(x=>x.id===p.homeItem&&x.type==='house');if(it)return it}return S.items.find(it=>it.type==='house'&&(itemIsle(it)||'hub')===p.isle)||null}
+function houseLabel(p){const h=houseOf(p);return h?'小屋（'+itemIsleName(h)+'）':'自己的位置'}
 function hm(s){const m=/^(\d{1,2}):(\d{2})/.exec(s||'');return m?(+m[1])+(+m[2])/60:0}
 function schedNow(p){if(!Array.isArray(p.sched))return null;const h=simHour;for(const b of p.sched){const f=hm(b.from),t=hm(b.to);if(f===t)continue;if(f<t?(h>=f&&h<t):(h>=f||h<t))return b}return null}
-function isleArea(id){if(id==='hub'||!isleById(id))return {x0:-6.5,x1:6.5,z0:1.6,z1:7.2};const c=isleCenter(id);return {x0:c.x-6,x1:c.x+6,z0:c.z-1.5,z1:c.z+7}}
+function isleArea(id){if(id==='hub'||!isleById(id))return {x0:-6.5,x1:6.5,z0:1.6,z1:7.2};const c=isleCenter(id);return {x0:c.x-6.5,x1:c.x+6.5,z0:c.z-2.5,z1:c.z+7}}
 function placePoint(p,place){place=place||'home';
+  if(place.startsWith('pt:')){const q=place.slice(3).split(',').map(Number);if(isFinite(q[0])&&isFinite(q[1]))return {x:q[0],z:q[1],face:null}}
   if(place.startsWith('item:')){const it=S.items.find(x=>x.id===place.slice(5));if(it){const k=it.s||1,d=(['bed','sofa','balcony','island','counter','register','house'].includes(it.type)?1.5:1.0)*k,ry=it.ry||0;return {x:it.x+Math.sin(ry)*d,z:it.z+Math.cos(ry)*d,face:ry+Math.PI}}}
   if(place.startsWith('isle:')){const r=isleArea(place.slice(5));return {x:(r.x0+r.x1)/2+(Math.random()-0.5)*4,z:(r.z0+r.z1)/2+(Math.random()-0.5)*2,face:null}}
   const r=homeRect(p);return {x:(r.x0+r.x1)/2,z:(r.z0+r.z1)/2,face:null}}
-function placeLabel(place){if(!place||place==='home')return '自己的位置';if(place.startsWith('isle:'))return isleName(place.slice(5));if(place.startsWith('item:')){const it=S.items.find(x=>x.id===place.slice(5));return it&&ITEMS[it.type]?ITEMS[it.type].n+'（'+itemIsleName(it)+'）':'（物件不見了）'}return ''}
+function placeLabel(place){if(!place||place==='home')return '自己的位置';if(place.startsWith('pt:')){const q=place.slice(3).split(',').map(Number),k=isleAt(q[0],q[1]);return '地圖上點的位置（'+(k?isleName(k):'海上')+'）'}if(place.startsWith('isle:'))return isleName(place.slice(5));if(place.startsWith('item:')){const it=S.items.find(x=>x.id===place.slice(5));return it&&ITEMS[it.type]?ITEMS[it.type].n+'（'+itemIsleName(it)+'）':'（物件不見了）'}return ''}
 function jobPlace(p){const J=JOBS[p.job];if(J&&J.places.length){const mine=S.items.filter(it=>J.places.includes(it.type));const own=mine.find(it=>(itemIsle(it)||'hub')===p.isle)||mine[0];if(own)return 'item:'+own.id}return 'isle:'+p.isle}
 function autoDay(p){const J=JOBS[p.job],acts=J?J.acts.slice():['talk'],pl=jobPlace(p);
-  return [{id:uid(),from:'08:00',to:'12:00',type:'work',place:pl,tasks:acts},{id:uid(),from:'12:00',to:'13:00',type:'stay',place:'home'},
-    {id:uid(),from:'13:00',to:'18:00',type:'work',place:pl,tasks:acts},{id:uid(),from:'18:00',to:'21:00',type:'wander',scope:'visit'},{id:uid(),from:'21:00',to:'08:00',type:'stay',place:'home'}]}
+  return [{id:uid(),from:'08:00',to:'12:00',type:'work',place:pl,tasks:acts},{id:uid(),from:'12:00',to:'13:00',type:'stay',place:'home',range:'near'},
+    {id:uid(),from:'13:00',to:'18:00',type:'work',place:pl,tasks:acts},{id:uid(),from:'18:00',to:'21:00',type:'wander',scope:'visit'},{id:uid(),from:'21:00',to:'08:00',type:'home'}]}
 function goTo(v,x,z){const path=routeTo(x,z,v.x,v.zz);if(path)v.path=path}
 function resetPose(c){c.legL.rotation.x=c.legR.rotation.x=0;c.armL.rotation.set(0,0,0);c.armR.rotation.set(0,0,0);c.head.rotation.set(0,0,0);c.cup.visible=false}
 function setActTag(v,e){const s=v.tag&&v.tag.querySelector('.act');if(s)s.textContent=e?' '+e:''}
@@ -1155,20 +1163,29 @@ function actGroups(c,name){c.acts=c.acts||{};if(c.acts[name])return c.acts[name]
   Object.values(P).forEach(g=>g.traverse(m=>{if(m.isMesh){m.castShadow=!m.userData.noShadow}}));c.acts[name]=P;return P}
 function hideActs(c){if(c.acts)Object.values(c.acts).forEach(P=>Object.values(P).forEach(g=>g.visible=false))}
 function showAct(v,name){const c=v.c;hideActs(c);const P=actGroups(c,name);Object.values(P).forEach(g=>g.visible=true);setActTag(v,ACTIONS[name].e)}
-function endWork(v){hideActs(v.c);resetPose(v.c);v.c.g.rotation.x=0;setActTag(v,'')}
+function endWork(v){if(v.inside){v.inside=false;v.c.g.visible=true}hideActs(v.c);resetPose(v.c);v.c.g.rotation.x=0;setActTag(v,'')}
 function applyBlock(v,b){endWork(v);v.sched=null;v.block=b||null;
-  if(!b){v.rect=homeRect(v.p);if(v.p.rest&&!v.R){v.R={id:v.p.rest.id,i:v.p.rest.i,auto:false};v.arrived=false}return}
+  if(!b){if(v.p.freeMode==='visit'){const r=isleArea(isleAt(v.x,v.zz)||v.p.isle);v.sched={type:'wander',rect:r,visit:true,free:true};v.rect=r}else v.rect=homeRect(v.p);
+    if(v.p.rest&&!v.R){v.R={id:v.p.rest.id,i:v.p.rest.i,auto:false};v.arrived=false}return}
   if(v.R)standUp(v);
-  if(b.type==='wander'){const isle=b.scope==='visit'?(isleAt(v.x,v.zz)||v.p.isle):(!b.scope||b.scope==='isle')?v.p.isle:b.scope;const r=isleArea(isleById(isle)?isle:'hub');
-    v.sched={type:'wander',rect:r,visit:b.scope==='visit'};v.rect=r;if((isleAt(v.x,v.zz)||'hub')!==(isleById(isle)?isle:'hub'))goTo(v,(r.x0+r.x1)/2,(r.z0+r.z1)/2);return}
-  const pl=placePoint(v.p,b.place);
-  if(b.type==='stay'){const r={x0:pl.x-1.2,x1:pl.x+1.2,z0:pl.z-1.2,z1:pl.z+1.2};v.sched={type:'stay',rect:r};v.rect=r;goTo(v,pl.x,pl.z);return}
+  if(b.type==='home'){const h=houseOf(v.p);if(h){const d=placePoint(v.p,'item:'+h.id);v.sched={type:'home',dx:d.x,dz:d.z,face:d.face};goTo(v,d.x,d.z);return}
+    const pl=placePoint(v.p,'home'),r=rangeRect(pl,'near');v.sched={type:'stay',rect:r,home:true};v.rect=r;goTo(v,pl.x,pl.z);return}
+  if(b.type==='wander'){if(b.scope==='place'){const pl=placePoint(v.p,b.place),r=rangeRect(pl,b.range||'near');v.sched={type:'wander',rect:r};v.rect=r;goTo(v,pl.x,pl.z);return}
+    const isle=b.scope==='visit'?(isleAt(v.x,v.zz)||v.p.isle):(!b.scope||b.scope==='isle')?v.p.isle:b.scope;const k=isleById(isle)?isle:'hub',r=isleArea(k);
+    v.sched={type:'wander',rect:r,visit:b.scope==='visit'};v.rect=r;if((isleAt(v.x,v.zz)||'hub')!==k)goTo(v,(r.x0+r.x1)/2,(r.z0+r.z1)/2);return}
+  const pl=placePoint(v.p,b.place),rg=b.range||(b.type==='work'?'spot':'near');
+  if(b.type==='stay'){const r=rangeRect(pl,rg);v.sched={type:'stay',rect:r};v.rect=r;goTo(v,pl.x,pl.z);return}
   const tasks=((b.tasks&&b.tasks.length)?b.tasks:(JOBS[v.p.job]?JOBS[v.p.job].acts:['talk'])).filter(a=>ACTIONS[a]);
-  v.sched={type:'work',ax:pl.x,az:pl.z,face:pl.face,tasks:tasks.length?tasks:['talk'],ti:-1,until:0};goTo(v,pl.x,pl.z)}
+  v.sched={type:'work',ax:pl.x,az:pl.z,face:pl.face,tasks:tasks.length?tasks:['talk'],ti:-1,until:0,rr:rg==='spot'?null:rangeRect(pl,rg)};goTo(v,pl.x,pl.z)}
+function homeTick(v,dt){const w=v.sched,c=v.c,P=S.ui.paused;if(!w||w.type!=='home'||v.path)return false;if(v.inside)return true;
+  const dx=w.dx-v.x,dz=w.dz-v.zz,d=Math.hypot(dx,dz);
+  if(d>0.15){resetPose(c);if(!P){const st=Math.min(d,1.6*dt);v.x+=dx/d*st;v.zz+=dz/d*st;v.face=Math.atan2(dx,dz)}let dr=v.face-c.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));c.g.rotation.y+=dr*Math.min(1,dt*8);
+    const sw=P?0:Math.sin(v.t*9)*0.6;c.legL.rotation.x=sw;c.legR.rotation.x=-sw;c.armL.rotation.x=-sw*0.8;c.armR.rotation.x=sw*0.8;c.g.position.set(v.x,TOP+0.17+bridgeY(v.x,v.zz)+(P?0:Math.abs(Math.sin(v.t*9))*0.06),v.zz);return true}
+  v.inside=true;c.g.visible=false;setActTag(v,'🏠');return true}
 function visitNext(v){const here=isleAt(v.x,v.zz)||'hub',ids=['hub'].concat(S.isles.map(i=>i.id)).filter(k=>k!==here);if(!ids.length)return;const k=pick(ids),r=isleArea(k);
   v.sched.rect=r;v.rect=r;goTo(v,r.x0+Math.random()*(r.x1-r.x0),r.z0+Math.random()*(r.z1-r.z0))}
 function workTick(v,dt){const w=v.sched,c=v.c,P=S.ui.paused;if(!w||w.type!=='work'||v.path)return false;
-  if(w.ti<0||v.t>=w.until){w.ti=(w.ti+1)%w.tasks.length;w.cur=w.tasks[w.ti];w.until=v.t+9+Math.random()*7;w.t0=v.t;w.leg=0;w.bx=null;showAct(v,w.cur)}
+  if(w.ti<0||v.t>=w.until){if(w.rr&&w.ti>=0){const k0=isleAt(w.ax,w.az);for(let i=0;i<8;i++){const x=w.rr.x0+Math.random()*(w.rr.x1-w.rr.x0),z=w.rr.z0+Math.random()*(w.rr.z1-w.rr.z0);if(isleAt(x,z)===k0){w.ax=x;w.az=z;w.face=null;break}}}w.ti=(w.ti+1)%w.tasks.length;w.cur=w.tasks[w.ti];w.until=v.t+9+Math.random()*7;w.t0=v.t;w.leg=0;w.bx=null;showAct(v,w.cur)}
   const A=ACTIONS[w.cur],G=actGroups(c,w.cur);resetPose(c);c.g.rotation.order='XYZ';c.g.rotation.x=0;let walking=false;
   if(A.walk){if(w.bx==null){let tries=0;do{const a=Math.random()*Math.PI*2;w.bx=w.ax+Math.cos(a)*2.6;w.bz=w.az+Math.sin(a)*2.6;tries++}while(tries<8&&isleAt(w.bx,w.bz)!==isleAt(w.ax,w.az));if(isleAt(w.bx,w.bz)!==isleAt(w.ax,w.az)){w.bx=w.ax;w.bz=w.az}}
     const tx=w.leg?w.bx:w.ax,tz=w.leg?w.bz:w.az,dx=tx-v.x,dz=tz-v.zz,d=Math.hypot(dx,dz);
@@ -1178,9 +1195,11 @@ function workTick(v,dt){const w=v.sched,c=v.c,P=S.ui.paused;if(!w||w.type!=='wor
   const r=A.pose(c,P?0:v.t-w.t0,G)||{};
   if(walking){const sw=P?0:Math.sin(v.t*9)*0.5;c.legL.rotation.x=sw;c.legR.rotation.x=-sw}
   c.g.position.set(v.x,TOP+0.17+bridgeY(v.x,v.zz)+(r.y||0)+(walking&&!P?Math.abs(Math.sin(v.t*9))*0.06:0),v.zz);return true}
-function nowText(p){const b=schedNow(p),v=byId[p.id];if(!b)return '沒有排作息，自由活動中';const span='（'+b.from+'～'+b.to+'）';
-  if(b.type==='work'){const cur=v&&v.sched&&v.sched.cur;return '🛠️ 工作中'+(cur?'・'+ACTIONS[cur].e+' '+ACTIONS[cur].n:'')+'・'+placeLabel(b.place)+span}
-  if(b.type==='stay')return '📍 待在 '+placeLabel(b.place)+span;return '🚶 '+(b.scope==='visit'?'到處串門子':'在'+(b.scope&&b.scope!=='isle'?isleName(b.scope):'本島')+'散步')+span}
+function nowText(p){const b=schedNow(p),v=byId[p.id];if(!b)return p.freeMode==='visit'?'自由活動：到處串門子':'自由活動：在本島散步';const span='（'+b.from+'～'+b.to+'）',rn=k=>(RANGES.find(r=>r[0]===k)||['',''])[1].replace(/（.*）/,'');
+  if(b.type==='home')return (v&&v.inside?'🏠 在家休息':'🏠 回家中・'+houseLabel(p))+span;
+  if(b.type==='work'){const cur=v&&v.sched&&v.sched.cur;return '🛠️ 工作中'+(cur?'・'+ACTIONS[cur].e+' '+ACTIONS[cur].n:'')+'・'+placeLabel(b.place)+'（'+rn(b.range||'spot')+'）'+span}
+  if(b.type==='stay')return '📍 待在 '+placeLabel(b.place)+'（'+rn(b.range||'near')+'）'+span;
+  return '🚶 '+(b.scope==='visit'?'到處串門子':b.scope==='place'?'在'+placeLabel(b.place)+'附近散步':'在'+(b.scope&&b.scope!=='isle'?isleName(b.scope):'本島')+'散步')+span}
 
 /* 坐沙發、坐長椅、躺床：spot 是家具上的位置（家具自己的座標，臉朝 +z） */
 const REST={sofa:[{x:-0.48,z:0.1,y:0.6,k:'sit'},{x:0.48,z:0.1,y:0.6,k:'sit'}],bench:[{x:-0.5,z:0.02,y:0.61,k:'sit'},{x:0.5,z:0.02,y:0.61,k:'sit'}],bed:[{x:-0.46,z:0.95,y:0.6,k:'lie'},{x:0.46,z:0.95,y:0.6,k:'lie'}]};
@@ -1195,7 +1214,7 @@ function standUp(v){const c=v.c;c.g.rotation.order='XYZ';const ry=c.g.rotation.y
 function restPose(v,w,k){const c=v.c,sc=c.g.scale.y;c.g.rotation.order='YXZ';
   if(k==='lie'){c.g.rotation.set(-Math.PI/2,w.ry,0);c.g.position.set(w.x,TOP+w.y+0.42*sc,w.z);c.legL.rotation.x=c.legR.rotation.x=0;c.armL.rotation.set(0,0,0.12);c.armR.rotation.set(0,0,-0.12);c.head.rotation.set(0,0,0);c.eyes.forEach(e=>e.scale.set(1.3,0.22,1))}
   else{c.g.rotation.set(0,w.ry,0);c.g.position.set(w.x,TOP+w.y-0.42*sc,w.z);c.legL.rotation.x=c.legR.rotation.x=-1.45;c.armL.rotation.set(-0.35,0,0);c.armR.rotation.set(-0.35,0,0)}}
-function sendRest(pid,kind){const v=byId[pid],p=S.people.find(x=>x.id===pid);if(!v||!p)return false;
+function sendRest(pid,kind){const v=byId[pid],p=S.people.find(x=>x.id===pid);if(!v||!p)return false;if(kind!=='up')unpause();if(v.inside){v.inside=false;v.c.g.visible=true}
   if(kind==='up'){p.rest=null;save();if(v.R)standUp(v);return true}
   const c=findRest(v,kind);if(!c.length){toast(kind==='lie'?'🛏️ 這座島上還沒有空的床，先按「擺設」放一張吧':'🛋️ 這座島上還沒有空的沙發或長椅，先按「擺設」放一張吧');return false}
   if(v.R)standUp(v);p.rest={id:c[0].it.id,i:c[0].i};save();v.R={id:p.rest.id,i:p.rest.i,auto:false};v.arrived=false;
@@ -1220,6 +1239,7 @@ function animChar(v,dt){const c=v.c,P=S.ui.paused;v.t+=dt;
     else{if(!P){const st=Math.min(d,2.4*dt);v.x+=dx/d*st;v.zz+=dz/d*st;v.face=Math.atan2(dx,dz)}
       c.g.position.set(v.x,TOP+0.17+bridgeY(v.x,v.zz)+(P?0:Math.abs(Math.sin(v.t*10))*0.08),v.zz);let dr=v.face-c.g.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));c.g.rotation.y+=dr*Math.min(1,dt*10);
       const sw=P?0:Math.sin(v.t*10)*0.6;c.legL.rotation.x=sw;c.legR.rotation.x=-sw;c.armL.rotation.x=-sw*0.8;if(v.p.status==='待辦'){if(!P)c.armR.rotation.z=2.65+Math.sin(v.t*5)*0.25}else c.armR.rotation.x=sw*0.8;c.cup.visible=false;return}}
+  if(homeTick(v,dt))return;
   if(workTick(v,dt))return;
   if(v.seat){c.g.position.set(v.x,TOP+0.32,v.zz);c.g.rotation.y=0;c.legL.rotation.x=c.legR.rotation.x=-1.45;
     if(!P){const ty=Math.sin(v.t*13);c.armL.rotation.set(-0.85+ty*0.08,0,0);c.head.rotation.x=0.12;
@@ -1317,7 +1337,7 @@ let W=1,H=1;
 function place(el,pos){tmpV.copy(pos).project(camera);if(tmpV.z>1||tmpV.x<-1.2||tmpV.x>1.2||tmpV.y<-1.2||tmpV.y>1.2){el.style.display='none';return}
   el.style.display='';el.style.transform='translate3d('+((tmpV.x+1)/2*W).toFixed(1)+'px,'+((1-tmpV.y)/2*H).toFixed(1)+'px,0)'}
 function updateLabels(){const camD=camera.position.distanceTo(controls.target),near=camD<55;const zl=camD>110?'far':camD>55?'mid':'near';if(labels.dataset.zoom!==zl)labels.dataset.zoom=zl;
-  chars.forEach(v=>{const gp=v.c.g.position;const hs=v.c.g.scale.y;P3.set(gp.x,gp.y+0.2+2.55*hs,gp.z);place(v.badge,P3);
+  chars.forEach(v=>{if(v.inside){v.badge.style.display='none';v.tagWrap.style.display='none';return}const gp=v.c.g.position;const hs=v.c.g.scale.y;P3.set(gp.x,gp.y+0.2+2.55*hs,gp.z);place(v.badge,P3);
     const show=(S.ui.names&&near)||sel===v.p.id;v.tagWrap.style.visibility=show?'visible':'hidden';P3.y=gp.y+0.8+2.55*hs;place(v.tagWrap,P3);v.tag.classList.toggle('sel',sel===v.p.id)});
   pets.forEach(v=>{const gp=v.m.g.position;const show=(S.ui.names&&near)||selPet===v.p.id;v.tagWrap.style.visibility=show?'visible':'hidden';P3.set(gp.x,gp.y+petLabelY(v.kind),gp.z);place(v.tagWrap,P3);v.tag.classList.toggle('sel',selPet===v.p.id)});
   if(me){P3.set(me.g.position.x,me.g.position.y+1.0+2.55*me.g.scale.y,me.g.position.z);place(meTagWrap,P3)}
@@ -1483,7 +1503,7 @@ function visiblePoint(){const r=renderer.domElement.getBoundingClientRect();let 
   mouse.set(-0.1,-((r.top+bot)/2-r.top)/r.height*2+1);ray.setFromCamera(mouse,camera);const p=new THREE.Vector3();return ray.ray.intersectPlane(groundPlane,p)?p:null}
 function flyToItem(id){const o=itemObjs[id];if(!o)return;flyTo(o.position.clone().setY(o.position.y+0.8),16)}
 /* 擺設面板打開時，把畫面中心往上移到面板上方看得到的地方，選取／鎖定的物件就不會被面板擋住 */
-let viewOff=0;function updateViewOffset(dt){const want=editOn()&&!sheet.hidden?Math.max(0,(H-(sheet.getBoundingClientRect().top-renderer.domElement.getBoundingClientRect().top))/2):0;
+let viewOff=0;function updateViewOffset(dt){const want=(editOn()||mode==='detail'||mode==='pet')&&!sheet.hidden?Math.max(0,(H-(sheet.getBoundingClientRect().top-renderer.domElement.getBoundingClientRect().top))/2):0;
   viewOff+=(want-viewOff)*Math.min(1,dt*8);if(Math.abs(viewOff)<0.5){if(camera.view&&camera.view.enabled){camera.clearViewOffset()}viewOff=want<0.5?0:viewOff;if(!viewOff)return}camera.setViewOffset(W,H,0,viewOff,W,H)}
 function addItem(type){const D=ITEMS[type],t=controls.target,v=visiblePoint();let x=v?v.x:t.x,z=v?v.z:t.z;if(!isleAt(x,z)){x=meState.x+1.5;z=meState.z+1}
   const f=new THREE.Vector3();camera.getWorldDirection(f);
@@ -1552,12 +1572,17 @@ let down=null,sel=null,selPet=null;
 renderer.domElement.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,t:performance.now()}});
 renderer.domElement.addEventListener('pointerup',e=>{if(editOn()){down=null;return}if(!down||!S.islandName)return;const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y),quick=performance.now()-down.t<450;down=null;if(moved>8||!quick)return;
   const r=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(mouse,camera);
+  if(pickPt){const q=new THREE.Vector3();if(ray.ray.intersectPlane(groundPlane,q)){if(!isleAt(q.x,q.z)){toast('要點在島上喔 🏝️');return}const b=draft&&draft.sched&&draft.sched[pickPt.bi];if(b)b.place='pt:'+q.x.toFixed(2)+','+q.z.toFixed(2);meMark.position.set(q.x,TOP+0.2,q.z);meMark.material.opacity=0.9;endPick(true)}return}
   const hits=ray.intersectObjects(chars.map(v=>v.c.hit).concat(pets.map(v=>v.m.hit),me?[me.hit]:[]),false);
   if(hits.length){const u=hits[0].object.userData;if(u.me){openSheet('owner');return}if(u.pet){selectPet(u.pet);return}select(u.id);return}
   const p=new THREE.Vector3();if(ray.ray.intersectPlane(groundPlane,p)){
     if(mode==='detail'&&sel&&byId[sel]){sendWalk(sel,p.x,p.z);return}
     const path=routeTo(p.x,p.z);if(path){meState.path=path;meMark.position.set(p.x,TOP+0.2,p.z);meMark.material.opacity=0.9}}});
-function sendWalk(id,x,z){const v=byId[id];if(!v)return;const path=routeTo(x,z,v.x,v.zz);if(!path){toast('那裡是海，走不過去 🌊');return}
+let pickPt=null;
+function startPick(bi){pickPt={bi};sheet.hidden=true;document.getElementById('pickBar').hidden=false}
+function endPick(ok){pickPt=null;document.getElementById('pickBar').hidden=true;if(mode){sheet.hidden=false;render()}if(ok)toast('📍 位置選好了，記得按「儲存作息」')}
+document.getElementById('pickCancel').addEventListener('click',()=>endPick(false));
+function sendWalk(id,x,z){const v=byId[id];if(!v)return;unpause();if(v.inside){v.inside=false;v.c.g.visible=true}const path=routeTo(x,z,v.x,v.zz);if(!path){toast('那裡是海，走不過去 🌊');return}
   if(v.R){if(!v.R.auto){v.p.rest=null}standUp(v)}v.p.home={x:+x.toFixed(2),z:+z.toFixed(2)};save();v.path=path;
   meMark.position.set(x,TOP+0.2,z);meMark.material.opacity=0.9;toast('🚶 '+v.p.name+' 走過去囉');if(mode==='detail')render()}
 function select(id){const v=byId[id];if(!v)return;sel=id;flyTo(v.c.g.position.clone(),18);openSheet('detail',id)}
@@ -1569,7 +1594,7 @@ const sheet=document.getElementById('sheet'),sTitle=document.getElementById('she
 let mode=null,arg=null,draft=null,confirmKey=null;
 const RAIL={iform:'bAddIsle',vform:'bAddPerson',pform:'bAddPet',quest:'bQuest',list:'bList',time:'bTime',settings:'bSet',build:'bEdit',item:'bEdit'};
 function restoreOwner(){if(ownerBackup){S.owner.look=ownerBackup;ownerBackup=null;buildMe()}}
-function openSheet(m,a){restoreOwner();mode=m;arg=a;confirmKey=null;draft=null;sel=m==='detail'?a:null;selPet=m==='pet'?a:null;
+function openSheet(m,a){if(pickPt){pickPt=null;document.getElementById('pickBar').hidden=true}restoreOwner();mode=m;arg=a;confirmKey=null;draft=null;sel=m==='detail'?a:null;selPet=m==='pet'?a:null;
   sheet.hidden=false;sheet.classList.toggle('tall',['owner','vform','iform','pform','sched'].includes(m));sheet.classList.toggle('short',m==='build'||m==='item');const ed=m==='build'||m==='item';selItem=m==='item'?a:(ed?selItem:null);pendingGo=null;if(!ed&&lockItem)setLock(null,true);if(m!=='item'){drag=null;controls.enabled=true}
   document.getElementById('chips').style.visibility='hidden';
   Object.values(RAIL).forEach(id=>document.getElementById(id).setAttribute('aria-pressed','false'));
@@ -1714,19 +1739,24 @@ function render(){
     h+='<div class="btnrow"><button class="btn" type="button" data-backbuild="1">⬅️ 回物件清單</button><button class="btn" type="button" data-dupitem="1">📄 複製一個</button><button class="btn red" type="button" data-ask="delitem">🗑️ 收起來</button></div>';
     if(confirmKey==='delitem')h+='<div class="confirm"><span>確定把「'+D.n+'」收起來嗎？</span><button class="btn" data-ask="">取消</button><button class="btn redfill" data-delitem="1">確定</button></div>'}
   else if(mode==='sched'){const p=S.people.find(x=>x.id===arg);if(!p){closeSheet();return}
-    if(!draft)draft={job:p.job||'',sched:JSON.parse(JSON.stringify(Array.isArray(p.sched)?p.sched:[]))};const J=JOBS[draft.job];
+    if(!draft)draft={job:p.job||'',homeItem:p.homeItem||'',freeMode:p.freeMode||'isle',sched:JSON.parse(JSON.stringify(Array.isArray(p.sched)?p.sched:[]))};const J=JOBS[draft.job];
     sTitle.textContent='🗓️ '+p.name+' 的作息與工作';
     h+='<div class="say">島上時間現在 <b>'+fmtHour(simHour)+'</b>・'+esc(nowText(p))+'<br><span class="meta">時間跟著右邊「時間」按鈕（現在時間或手動調整）。沒排到的時段就自由活動。</span></div>';
     h+='<div class="fld"><label for="fJob">💼 職業</label><select id="fJob" class="ssel"><option value="">（還沒設定）</option>'+JOB_LIST.map(([id,n,e])=>'<option value="'+id+'"'+(draft.job===id?' selected':'')+'>'+e+' '+n+'</option>').join('')+'</select>'+(J?'<div class="hint">'+J.n+'常做：'+J.acts.map(a=>ACTIONS[a].e+ACTIONS[a].n).join('、')+'</div>':'')+'</div>';
+    {const houses=S.items.filter(it=>it.type==='house');h+='<div class="fld"><label for="fHome">🏠 他的家（「回家」會走到這裡進門休息）</label><select id="fHome" class="ssel"><option value=""'+(!draft.homeItem?' selected':'')+'>自動：住的島上的小屋</option>'+houses.map(it=>'<option value="'+it.id+'"'+(draft.homeItem===it.id?' selected':'')+'>🏠 小屋（'+esc(itemIsleName(it))+'）</option>').join('')+'<option value="none"'+(draft.homeItem==='none'?' selected':'')+'>沒有房子：回到自己的位置附近</option></select></div>';}
+    h+='<div class="fld"><label>🕊️ 沒排到的時間要做什麼</label><div class="opts"><button type="button" class="opt" data-sc="free|0|isle" aria-pressed="'+(draft.freeMode!=='visit')+'">在自己住的島散步</button><button type="button" class="opt" data-sc="free|0|visit" aria-pressed="'+(draft.freeMode==='visit')+'">🚶‍♂️ 到每座島串門子</button></div></div>';
     h+='<div class="btnrow"><button class="btn on" type="button" data-sc="auto">🪄 依職業自動排一天</button><button class="btn" type="button" data-sc="add">＋ 新增時段</button></div>';
     const order=draft.sched.map((b,i)=>i).sort((a,b)=>hm(draft.sched[a].from)-hm(draft.sched[b].from));
     if(!order.length)h+='<div class="meta" style="margin:8px 0">還沒有時段。按「🪄 依職業自動排一天」最快！</div>';
-    const placeOpts=cur=>{let o='<option value="home"'+(cur==='home'||!cur?' selected':'')+'>🏠 自己的位置附近</option><optgroup label="島">';['hub'].concat(S.isles.map(x=>x.id)).forEach(id=>o+='<option value="isle:'+id+'"'+(cur==='isle:'+id?' selected':'')+'>🏝️ '+esc(isleName(id))+'</option>');o+='</optgroup><optgroup label="物件旁邊">';
+    const rangeOpts=(cur,i)=>'<select class="ssel" data-bf="range|'+i+'" aria-label="範圍">'+RANGES.map(([k,l])=>'<option value="'+k+'"'+(cur===k?' selected':'')+'>'+l+'</option>').join('')+'</select>';
+    const placeOpts=cur=>{let o='<option value="__pick">📍 在地圖上點一個位置…</option>'+(cur&&cur.startsWith('pt:')?'<option value="'+esc(cur)+'" selected>📍 '+esc(placeLabel(cur))+'</option>':'')+'<option value="home"'+(cur==='home'||!cur?' selected':'')+'>📌 自己的位置（點地板讓他走過去的地方）</option><optgroup label="島">';['hub'].concat(S.isles.map(x=>x.id)).forEach(id=>o+='<option value="isle:'+id+'"'+(cur==='isle:'+id?' selected':'')+'>🏝️ '+esc(isleName(id))+'</option>');o+='</optgroup><optgroup label="物件旁邊">';
       S.items.filter(it=>ITEMS[it.type]).slice().sort((a,b)=>itemIsleName(a).localeCompare(itemIsleName(b))).forEach(it=>o+='<option value="item:'+it.id+'"'+(cur==='item:'+it.id?' selected':'')+'>'+ITEMS[it.type].e+' '+esc(ITEMS[it.type].n)+'（'+esc(itemIsleName(it))+'）</option>');return o+'</optgroup>'};
-    order.forEach(i=>{const b=draft.sched[i];h+='<div class="sblk"><div class="trow"><input type="time" step="1800" value="'+esc(b.from)+'" data-bf="from|'+i+'" aria-label="開始時間">～<input type="time" step="1800" value="'+esc(b.to)+'" data-bf="to|'+i+'" aria-label="結束時間"><button class="btn red" type="button" data-sc="del|'+i+'" style="margin-left:auto">🗑️</button></div>';
+    order.forEach(i=>{const b=draft.sched[i];h+='<div class="sblk"><div class="trow"><input type="time" step="60" value="'+esc(b.from)+'" data-bf="from|'+i+'" aria-label="開始時間">～<input type="time" step="60" value="'+esc(b.to)+'" data-bf="to|'+i+'" aria-label="結束時間"><button class="btn red" type="button" data-sc="del|'+i+'" style="margin-left:auto">🗑️</button></div>';
       h+='<div class="opts" style="margin-top:8px">'+SCHED_TYPES.map(([t,l])=>'<button type="button" class="opt" data-sc="type|'+i+'|'+t+'" aria-pressed="'+(b.type===t)+'">'+l+'</button>').join('')+'</div>';
-      if(b.type==='wander')h+='<select class="ssel" data-bf="scope|'+i+'"><option value="isle"'+(!b.scope||b.scope==='isle'?' selected':'')+'>在自己住的島（'+esc(isleName(p.isle))+'）散步</option><option value="visit"'+(b.scope==='visit'?' selected':'')+'>🚶‍♂️ 串門子：到各座島走走</option>'+['hub'].concat(S.isles.map(x=>x.id)).map(id=>'<option value="'+id+'"'+(b.scope===id?' selected':'')+'>只在「'+esc(isleName(id))+'」散步</option>').join('')+'</select>';
-      else{h+='<select class="ssel" data-bf="place|'+i+'" aria-label="地點">'+placeOpts(b.place)+'</select>';
+      if(b.type==='home')h+='<div class="hint" style="margin-top:8px">🏠 走回他的家（'+esc(houseLabel(Object.assign({},p,{homeItem:draft.homeItem})))+'），進門休息；時間到了再走出來。</div>';
+      else if(b.type==='wander'){h+='<select class="ssel" data-bf="scope|'+i+'"><option value="isle"'+(!b.scope||b.scope==='isle'?' selected':'')+'>在自己住的島（'+esc(isleName(p.isle))+'）散步</option><option value="visit"'+(b.scope==='visit'?' selected':'')+'>🚶‍♂️ 串門子：到每座島走走</option><option value="place"'+(b.scope==='place'?' selected':'')+'>📍 在某個地點附近散步…</option>'+['hub'].concat(S.isles.map(x=>x.id)).map(id=>'<option value="'+id+'"'+(b.scope===id?' selected':'')+'>只在「'+esc(isleName(id))+'」散步</option>').join('')+'</select>';
+        if(b.scope==='place')h+='<select class="ssel" data-bf="place|'+i+'" aria-label="地點">'+placeOpts(b.place)+'</select>'+rangeOpts(b.range||'near',i)}
+      else{h+='<select class="ssel" data-bf="place|'+i+'" aria-label="地點">'+placeOpts(b.place)+'</select>'+rangeOpts(b.range||(b.type==='work'?'spot':'near'),i);
         if(b.type==='work'){const rec=J?J.acts:[],all=rec.concat(Object.keys(ACTIONS).filter(a=>!rec.includes(a))),sel=b.tasks||[];
           h+='<div class="ol" style="margin-top:8px;font-size:12px;font-weight:700;color:var(--ink-soft)">做哪些工作（可複選，會輪流做；⭐＝這個職業常做）</div><div class="opts">'+all.map(a=>'<button type="button" class="opt" data-sc="task|'+i+'|'+a+'" aria-pressed="'+sel.includes(a)+'">'+(rec.includes(a)?'⭐':'')+ACTIONS[a].e+' '+ACTIONS[a].n+'</button>').join('')+'</div>'+(sel.length?'':'<div class="hint">沒選的話就做職業常做的工作。</div>')}}
       h+='</div>'});
@@ -1785,12 +1815,13 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
   if(d.qdel){const [pid,qid]=d.qdel.split('|');const p=S.people.find(x=>x.id===pid);if(!p)return;p.quests=p.quests.filter(x=>x.id!==qid);save();if(byId[pid])refreshQ(byId[pid]);updateHud();render();return}
   if(d.sched&&mode==='detail'){openSheet('sched',arg);return}
   if(d.sc&&mode==='sched'&&draft){const p=S.people.find(x=>x.id===arg);if(!p)return;const [cmd,ix,val]=d.sc.split('|'),b=draft.sched[+ix];
+    if(cmd==='free'){draft.freeMode=val;const st=sBody.scrollTop;render();sBody.scrollTop=st;return}
     if(cmd==='auto'){draft.sched=autoDay(Object.assign({},p,{job:draft.job}));toast('🪄 排好了，可以再微調');render();return}
     if(cmd==='add'){const last=draft.sched.map(x=>hm(x.to)).sort((a,b)=>b-a)[0];const f=last!=null?Math.floor(last):9;const pad=n=>String(((n%24)+24)%24).padStart(2,'0')+':00';draft.sched.push({id:uid(),from:pad(f),to:pad(f+1),type:'work',place:jobPlace(Object.assign({},p,{job:draft.job})),tasks:[]});render();setTimeout(()=>{sBody.scrollTop=sBody.scrollHeight},0);return}
     if(cmd==='del'&&b){draft.sched.splice(+ix,1);render();return}
-    if(cmd==='type'&&b){b.type=val;if(val==='wander'){b.scope=b.scope||'isle'}else{b.place=b.place||(val==='work'?jobPlace(Object.assign({},p,{job:draft.job})):'home');if(val==='work')b.tasks=b.tasks||[]}const st=sBody.scrollTop;render();sBody.scrollTop=st;return}
+    if(cmd==='type'&&b){b.type=val;if(val==='home'){}else if(val==='wander'){b.scope=b.scope||'isle'}else{b.range=b.range||(val==='work'?'spot':'near');b.place=b.place||(val==='work'?jobPlace(Object.assign({},p,{job:draft.job})):'home');if(val==='work')b.tasks=b.tasks||[]}const st=sBody.scrollTop;render();sBody.scrollTop=st;return}
     if(cmd==='task'&&b){b.tasks=b.tasks||[];const k=b.tasks.indexOf(val);if(k>=0)b.tasks.splice(k,1);else b.tasks.push(val);const st=sBody.scrollTop;render();sBody.scrollTop=st;return}
-    if(cmd==='save'){p.job=draft.job||undefined;p.sched=draft.sched.map(x=>Object.assign({id:x.id||uid()},x));save();const v=byId[p.id];if(v)v.schK=null;draft=null;toast('🗓️ '+p.name+' 的作息存好了');select(p.id);return}}
+    if(cmd==='save'){unpause();p.homeItem=draft.homeItem||undefined;p.freeMode=draft.freeMode==='visit'?'visit':undefined;p.job=draft.job||undefined;p.sched=draft.sched.map(x=>Object.assign({id:x.id||uid()},x));save();const v=byId[p.id];if(v)v.schK=null;draft=null;toast('🗓️ '+p.name+' 的作息存好了');select(p.id);return}}
   if(d.rest&&mode==='detail'){if(sendRest(arg,d.rest))render();return}
   if(d.person!=null){draft=null;select(d.person);return}
   if(d.goisle){openIsle(d.goisle);return}
@@ -1846,7 +1877,8 @@ sBody.addEventListener('submit',e=>{const f=e.target.closest('[data-addq]');if(!
   const p=S.people.find(x=>x.id===f.dataset.addq);if(!p)return;p.quests.push({id:uid(),text:t,done:false});save();if(byId[p.id])refreshQ(byId[p.id]);updateHud();render();
   const ni=sBody.querySelector('[data-addq] input');if(ni)ni.focus();guideHook('quest')});
 sBody.addEventListener('change',e=>{
-  if(mode==='sched'&&draft){if(e.target.id==='fJob'){draft.job=e.target.value;const st=sBody.scrollTop;render();sBody.scrollTop=st;return}const bf=e.target.dataset&&e.target.dataset.bf;if(bf){const [k,ix]=bf.split('|'),b=draft.sched[+ix];if(b){b[k]=e.target.value;if(k==='scope'||k==='place'){}}return}}
+  if(mode==='sched'&&draft){if(e.target.id==='fJob'){draft.job=e.target.value;const st=sBody.scrollTop;render();sBody.scrollTop=st;return}if(e.target.id==='fHome'){draft.homeItem=e.target.value;const st=sBody.scrollTop;render();sBody.scrollTop=st;return}
+  const bf=e.target.dataset&&e.target.dataset.bf;if(bf){const [k,ix]=bf.split('|'),b=draft.sched[+ix];if(b){if(e.target.value==='__pick'){startPick(+ix);return}b[k]=e.target.value;if(k==='scope'||k==='place'||k==='range'){const st=sBody.scrollTop;render();sBody.scrollTop=st}}return}}
   if(e.target.id==='imFile'){const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const t=document.getElementById('im');if(t)t.value=String(r.result||'');previewImport(String(r.result||''))};r.onerror=()=>toast('讀不到這個檔案');r.readAsText(f);return}if(e.target.id==='fIsle'&&draft){draft.isle=e.target.value;const th=isleTheme(draft.isle),L=Object.assign({},draft.look);if(!L.outfit||L.outfit==='uniform')L.shirt=th?th.shirt:HUB_SHIRT;L.capColor=L.capC||L.shirt;pvSet(L)}});
 sBody.addEventListener('input',e=>{
   if(e.target.id==='iSearch'){buildQ=e.target.value;const l=document.getElementById('iList');if(l)l.innerHTML=itemListHTML();return}
@@ -1872,7 +1904,8 @@ document.getElementById('bTime').addEventListener('click',()=>toggleSheet('time'
 document.getElementById('bSet').addEventListener('click',()=>toggleSheet('settings'));
 document.getElementById('brand').addEventListener('click',()=>toggleSheet('settings'));
 document.getElementById('bOverview').addEventListener('click',()=>{closeSheet();setView(S.ui.bird,false)});
-function applyToggles(){[['tNames','names'],['tPause','paused'],['tBird','bird']].forEach(([id,k])=>document.getElementById(id).setAttribute('aria-pressed',String(!!S.ui[k])))}
+function applyToggles(){[['tNames','names'],['tPause','paused'],['tBird','bird']].forEach(([id,k])=>document.getElementById(id).setAttribute('aria-pressed',String(!!S.ui[k])));const tp=document.getElementById('tPause');tp.textContent=S.ui.paused?'⏸️ 暫停中（點我繼續）':'暫停';tp.classList.toggle('warn',!!S.ui.paused)}
+function unpause(){if(!S.ui.paused)return;S.ui.paused=false;save();applyToggles();toast('▶️ 已取消暫停，島民和動物開始活動')}
 document.getElementById('tNames').addEventListener('click',()=>{S.ui.names=!S.ui.names;save();applyToggles()});
 document.getElementById('tPause').addEventListener('click',()=>{S.ui.paused=!S.ui.paused;save();applyToggles()});
 document.getElementById('tBird').addEventListener('click',()=>{S.ui.bird=!S.ui.bird;save();applyToggles();setView(S.ui.bird,false)});
@@ -1932,7 +1965,7 @@ function showSetup(){const el=document.getElementById('setup');el.hidden=false;
       S.people.push({id:uid(),name:'英文家教',task:'每天陪我背 10 個單字',status:'進行中',isle:b.id,look:randomLook(),quests:[{id:uid(),text:'背 10 個英文單字',done:false},{id:uid(),text:'聽一集英文 Podcast',done:false}]})}
     save();el.hidden=true;PV.el=null;startGame(true)})}
 
-function startGame(first){document.getElementById('hud').hidden=false;buildWorld();buildMe();updateHud();applyToggles();
+function startGame(first){if(S.ui.paused)setTimeout(()=>toast('⏸️ 島民和動物目前是「暫停」，按下方「暫停中」就會繼續活動'),2500);document.getElementById('hud').hidden=false;buildWorld();buildMe();updateHud();applyToggles();
   meState.x=-1.6;meState.z=5.2;setView(S.ui.bird,!first);if(first){setTimeout(startGuide,900);toast('🎉 '+S.islandName+' 誕生了！')}}
 
 /* =========================================================
