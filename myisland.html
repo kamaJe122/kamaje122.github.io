@@ -355,9 +355,9 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.7.0';
-const APP_NOTES=['✈️ 出國紀錄島：新增小島時選「出國紀錄島」，選國家和出遊日期，島上會有一張小機票（可設定顯示年／年月／年月日）','🗺️ 12 國特色景點共 47 個：日本富士山、東京鐵塔、雷門、清水寺、鳥居、大阪城；韓國、泰國、越南、香港、澳門、馬來西亞、新加坡、美國、菲律賓、澳洲、英國'];
-const APP_OLD=['☑️ 群組、🔎 搜尋、⚡ 效能模式、🔓 鎖定鈕、👕 吊嘎 V 領','☕ 咖啡吧用品、💡 燈具風扇、🍽️ 洗碗機菜梯、🧾 結帳櫃台零件、🔵 門牌','🚗 交通工具、紅綠燈、🐠 魚缸、外帶杯 logo、電話、🎄 聖誕節裝飾','⛲ 噴水池會噴水、🟫 地板材質＋小螃蟹、🪜 樓梯、🚇 隧道、🪨 石頭、🌉 橋樣式','🔄 物件 360° 旋轉','📍 新增物件放在你正在看的地方','🧱 牆壁可調長寬高、玻璃門、出菜口、招牌、告示牌、牛角椅；🍳 早午餐、漢堡、披薩、甜點、飲料；🐮 牛、黑柴犬','🥛 牛奶盒、旋奶機、鋼杯、冰杓、餐具、餐巾紙、衛生紙、抱枕','🐷 小豬、蛇、倉鼠、烏龜＋每種動物 5 種以上品種；💰 錢幣鈔票、信用卡、筆電、雨衣；☕ 咖啡廳桌椅、水杯、菜單','👀 編輯時預覽跟著捲動','🦜 鸚鵡嘴巴換顏色','😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
+const APP_VERSION='1.7.1';
+const APP_NOTES=['⛵ 出國紀錄島改成「離島」：蓋在外海、不跟其他島用橋連在一起，有小碼頭和小船；點離島地面，島主或島民會坐船過去','之前蓋的出國紀錄島會自動搬到外海，島上的景點和機票一起搬'];
+const APP_OLD=['✈️ 出國紀錄島＋機票、🗺️ 12 國 47 個景點','☑️ 群組、🔎 搜尋、⚡ 效能模式、🔓 鎖定鈕、👕 吊嘎 V 領','☕ 咖啡吧用品、💡 燈具風扇、🍽️ 洗碗機菜梯、🧾 結帳櫃台零件、🔵 門牌','🚗 交通工具、紅綠燈、🐠 魚缸、外帶杯 logo、電話、🎄 聖誕節裝飾','⛲ 噴水池會噴水、🟫 地板材質＋小螃蟹、🪜 樓梯、🚇 隧道、🪨 石頭、🌉 橋樣式','🔄 物件 360° 旋轉','📍 新增物件放在你正在看的地方','🧱 牆壁可調長寬高、玻璃門、出菜口、招牌、告示牌、牛角椅；🍳 早午餐、漢堡、披薩、甜點、飲料；🐮 牛、黑柴犬','🥛 牛奶盒、旋奶機、鋼杯、冰杓、餐具、餐巾紙、衛生紙、抱枕','🐷 小豬、蛇、倉鼠、烏龜＋每種動物 5 種以上品種；💰 錢幣鈔票、信用卡、筆電、雨衣；☕ 咖啡廳桌椅、水杯、菜單','👀 編輯時預覽跟著捲動','🦜 鸚鵡嘴巴換顏色','😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -834,6 +834,7 @@ const ITEMS={
   coop:{n:'雞舍',e:'🐔',cat:'garden',cols:[['wall','牆壁','#f4e3c1'],['roof','屋頂','#d4482f'],['chicken','雞','#ffffff']]},
   garden:{n:'菜園',e:'🥕',cat:'garden',cols:[['border','木框','#a26c43'],['leaf','菜葉','#5bb85d'],['carrot','紅蘿蔔','#f08a3c'],['tomato','番茄','#e5534b']]},
   fence:{n:'圍欄',e:'🪵',cat:'garden',cols:[['wood','圍欄','#f4efe6'],['rail','橫木','#c9a27a']]}};
+ITEMS.pier={n:'小碼頭＋小船',e:'⛵',cat:'travel',cols:[['wood','碼頭','#a0784f'],['boat','小船','#f4f4f4']]};
 ITEMS.ticket={n:'出國機票（登機證）',e:'🎫',cat:'travel',text:'出遊日期（例如 2024-05-03）',textDef:'2024-05-03',cols:[],opts:[['country','國家',TRIP_OPTS,'jp'],['fmt','日期顯示',[['y','只有年'],['ym','年月'],['ymd','年月日']],'ymd']]};
 Object.keys(LM_DEF).forEach(k=>{const [n,e,c]=LM_DEF[k];ITEMS[k]={n:n+'（'+LM_COUNTRY[k]+'）',e,cat:'travel',cols:[['main','主色',c]]}});
 const GENDER_H={m:1.06,f:0.95};/* 男生比女生高 */
@@ -843,6 +844,8 @@ const HEX_R=12,HUB_R=12,TOP=1.0;
 /* 中央主島 + 12 個小島位置（外圈 p = 接到哪一座內圈小島） */
 const SLOTS=[{x:-12.9,z:-22.35},{x:12.9,z:-22.35},{x:25.8,z:0},{x:12.9,z:22.35},{x:-12.9,z:22.35},{x:-25.8,z:0},
   {x:0,z:-44.7,p:0},{x:38.7,z:-22.35,p:1},{x:38.7,z:22.35,p:2},{x:0,z:44.7,p:3},{x:-38.7,z:22.35,p:4},{x:-38.7,z:-22.35,p:5}];
+/* 離島（出國紀錄島）：外圈 12 個位置，沒有橋，要坐船 */
+for(let i=0;i<12;i++){const a=(15+i*30)*Math.PI/180;SLOTS.push({x:+(Math.sin(a)*74).toFixed(2),z:+(-Math.cos(a)*74).toFixed(2),off:1})}
 
 /* =========================================================
    2. 本機儲存
@@ -1358,6 +1361,9 @@ const BUILD={
   cardreader(g,C){const b=box(0.07,0.025,0.14,C.body,0,0.0125,0,g);box(0.05,0.03,0.002,'#9fe0a0',0,0.026,0.04,g,{emissive:'#7fd07f',emissiveIntensity:0.4}).rotation.x=-Math.PI/2;for(let i=0;i<9;i++)box(0.012,0.004,0.01,'#d0d0d0',-0.016+(i%3)*0.016,0.027,-0.01-Math.floor(i/3)*0.016,g)},
   receiptprinter(g,C){box(0.14,0.1,0.18,C.body,0,0.05,0,g);box(0.1,0.002,0.06,'#ffffff',0,0.101,0.06,g);const p=box(0.08,0.07,0.002,'#ffffff',0,0.13,0.085,g);p.rotation.x=-0.3;sph(0.006,'#3fd16b',0.05,0.08,0.091,g,{emissive:'#3fd16b',emissiveIntensity:0.9},4)},
   cashdrawer(g,C){box(0.4,0.1,0.4,C.body,0,0.05,0,g);box(0.36,0.06,0.005,shade(C.body,-0.1),0,0.05,0.202,g);cyl(0.012,0.012,0.01,8,'#c9ced6',0,0.05,0.206,g).rotation.x=Math.PI/2},
+  pier(g,C){for(let i=0;i<7;i++)box(1.2,0.08,0.45,i%2?C.wood:shade(C.wood,-0.06),0,0.1,0.4+i*0.48,g);[[-0.55,0.2],[0.55,0.2],[-0.55,1.8],[0.55,1.8],[-0.55,3.4],[0.55,3.4]].forEach(([x,z])=>cyl(0.07,0.07,1.0,8,shade(C.wood,-0.15),x,-0.2,z,g));
+    const bt=new THREE.Group();bt.position.set(1.3,0,2.8);g.add(bt);const h=box(0.7,0.3,1.6,C.boat,0,0.05,0,bt);const bw=new THREE.Mesh(new THREE.ConeGeometry(0.36,0.6,4),mat(C.boat));bw.rotation.set(Math.PI/2,Math.PI/4,0);bw.scale.set(1,1,0.4);bw.position.set(0,0.05,1.05);bt.add(bw);box(0.72,0.06,1.62,'#2f8fd8',0,0.22,0,bt);
+    cyl(0.02,0.02,1.2,6,'#8b5a34',0,0.75,0,bt);const sl=new THREE.Mesh(new THREE.ConeGeometry(0.4,0.9,3),mat('#fbf8f0',{side:THREE.DoubleSide}));sl.scale.set(0.05,1,1);sl.position.set(0,0.85,0.25);bt.add(sl);A(t=>{bt.position.y=Math.sin(t*1.6)*0.05;bt.rotation.z=Math.sin(t*1.2)*0.05})},
   ticket(g,C,it){const o=Object.assign({country:'jp',fmt:'ymd'},it&&it.o),K=TRIP[o.country]||TRIP.jp,ds=fmtTrip((it&&it.text)||'',o.fmt);
     [-0.6,0.6].forEach(x=>cyl(0.04,0.05,1.1,8,'#8b5a34',x,0.55,0,g));const m=txMat('tk'+o.country+ds,(x,w,h)=>{x.fillStyle='#fbf8f0';x.fillRect(0,0,w,h);x.fillStyle=K.color;x.fillRect(0,0,w,70);x.fillRect(w-150,0,150,h);
       x.fillStyle='#ffffff';x.font='bold 34px sans-serif';x.textBaseline='middle';x.fillText('✈ BOARDING PASS 登機證',24,36);x.save();x.translate(w-75,h/2);x.rotate(-Math.PI/2);x.textAlign='center';x.font='bold 30px sans-serif';x.fillText(K.n,0,0);x.restore();
@@ -1992,12 +1998,18 @@ function isleCenter(id){if(!id||id==='hub')return {x:0,z:0};const is=isleById(id
 function isleName(id){if(!id||id==='hub')return '主島';const is=isleById(id);return is?is.name:'主島'}
 function isleTheme(id){const is=isleById(id);return is?THEMES[is.theme%THEMES.length]:null}
 function parentOf(is){const s=SLOTS[is.slot];if(s.p==null)return 'hub';const par=S.isles.find(i=>i.slot===s.p);return par?par.id:'hub'}
-function freeSlot(){const used={};S.isles.forEach(i=>used[i.slot]=1);for(let k=0;k<SLOTS.length;k++)if(!used[k])return k;return -1}
+function freeSlot(off){const used={};S.isles.forEach(i=>used[i.slot]=1);for(let k=0;k<SLOTS.length;k++)if(!used[k]&&!!SLOTS[k].off===!!off)return k;return -1}
+function offIsle(id){const is=id&&id!=='hub'&&isleById(id);return !!(is&&SLOTS[is.slot]&&SLOTS[is.slot].off)}
+/* 1.7.0 建的出國紀錄島搬到外圈離島，島上的東西一起搬 */
+function migrateTrips(){let ch=false;S.isles.forEach(is=>{if(!is.trip||SLOTS[is.slot].off)return;const ns=freeSlot(true);if(ns<0)return;const o=SLOTS[is.slot],n=SLOTS[ns];
+  S.items.forEach(it=>{if(Math.hypot(it.x-o.x,it.z-o.z)<HEX_R*0.98){it.x=+(it.x+n.x-o.x).toFixed(2);it.z=+(it.z+n.z-o.z).toFixed(2)}});S.people.forEach(p=>{if(p.home&&Math.hypot(p.home.x-o.x,p.home.z-o.z)<HEX_R)p.home=null});is.slot=ns;ch=true;
+  if(!S.items.some(it=>it.type==='pier'&&Math.hypot(it.x-n.x,it.z-n.z)<HEX_R))S.items.push(pierFor(n));});if(ch)save()}
+function pierFor(c){const d=Math.hypot(c.x,c.z)||1,ux=-c.x/d,uz=-c.z/d;return {id:uid(),type:'pier',x:+(c.x+ux*HEX_R*0.82).toFixed(2),z:+(c.z+uz*HEX_R*0.82).toFixed(2),y:0,ry:+Math.atan2(ux,uz).toFixed(3),s:1,c:{}}}
 const BR_OF={};/* isle id -> bridge to its parent */
 const DESKS={};/* isle id -> [{x,z,taken}] */
 let zLabels=[];
 
-function buildWorld(){
+function buildWorld(){migrateTrips();
   scene.remove(world);world=new THREE.Group();scene.add(world);
   lampHeads=[];windows=[];BRIDGES=[];boards=[];seed=7;Object.keys(BR_OF).forEach(k=>delete BR_OF[k]);Object.keys(DESKS).forEach(k=>delete DESKS[k]);
   /* 主島（中央廣場） */
@@ -2007,7 +2019,7 @@ function buildWorld(){
   S.isles.slice().sort((a,b)=>a.slot-b.slot).forEach(is=>{
     const s=SLOTS[is.slot],th=THEMES[is.theme%THEMES.length],cx=s.x,cz=s.z;
     const pal=is.floor?floorPal(is.floor):th.tiles;hexIsland(cx,cz,HEX_R,pal[1]);tiles(cx,cz,15,14,pal);
-    const pc=isleCenter(parentOf(is));BR_OF[is.id]=cuteBridge(pc.x,pc.z,cx,cz,is.br);
+    if(!SLOTS[is.slot].off){const pc=isleCenter(parentOf(is));BR_OF[is.id]=cuteBridge(pc.x,pc.z,cx,cz,is.br)}
     DESKS[is.id]=[];[cz+0.2,cz+3.4].forEach(r=>[cx-5,cx,cx+5].forEach(c=>DESKS[is.id].push({x:c,z:r,taken:null})));
   });
   /* 外海的小點綴 */
@@ -2323,6 +2335,7 @@ function isleAt(x,z){const all=[{id:'hub',x:0,z:0,r:HUB_R}].concat(S.isles.map(i
   return null}
 function chainUp(id){const out=[];let k=id,n=0;while(k&&k!=='hub'&&n<20){out.push(k);const is=isleById(k);k=is?parentOf(is):'hub';n++}return out}
 function routeTo(tx,tz,fx,fz){if(fx==null){fx=meState.x;fz=meState.z}const a=isleAt(fx,fz)||'hub',b=isleAt(tx,tz);if(!b)return null;
+  if(offIsle(a)||offIsle(b)){if(a===b)return [{x:tx,z:tz}];return null}
   const up=chainUp(a),down=chainUp(b);while(up.length&&down.length&&up[up.length-1]===down[down.length-1]){up.pop();down.pop()}
   const pts=[];up.forEach(id=>{const br=BR_OF[id];pts.push({x:br.x1,z:br.z1},{x:br.x0,z:br.z0})});
   down.reverse().forEach(id=>{const br=BR_OF[id];pts.push({x:br.x0,z:br.z0},{x:br.x1,z:br.z1})});pts.push({x:tx,z:tz});return pts}
@@ -2518,7 +2531,7 @@ function placeItem(g,it){g.position.set(it.x,TOP+(it.y||0),it.z);g.rotation.orde
   /* 前後／左右傾斜時繞著物件中心轉，不會插進地板 */
   if(it.rx||it.rz){const hc=(g.userData.hc||0)*(it.s||1),v=new THREE.Vector3(0,hc,0).applyEuler(g.rotation);g.position.x-=v.x;g.position.z-=v.z;g.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(g);if(!b.isEmpty())g.position.y+=TOP+(it.y||0)-b.min.y}obstDirty=true}
 /* 不穿過家具：每個大型物件有一個「腳印」方框，人物和動物走路會繞開 */
-let OBST=[],obstDirty=true;const BODY=0.42,NOCOLL={balcony:1,ground:1,tunnel:1,lantern:1,walllamp:1,ringlight:1,houseplate:1},TRUNK={tree:1,ptree:1,pine:1};
+let OBST=[],obstDirty=true;const BODY=0.42,NOCOLL={pier:1,balcony:1,ground:1,tunnel:1,lantern:1,walllamp:1,ringlight:1,houseplate:1},TRUNK={tree:1,ptree:1,pine:1};
 function footprint(g,type){if(NOCOLL[type])return null;if(TRUNK[type])return {cx:0,cz:0,hx:0.35,hz:0.35};
   const b=new THREE.Box3().setFromObject(g);if(b.isEmpty())return null;return {cx:(b.min.x+b.max.x)/2,cz:(b.min.z+b.max.z)/2,hx:(b.max.x-b.min.x)/2,hz:(b.max.z-b.min.z)/2}}
 function obstRebuild(){OBST=[];for(const id in itemObjs){const fp=itemObjs[id].userData.fp;if(!fp)continue;const it=S.items.find(x=>x.id===id);if(!it||(it.y||0)>0.6)continue;const k=it.s||1,ry=it.ry||0;
@@ -2655,12 +2668,13 @@ renderer.domElement.addEventListener('pointerup',e=>{if(editOn()){down=null;retu
   if(hits.length){const u=hits[0].object.userData;if(u.me){openSheet('owner');return}if(u.pet){selectPet(u.pet);return}select(u.id);return}
   const p=new THREE.Vector3();if(ray.ray.intersectPlane(groundPlane,p)){
     if(mode==='detail'&&sel&&byId[sel]){sendWalk(sel,p.x,p.z);return}
-    const path=routeTo(p.x,p.z);if(path){meState.path=path;meMark.position.set(p.x,TOP+0.2,p.z);meMark.material.opacity=0.9}}});
+    const path=routeTo(p.x,p.z);if(path){meState.path=path;meMark.position.set(p.x,TOP+0.2,p.z);meMark.material.opacity=0.9}
+    else{const b=isleAt(p.x,p.z);if(b&&(offIsle(b)||offIsle(isleAt(meState.x,meState.z)))){meState.x=p.x;meState.z=p.z;meState.path=null;toast('⛵ 坐船到「'+isleName(b)+'」')}}}});
 let pickPt=null;
 function startPick(bi){pickPt={bi};sheet.hidden=true;document.getElementById('pickBar').hidden=false}
 function endPick(ok){pickPt=null;document.getElementById('pickBar').hidden=true;if(mode){sheet.hidden=false;render()}if(ok)toast('📍 位置選好了，記得按「儲存作息」')}
 document.getElementById('pickCancel').addEventListener('click',()=>endPick(false));
-function sendWalk(id,x,z){const v=byId[id];if(!v)return;unpause();if(v.inside){v.inside=false;v.c.g.visible=true}const path=routeTo(x,z,v.x,v.zz);if(!path){toast('那裡是海，走不過去 🌊');return}
+function sendWalk(id,x,z){const v=byId[id];if(!v)return;unpause();if(v.inside){v.inside=false;v.c.g.visible=true}let path=routeTo(x,z,v.x,v.zz);if(!path){const b=isleAt(x,z);if(b&&(offIsle(b)||offIsle(isleAt(v.x,v.zz)))){v.x=x;v.zz=z;v.tx=x;v.tz=z;path=[{x,z}];toast('⛵ '+v.p.name+' 坐船到「'+isleName(b)+'」')}else{toast('那裡是海，走不過去 🌊');return}}
   if(v.R){if(!v.R.auto){v.p.rest=null}standUp(v)}v.p.home={x:+x.toFixed(2),z:+z.toFixed(2)};save();v.path=path;
   meMark.position.set(x,TOP+0.2,z);meMark.material.opacity=0.9;toast('🚶 '+v.p.name+' 走過去囉');if(mode==='detail')render()}
 function select(id){const v=byId[id];if(!v)return;sel=id;flyTo(v.c.g.position.clone(),18);openSheet('detail',id)}
@@ -2750,7 +2764,7 @@ function render(){
     else{h+='<div class="fld"><label for="fIN">小島名稱</label><input type="text" id="fIN" maxlength="8" value="'+esc(draft.name)+'" placeholder="例如：工作島、學習島、興趣島"></div>';
       if(isNew||draft.trip){h+=tabRow('島的種類','kind',[['normal','🏝️ 一般小島'],['trip','✈️ 出國紀錄島']],draft.trip?'trip':'normal','trip');
         if(draft.trip){h+=tabRow('去了哪個國家','country',TRIP_OPTS,draft.trip.country,'trip')+'<div class="fld"><label for="fTripDate">出遊日期</label><input type="date" id="fTripDate" value="'+esc(draft.trip.date||'')+'"></div>'+tabRow('機票上顯示','fmt',[['y','只有年'],['ym','年月'],['ymd','年月日']],draft.trip.fmt||'ymd','trip');
-          if(isNew)h+='<div class="hint">🎫 島上會放一張寫著日期的小機票，還有 '+TRIP[draft.trip.country].lm.length+' 個'+TRIP[draft.trip.country].n+'特色景點：'+TRIP[draft.trip.country].lm.map(k=>LM_DEF[k][0]).join('、')+'（之後都可以移動或收起來）。</div>'}}
+          if(isNew)h+='<div class="hint">⛵ 出國紀錄島是<b>離島</b>，會蓋在外海、不跟其他島連在一起，要坐船過去。🎫 島上會放一張寫著日期的小機票，還有 '+TRIP[draft.trip.country].lm.length+' 個'+TRIP[draft.trip.country].n+'特色景點：'+TRIP[draft.trip.country].lm.map(k=>LM_DEF[k][0]).join('、')+'（之後都可以移動或收起來）。</div>'}}
       h+='<div class="fld"><label for="fNote">一句話說明（選填）</label><input type="text" id="fNote" maxlength="50" value="'+esc(draft.note||'')+'" placeholder="例如：跟上班有關的島民都住這裡"></div>';
       h+='<div class="fld"><label>地板顏色（島民制服也會換成這個色）</label><div class="tabs">'+THEMES.map((t,k)=>'<button type="button" class="theme" data-th="'+k+'" aria-pressed="'+(draft.theme===k)+'"><i style="background:linear-gradient(135deg,'+t.tiles[1]+' 50%,'+t.shirt+' 50%)"></i>'+t.name+'</button>').join('')+'</div></div>';
       h+='<div class="fld" id="floorBox">'+floorRow()+'</div>';
@@ -2764,7 +2778,8 @@ function render(){
     h+='<div class="grp">🧑 島民（'+ps.length+'）</div>'+(ps.length?ps.map(personRow).join(''):'<div class="meta">這座島還沒有島民。</div>');
     const pts=S.pets.filter(p=>p.isle===id);h+='<div class="grp">🐾 小動物（'+pts.length+'）</div>'+(pts.length?'<div class="tabs">'+pts.map(p=>'<button type="button" class="tab" data-pet="'+p.id+'">'+PET_KIND[p.kind].emoji+' '+esc(p.name)+'</button>').join('')+'</div>':'<div class="meta">這座島還沒有小動物。</div>');
     h+='<div class="btnrow"><button class="btn on" data-newp="'+id+'">＋ 在這裡新增島民</button><button class="btn on" data-newpet="'+id+'">🐾 放一隻動物</button><button class="btn" data-editisle="'+id+'">✏️ 編輯</button>'+(hub?'':'<button class="btn red" data-ask="deli">🗑️ 拆掉</button>')+'</div>';
-    if(!hub){const br=Object.assign({},BR_DEF,is.br);h+='<div class="grp">🌉 通往這座島的橋</div>'+tabRow('樣式','type',BR_TYPES,br.type,'brt');
+    if(!hub&&SLOTS[is.slot].off)h+='<div class="hint">⛵ 這是離島，沒有橋連過去。點這座島的地面，島主或島民會坐船過來。</div>';
+    if(!hub&&!SLOTS[is.slot].off){const br=Object.assign({},BR_DEF,is.br);h+='<div class="grp">🌉 通往這座島的橋</div>'+tabRow('樣式','type',BR_TYPES,br.type,'brt');
       if(br.type==='cute'){h+=tabRow('橋板花樣','pat',[['alt','兩色交錯'],['solid','單色']],br.pat,'brt')+cpRow('c1','橋板顏色 1',br.c1);if(br.pat!=='solid')h+=cpRow('c2','橋板顏色 2',br.c2);h+=cpRow('rail','欄杆顏色',br.rail)+cpRow('ball','欄杆圓球',br.ball)}
       if(br.type==='floor')h+=tabRow('地板材質','surf',GROUND_OPTS,br.surf,'brt')+cpRow('rail','欄杆顏色',br.rail)+cpRow('ball','欄杆圓球',br.ball);
       if(br.type==='tunnel')h+=cpRow('glass','玻璃顏色',br.glass)+cpRow('rail','骨架顏色',br.rail);if(br.type==='highway')h+='<div class="hint">柏油路面、黃色中線、白色邊線、水泥護欄和路燈。</div>'}
@@ -2973,7 +2988,7 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
     if(isNew)toast('👋 '+n+' 搬進來了！');select(id);guideHook('person');return}
   if(d.th!=null){draft.theme=+d.th;draft.floor=null;const fb=document.getElementById('floorBox');if(fb)fb.innerHTML=floorRow();sBody.querySelectorAll('[data-th]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.th===d.th)));return}
   if(d.trip&&mode==='iform'&&draft){const n=document.getElementById('fIN');if(n)draft.name=n.value;const no=document.getElementById('fNote');if(no)draft.note=no.value;const auto=!draft.name||Object.values(TRIP).some(t=>t.n===draft.name);
-    if(d.trip==='kind'){if(d.v==='trip'){draft.trip=draft.trip||{country:'jp',date:'',fmt:'ymd'};if(auto)draft.name=TRIP[draft.trip.country].n}else{delete draft.trip;if(Object.values(TRIP).some(t=>t.n===draft.name))draft.name=''}}
+    if(d.trip==='kind'){const isNew=!S.isles.some(i=>i.id===draft.id);if(d.v==='trip'){draft.trip=draft.trip||{country:'jp',date:'',fmt:'ymd'};if(auto)draft.name=TRIP[draft.trip.country].n;if(isNew)draft.slot=freeSlot(true)}else{delete draft.trip;if(Object.values(TRIP).some(t=>t.n===draft.name))draft.name='';if(isNew)draft.slot=freeSlot()}}
     else{draft.trip[d.trip]=d.v;if(d.trip==='country'&&auto)draft.name=TRIP[d.v].n}render();return}
   if(d.saveisle){const n=document.getElementById('fIN').value.trim();if(!n){toast('要取個名字喔');return}
     if(arg==='hub'){S.islandName=n;S.hubFloor=draft.floor||null;save();buildWorld();updateHud();draft=null;openIsle('hub');toast('✨ 島名改好了');return}
@@ -2981,7 +2996,7 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
     const k=S.isles.findIndex(x=>x.id===draft.id),isNew=k<0;if(!isNew&&S.isles[k].theme!==draft.theme){const sh=THEMES[draft.theme%THEMES.length].shirt;S.items.forEach(it=>{if(it.isle!==draft.id)return;if(!it.c)it.c={};if(it.type==='house')it.c.roof=sh;if(it.type==='sign')it.c.accent=sh})}
     if(isNew){if(draft.slot<0){toast('海面已經滿了 🌊');return}S.isles.push(draft)}else S.isles[k]=draft;
     const id=draft.id,trip=draft.trip?Object.assign({},draft.trip):null;draft=null;save();buildWorld();updateHud();
-    if(trip&&isNew)placeTripItems(id,trip);if(trip&&!isNew)S.items.filter(it=>it.type==='ticket'&&itemIsle(it)===id).forEach(it=>{it.o=Object.assign({},it.o,{country:trip.country,fmt:trip.fmt});it.text=trip.date||'';rebuildItem(it)});if(trip)save();
+    if(trip&&isNew){placeTripItems(id,trip);const pi=pierFor(isleCenter(id));S.items.push(pi);addItemObj(pi);save()}if(trip&&!isNew)S.items.filter(it=>it.type==='ticket'&&itemIsle(it)===id).forEach(it=>{it.o=Object.assign({},it.o,{country:trip.country,fmt:trip.fmt});it.text=trip.date||'';rebuildItem(it)});if(trip)save();
     if(isNew){toast('🏝️ '+n+' 浮出海面了！');setView(S.ui.bird,false);setTimeout(()=>openIsle(id),950);guideHook('isle')}else openIsle(id);return}
   if(d.newp){openSheet('vform');draft.isle=d.newp;render();return}
   if(d.editisle){draft=null;openSheet('iform',d.editisle);return}
