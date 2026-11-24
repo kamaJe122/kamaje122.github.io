@@ -201,8 +201,9 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
 .warn2{background:#fff4d6;border:1.5px solid #f2b705;border-radius:12px;padding:8px 10px;font-size:12.5px;margin:0 0 8px}
 /* 擺設：選取框與鎖頭 */
 .selbox{position:absolute;left:0;top:0;border:2.5px dashed var(--orange);border-radius:12px;pointer-events:none;z-index:4;box-shadow:0 0 0 2px #fff8}
+.selbox.fx .lockbtn{left:auto;right:calc(100% + 6px)}.selbox.fy .lockbtn{top:auto;bottom:calc(100% + 6px)}
 .selbox.locked{border:3px solid #8f847c;border-style:solid;box-shadow:0 0 0 3px #f2b70555,0 0 18px #f2b70599}
-.lockbtn{position:absolute;right:-24px;bottom:-24px;width:48px;height:48px;border-radius:50%;border:2.5px solid var(--orange);background:#fff;font-size:22px;line-height:1;display:grid;place-items:center;cursor:pointer;pointer-events:auto;box-shadow:0 3px 10px #0003;padding:0}
+.lockbtn{position:absolute;left:calc(100% + 6px);top:calc(100% + 6px);width:44px;height:44px;border-radius:50%;border:2.5px solid var(--orange);background:#fff;font-size:22px;line-height:1;display:grid;place-items:center;cursor:pointer;pointer-events:auto;box-shadow:0 3px 10px #0003;padding:0}
 .selbox.locked .lockbtn{border-color:#6b5f58;background:#e9e4da}
 .lockbar{display:flex;align-items:center;gap:8px;background:#fff6d6;border:2px solid #f2b705;border-radius:14px;padding:8px 10px;margin:0 0 10px;font-size:13.5px}
 .lockbar span{flex:1;min-width:0}
@@ -267,6 +268,7 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
 .toast{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 96px);transform:translateX(-50%);background:#2a2421;color:#fff;font-family:var(--font-display);font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px;box-shadow:0 4px 14px #0003;pointer-events:none;max-width:86%;text-align:center;z-index:9}
 .loading{position:absolute;inset:0;display:grid;place-items:center;background:#bfe3ef;font-family:var(--font-display);font-weight:700;color:var(--ink);transition:opacity .6s;z-index:10}
 .relrow{display:flex;align-items:center;gap:8px;margin:4px 0;flex-wrap:wrap}.relrow>span{font-weight:700;min-width:5em}
+.ic2{display:flex;flex-direction:column;gap:6px;cursor:default}.ic2b{display:flex;gap:4px;flex-wrap:wrap}.ic2b .btn{min-height:36px;padding:4px 8px;font-size:12px}.tab small{opacity:.6;font-size:11px}
 .holdrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.holdrow label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}.holdrow select{min-height:44px;border-radius:12px;border:1.5px solid #e6dccb;padding:0 8px;font:inherit;font-weight:500;background:#fff;color:#2b2421;width:100%}
 </style></head><body>
 <div id="app">
@@ -353,9 +355,9 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.5.2';
-const APP_NOTES=['☕ 咖啡吧：敲粉桶、磨豆機、咖啡手把、手沖濾杯組、細口壺、鬆餅機、外帶盒、編織籃、菜單展示架、雨傘架、垃圾桶','💡 燈具・風扇：紙燈籠吊燈＋軌道燈、圓球壁燈、圓形中空吊燈、循環扇、立扇（都會轉）','🍽️ 廚房：商用洗碗機、洗碗籃（可選空的或放滿盤子）、菜梯、腳踏凳','🧾 結帳櫃台改成空的，收銀螢幕、刷卡機、發票機、錢櫃可以自己擺；🔵 門牌、🪴 小盆栽、⛲ 流水盆栽'];
-const APP_OLD=['🚗 交通工具、紅綠燈、🐠 魚缸、外帶杯 logo、電話、🎄 聖誕節裝飾','⛲ 噴水池會噴水、🟫 地板材質＋小螃蟹、🪜 樓梯、🚇 隧道、🪨 石頭、🌉 橋樣式','🔄 物件 360° 旋轉','📍 新增物件放在你正在看的地方','🧱 牆壁可調長寬高、玻璃門、出菜口、招牌、告示牌、牛角椅；🍳 早午餐、漢堡、披薩、甜點、飲料；🐮 牛、黑柴犬','🥛 牛奶盒、旋奶機、鋼杯、冰杓、餐具、餐巾紙、衛生紙、抱枕','🐷 小豬、蛇、倉鼠、烏龜＋每種動物 5 種以上品種；💰 錢幣鈔票、信用卡、筆電、雨衣；☕ 咖啡廳桌椅、水杯、菜單','👀 編輯時預覽跟著捲動','🦜 鸚鵡嘴巴換顏色','😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
+const APP_VERSION='1.6.0';
+const APP_NOTES=['☑️ 群組：擺設 → 多選，選好幾個物件後可以整組移動、旋轉、放大縮小、升降、複製、收起來','🔎 新增物件可以搜尋，分類標籤顯示數量；有內容物的東西新增時可以選「空的」或「有內容物」','⚡ 效能模式（設定）：太卡會自動切到省電模式，也能看島的資料大小','🔓 小東西的鎖定按鈕移到框外面，不會再擋住物件；👕 吊嘎胸前的怪球改成 V 領'];
+const APP_OLD=['☕ 咖啡吧用品、💡 燈具風扇、🍽️ 洗碗機菜梯、🧾 結帳櫃台零件、🔵 門牌','🚗 交通工具、紅綠燈、🐠 魚缸、外帶杯 logo、電話、🎄 聖誕節裝飾','⛲ 噴水池會噴水、🟫 地板材質＋小螃蟹、🪜 樓梯、🚇 隧道、🪨 石頭、🌉 橋樣式','🔄 物件 360° 旋轉','📍 新增物件放在你正在看的地方','🧱 牆壁可調長寬高、玻璃門、出菜口、招牌、告示牌、牛角椅；🍳 早午餐、漢堡、披薩、甜點、飲料；🐮 牛、黑柴犬','🥛 牛奶盒、旋奶機、鋼杯、冰杓、餐具、餐巾紙、衛生紙、抱枕','🐷 小豬、蛇、倉鼠、烏龜＋每種動物 5 種以上品種；💰 錢幣鈔票、信用卡、筆電、雨衣；☕ 咖啡廳桌椅、水杯、菜單','👀 編輯時預覽跟著捲動','🦜 鸚鵡嘴巴換顏色','😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -975,7 +977,7 @@ function makeChar(o){
     const col=new THREE.Mesh(new THREE.TorusGeometry(0.21,0.04,6,14),mat(oc2));col.rotation.x=Math.PI/2;col.position.y=1.29;g.add(col)}
   if(out==='towel'||out==='towelWrap'){cyl(0.47,0.5,0.86,12,oc,0,0.8,0,g);box(0.16,0.22,0.05,shade(oc,-0.06),0.2,1.08,0.44,g)}
   if(out==='chef'){[1.12,0.95,0.78].forEach(y=>[-0.11,0.11].forEach(x=>sph(0.035,oc2,x,y,Math.sqrt(Math.max(0,T(y)*T(y)-x*x))+0.01,g,null,8)));cyl(0.22,0.25,0.1,12,oc,0,1.32,0,g)}
-  if(out==='tank'){const n=sph(0.17,skin,0,1.2,T(1.2)-0.03,g);n.scale.set(1,1.1,0.35);[-1,1].forEach(s=>sph(0.13,skin,s*0.33,1.23,0,g))}
+  if(out==='tank'){const n=new THREE.Mesh(new THREE.CircleGeometry(0.13,3),mat(skin,{side:THREE.DoubleSide}));n.rotation.set(-0.1,0,-Math.PI/2);n.scale.set(1.3,0.95,1);n.position.set(0,1.23,T(1.23)+0.006);g.add(n);[-1,1].forEach(s=>sph(0.13,skin,s*0.33,1.23,0,g))}
   if(out==='uncle'){torso.scale.set(1.12,1,1.08);[0.64,0.86,1.08].forEach(y=>{const r=new THREE.Mesh(new THREE.CylinderGeometry(T(y+0.05)+0.012,T(y-0.05)+0.012,0.1,10,1,true),mat(oc2,{side:THREE.DoubleSide}));r.position.y=y-0.9;torso.add(r)})}
   const armL=new THREE.Group(),armR=new THREE.Group();armL.position.set(-0.47,1.22,0);armR.position.set(0.47,1.22,0);
   [armL,armR].forEach(A=>{cyl(0.1,0.1,0.56,6,slvC,0,-0.27,0,A);if(out==='uncle')cyl(0.108,0.108,0.1,6,oc2,0,-0.22,0,A);if(out==='pajama')sph(0.035,oc2,0,-0.3,0.09,A,null,6);
@@ -2373,7 +2375,19 @@ function lookEditor(host,look,onChange,opts){opts=opts||{};normLook(look);if(!lo
 /* =========================================================
    12b. 擺設：放物件、拖曳、調高度與方向
    ========================================================= */
-let itemObjs={},selItem=null,selR=1,drag=null,buildCat='kitchen',saveT=0;
+let itemObjs={},selItem=null,selR=1,drag=null,buildCat='kitchen',saveT=0,buildCatQ='';
+/* 群組：多選後一起移動、旋轉、縮放、複製、收起來 */
+let multi=null,gUnlock=false,gHelpers=[];
+function gItems(){return (multi||[]).map(id=>S.items.find(x=>x.id===id)).filter(Boolean)}
+function gRefresh(){gHelpers.forEach(h=>{scene.remove(h);h.geometry.dispose()});gHelpers=[];(multi||[]).forEach(id=>{const o=itemObjs[id];if(o){const h=new THREE.BoxHelper(o,0xe8673a);scene.add(h);gHelpers.push(h)}})}
+function gCenter(its){let x=0,z=0;its.forEach(i=>{x+=i.x;z+=i.z});return {x:x/its.length,z:z/its.length}}
+function gApply(its){its.forEach(it=>{it.x=+it.x.toFixed(2);it.z=+it.z.toFixed(2);const o=itemObjs[it.id];if(o)placeItem(o,it)});obstDirty=true;saveSoon();gRefresh()}
+function gToggle(id){if(!multi)return;const i=multi.indexOf(id);if(i>=0)multi.splice(i,1);else multi.push(id);gRefresh();if(mode==='group')render()}
+function gEnd(){multi=null;gUnlock=false;gRefresh()}
+function catGridHTML(){const q=buildCatQ.trim().toLowerCase(),keys=Object.keys(ITEMS).filter(k=>q?ITEMS[k].n.toLowerCase().includes(q):ITEMS[k].cat===buildCat);
+  if(!keys.length)return '<div class="meta">找不到「'+esc(buildCatQ)+'」，換個關鍵字試試。</div>';
+  return keys.map(k=>{const D=ITEMS[k];if(D.content)return '<div class="icard ic2"><span aria-hidden="true">'+D.e+'</span>'+D.n+'<span class="ic2b"><button type="button" class="btn" data-additem="'+k+'" data-content="empty">＋空的</button><button type="button" class="btn on" data-additem="'+k+'" data-content="full">＋有內容物</button></span></div>';
+    return '<button type="button" class="icard" data-additem="'+k+'"><span aria-hidden="true">'+D.e+'</span>'+D.n+'</button>'}).join('')}
 function saveSoon(){clearTimeout(saveT);saveT=setTimeout(save,400)}
 function placeItem(g,it){g.position.set(it.x,TOP+(it.y||0),it.z);g.rotation.order='YXZ';g.rotation.set(it.rx||0,it.ry||0,it.rz||0);g.scale.setScalar(it.s||1);
   /* 前後／左右傾斜時繞著物件中心轉，不會插進地板 */
@@ -2438,10 +2452,10 @@ function addSpot(small){const t=controls.target;let x=t.x,z=t.z;
   if(small)return {x,z};const home=isleAt(x,z);
   for(let r=0;r<=4;r+=0.5)for(let k=0;k<(r?10:1);k++){const a=k/10*6.283+r,qx=x+Math.cos(a)*r,qz=z+Math.sin(a)*r;if(isleAt(qx,qz)===home&&!blockedAt(qx,qz,0.45,null))return {x:qx,z:qz}}
   return {x,z}}
-function addItem(type){const D=ITEMS[type],sp=addSpot(!!D.small),x=sp.x,z=sp.z;
+function addItem(type,content){const D=ITEMS[type],sp=addSpot(!!D.small),x=sp.x,z=sp.z;
   const f=new THREE.Vector3();camera.getWorldDirection(f);
   const it={unlocked:true,id:uid(),type,x:+x.toFixed(2),z:+z.toFixed(2),y:0,ry:Math.round(Math.atan2(-f.x,-f.z)/(Math.PI/4))*(Math.PI/4),s:1,c:{}};
-  if(D.small)it.y=surfaceAt(it.x,it.z,null);
+  if(content)it.o={content};if(D.small)it.y=surfaceAt(it.x,it.z,null);
   S.items.push(it);save();addItemObj(it);selectItem(it.id);toast(D.e+' '+D.n+' 放好了！按住它就能拖曳')}
 function selectItem(id){if(selItem&&selItem!==id)relock(selItem);openSheet('item',id);measureSel()}
 /* 鎖定：同一時間只鎖一個；鎖定時畫面繞著它轉、跟著它走，點其他東西不會換選取 */
@@ -2461,6 +2475,7 @@ function updateSelBox(){const sb=document.getElementById('selBox'),o=editOn()&&s
     const sx=(_c3.x+1)/2*W,sy=(1-_c3.y)/2*H;x0=Math.min(x0,sx);y0=Math.min(y0,sy);x1=Math.max(x1,sx);y1=Math.max(y1,sy)}
   if(!ok||x1<0||y1<0||x0>W||y0>H){sb.hidden=true;return}
   const pad=8;sb.hidden=false;sb.style.transform='translate('+(x0-pad).toFixed(1)+'px,'+(y0-pad).toFixed(1)+'px)';sb.style.width=(x1-x0+pad*2).toFixed(1)+'px';sb.style.height=(y1-y0+pad*2).toFixed(1)+'px';
+  {const lim=sheet.hidden?H:Math.min(H,sheet.getBoundingClientRect().top-renderer.domElement.getBoundingClientRect().top);sb.classList.toggle('fx',x1+pad+56>W);sb.classList.toggle('fy',y1+pad+56>lim)}
   const sit=S.items.find(x=>x.id===selItem),lk=isLocked(sit);sb.classList.toggle('locked',lk);const b=document.getElementById('lockBtn');if(b.textContent!==(lk?'🔒':'🔓')){b.textContent=lk?'🔒':'🔓';b.setAttribute('aria-pressed',String(lk));b.setAttribute('aria-label',lk?'解鎖，開始移動':'鎖定，固定位置')}}
 function followLock(dt){return;const o=itemObjs[lockItem];if(!o){setLock(null,true);return}if(drag||tw)return;
   _f3.set(o.position.x,o.position.y+0.8,o.position.z).sub(controls.target);if(_f3.lengthSq()<1e-6)return;_f3.multiplyScalar(Math.min(1,dt*6));controls.target.add(_f3);camera.position.add(_f3)}
@@ -2506,6 +2521,7 @@ window.addEventListener('pointerup',endDrag);window.addEventListener('pointercan
    ========================================================= */
 const ray=new THREE.Raycaster(),mouse=new THREE.Vector2(),groundPlane=new THREE.Plane(new THREE.Vector3(0,1,0),-TOP);
 let down=null,sel=null,selPet=null;
+renderer.domElement.addEventListener('pointerup',e=>{if(mode!=='group'||!multi||!down)return;if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>8||performance.now()-down.t>500)return;const id=itemHit(e);if(id){gToggle(id);e.stopImmediatePropagation()}},{capture:true});
 renderer.domElement.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,t:performance.now()}});
 renderer.domElement.addEventListener('pointerup',e=>{if(editOn()){down=null;return}if(!down||!S.islandName)return;const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y),quick=performance.now()-down.t<450;down=null;if(moved>8||!quick)return;
   const r=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(mouse,camera);
@@ -2538,7 +2554,7 @@ function openSheet(m,a){if(pickPt){pickPt=null;document.getElementById('pickBar'
   const rb=(['iform','vform','pform'].includes(m)&&a)?null:RAIL[m];if(rb)document.getElementById(rb).setAttribute('aria-pressed','true');
   render();sBody.scrollTop=0;requestAnimationFrame(fitRail)}
 function fitRail(){const r=document.querySelector('.rail');if(!r)return;const top=r.getBoundingClientRect().top;let bot=window.innerHeight;if(!sheet.hidden)bot=Math.min(bot,sheet.getBoundingClientRect().top);r.style.maxHeight=Math.max(56,bot-top-8)+'px'}
-function closeSheet(){if(selItem)relock(selItem);restoreOwner();sheet.hidden=true;if(!S.islandName){const su=document.getElementById('setup');if(su)su.hidden=false}mode=null;selItem=null;pendingGo=null;if(lockItem)setLock(null,true);drag=null;controls.enabled=true;sel=null;selPet=null;document.getElementById('chips').style.visibility='visible';Object.values(RAIL).forEach(id=>document.getElementById(id).setAttribute('aria-pressed','false'));requestAnimationFrame(fitRail)}
+function closeSheet(){if(selItem)relock(selItem);if(multi)gEnd();restoreOwner();sheet.hidden=true;if(!S.islandName){const su=document.getElementById('setup');if(su)su.hidden=false}mode=null;selItem=null;pendingGo=null;if(lockItem)setLock(null,true);drag=null;controls.enabled=true;sel=null;selPet=null;document.getElementById('chips').style.visibility='visible';Object.values(RAIL).forEach(id=>document.getElementById(id).setAttribute('aria-pressed','false'));requestAnimationFrame(fitRail)}
 document.getElementById('sheetClose').addEventListener('click',closeSheet);
 window.addEventListener('resize',()=>requestAnimationFrame(fitRail));
 ['gesturestart','gesturechange'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
@@ -2652,11 +2668,23 @@ function render(){
     h+='<div style="margin-top:12px"><input type="range" id="tSlider" min="0" max="23.99" step="0.05" value="'+simHour.toFixed(2)+'" aria-label="拖曳調整時間"><div class="ticks"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div></div><div class="note">晚上路燈和窗戶會亮、天上有星星。</div>'}
   else if(mode==='owner'){sTitle.textContent='👑 島主造型';if(!draft){draft={name:S.owner.name,look:Object.assign({},S.owner.look)};ownerBackup=JSON.parse(JSON.stringify(S.owner.look))}
     h+='<div class="fld"><label for="fON">島主名稱</label><input type="text" id="fON" maxlength="10" value="'+esc(draft.name)+'"></div><div id="oEditor"></div><button class="go" type="button" data-saveowner="1">💾 儲存造型</button>'}
+  else if(mode==='group'){if(!multi)multi=[];sTitle.textContent='☑️ 群組（'+multi.length+' 個物件）';
+    h+='<div class="say">點畫面上的物件（或下面清單）加入／移出群組，被選到的會有橘色框。然後可以整組一起移動、旋轉、放大縮小、複製。</div>';
+    h+='<div class="btnrow" style="margin-top:0"><button type="button" class="btn'+(gUnlock?' on':'')+'" data-glock="1">'+(gUnlock?'🔓 已解鎖，可以一起動':'🔒 群組鎖定中（按這裡解鎖）')+'</button></div>';
+    if(multi.length){h+='<div class="mv"><div class="pad"><span></span><button type="button" class="btn" data-gn="f" aria-label="往前">▲</button><span></span><button type="button" class="btn" data-gn="l" aria-label="往左">◀</button><button type="button" class="btn" data-gn="b" aria-label="往後">▼</button><button type="button" class="btn" data-gn="r" aria-label="往右">▶</button></div><div>'+
+      '<div class="ol">整組旋轉</div><div class="tabs hq"><button type="button" class="tab" data-gr="45">↺ 45°</button><button type="button" class="tab" data-gr="15">↺ 15°</button><button type="button" class="tab" data-gr="-15">↻ 15°</button><button type="button" class="tab" data-gr="-45">↻ 45°</button></div>'+
+      '<div class="ol">整組大小</div><div class="tabs hq"><button type="button" class="tab" data-gs="0.9">➖ 縮小</button><button type="button" class="tab" data-gs="1.1">➕ 放大</button></div>'+
+      '<div class="ol">整組高度</div><div class="tabs hq"><button type="button" class="tab" data-gh="-0.1">⬇ 降低</button><button type="button" class="tab" data-gh="0.1">⬆ 升高</button></div></div></div>'}
+    {const here=isleAt(controls.target.x,controls.target.z)||'hub',list=S.items.filter(it=>ITEMS[it.type]&&(itemIsle(it)||'hub')===here);h+='<div class="grp">📍 '+esc(isleName(here))+' 的物件（點一下加入／移出）</div><div class="tabs">'+list.map(it=>'<button type="button" class="tab" data-gtog="'+it.id+'" aria-selected="'+multi.includes(it.id)+'">'+ITEMS[it.type].e+' '+esc(ITEMS[it.type].n)+'</button>').join('')+'</div>'}
+    h+='<div class="btnrow"><button type="button" class="btn on" data-gdone="1">✅ 完成</button>'+(multi.length?'<button type="button" class="btn" data-gdup="1">📄 複製整個群組</button><button type="button" class="btn red" data-ask="gdel">🗑️ 收起整個群組</button>':'')+'</div>';
+    if(confirmKey==='gdel')h+='<div class="confirm"><span>確定把這 '+multi.length+' 個物件一起收起來？</span><button class="btn" data-ask="">取消</button><button class="btn redfill" data-gdelok="1">確定</button></div>'}
   else if(mode==='settings'){sTitle.textContent='⚙️ 設定';
     h+='<button class="row" data-open="owner"><span class="tx"><span class="nm">👑 島主造型與名字</span><span class="ds">換髮型、衣服、配件</span></span></button>';
     h+='<button class="row" data-editisle="hub"><span class="tx"><span class="nm">🏝️ 改島的名字</span><span class="ds">目前：'+esc(S.islandName)+'</span></span></button>';
     h+='<button class="row" data-open="install"><span class="tx"><span class="nm">📲 '+(isStandalone()?'你正在用 App 版 ✅':'安裝成 App（加到主畫面）')+'</span><span class="ds">桌面圖示、全螢幕、沒網路也能開，存檔比較不容易被清掉</span></span></button>';
     {const st=notifState();h+='<button class="row" data-notif="toggle"><span class="tx"><span class="nm">🔔 新版本通知：'+(st==='on'?'已開啟 ✅':st==='denied'?'被系統關掉了':st==='unsupported'?'這裡不支援':'未開啟')+'</span><span class="ds">'+(st==='unsupported'?(isStandalone()?'這台裝置的瀏覽器不支援通知':'iPhone 要先「加到主畫面」用 App 版才能開通知'):st==='denied'?'要到手機的「設定 → 通知 → 我的小島」打開':'有新版本時用手機通知告訴你')+'</span></span></button>'}
+    {const st=islandStats(),pm=S.ui.perf||'auto';h+='<div class="grp">⚡ 效能模式</div>'+tabRow('','perf',[['auto','自動'],['low','省電（不卡）'],['high','高畫質']],pm,'perf')+
+      '<div class="hint">「自動」會在畫面太卡時自動改成省電（降低解析度、關掉陰影）。現在：'+(perfLow()?'省電 🐢':'一般 ✨')+'</div><div class="meta">📊 島的資料大小：'+st.kb+' KB・物件 '+st.items+' 個・島民 '+st.people+' 位・動物 '+st.pets+' 隻・畫面上的 3D 零件 '+st.meshes+' 個'+(st.meshes>6000?'（零件很多，建議用省電模式或收掉一些物件）':'')+'</div>'}
     h+='<button class="row" data-open="backup"><span class="tx"><span class="nm">📤 匯出島嶼（備份）</span><span class="ds">下載備份檔、分享或複製，換手機也能搬過去</span></span></button>';
     h+='<button class="row" data-open="import"><span class="tx"><span class="nm">📥 匯入島嶼（還原）</span><span class="ds">選備份檔或貼上備份文字</span></span></button>';
     if(hasUndoImport())h+='<button class="row" data-imp="undo"><span class="tx"><span class="nm">↩️ 還原匯入前的島</span><span class="ds">剛剛匯入的不是你要的？回到匯入前</span></span></button>';
@@ -2667,8 +2695,10 @@ function render(){
   else if(mode==='build'){sTitle.textContent='🛠️ 擺設模式';
     h+=lockBarHTML()+confirmGoHTML();
     h+='<div class="say">挑一個物件放到畫面中間 👇 <b>點一下物件，按 🔓 解鎖後就能拖曳</b>（每個物件平常都是鎖定的，不會被不小心拖走）；顏色鎖定時也能換。小東西（蛋糕、咖啡組…）拖到桌子上會自動放在桌面。路燈、樹、小屋、招牌這些島上原本就有的東西，也可以點選後移動、換色或收起來。</div>';
-    h+='<div class="tabs">'+ITEM_CAT.map(([k,l])=>'<button type="button" class="tab" data-icat="'+k+'" aria-selected="'+(buildCat===k)+'">'+l+'</button>').join('')+'</div>';
-    h+='<div class="igrid">'+Object.keys(ITEMS).filter(k=>ITEMS[k].cat===buildCat).map(k=>'<button type="button" class="icard" data-additem="'+k+'"><span aria-hidden="true">'+ITEMS[k].e+'</span>'+ITEMS[k].n+'</button>').join('')+'</div>';
+    h+='<div class="btnrow" style="margin-top:0"><button class="btn" type="button" data-multi="1">☑️ 多選（群組）</button></div>';
+    h+='<input type="search" class="isearch" id="catSearch" placeholder="🔎 搜尋要新增的東西（例如：咖啡、燈、聖誕）" value="'+esc(buildCatQ)+'">';
+    h+='<div class="tabs">'+ITEM_CAT.map(([k,l])=>'<button type="button" class="tab" data-icat="'+k+'" aria-selected="'+(buildCat===k&&!buildCatQ)+'">'+l+' <small>'+Object.keys(ITEMS).filter(t=>ITEMS[t].cat===k).length+'</small></button>').join('')+'</div>';
+    h+='<div class="igrid" id="igrid">'+catGridHTML()+'</div>';
     h+='<div class="grp">🏠 已經擺好的（'+S.items.length+'）・依所在的島分組</div><input type="search" class="isearch" id="iSearch" placeholder="🔎 搜尋物件名稱（所有島）" value="'+esc(buildQ)+'" aria-label="搜尋物件"><div id="iList">'+itemListHTML()+'</div>';
     h+='<div class="grp">🎨 地板顏色</div><div class="tabs">'+[{id:'hub',name:'主島'}].concat(S.isles).map(is=>'<button type="button" class="tab" data-editisle="'+is.id+'">'+esc(is.name)+'</button>').join('')+'</div>';
     h+='<button class="go ghost" type="button" data-endedit="1">✅ 完成擺設</button>'}
@@ -2753,8 +2783,18 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
     if(d.dupitem){const c=JSON.parse(JSON.stringify(it));c.id=uid();c.unlocked=true;c.x=+(c.x+0.8).toFixed(2);c.z=+(c.z+0.4).toFixed(2);S.items.push(c);save();addItemObj(c);selectItem(c.id);toast('📄 複製好了，拖曳到想要的位置');return}
     if(d.delitem){if(lockItem===it.id)setLock(null,true);removeItemObj(it.id);S.items=S.items.filter(x=>x.id!==it.id);save();openSheet('build');toast('🧹 收起來了');return}}}
   if(mode==='iform'&&draft&&cpClick(sBody,b,draft,null))return;
-  if(d.icat){buildCat=d.icat;render();return}
-  if(d.additem){addItem(d.additem);return}
+  if(d.icat){buildCat=d.icat;buildCatQ='';render();return}
+  if(d.multi){if(selItem)relock(selItem);multi=[];gUnlock=false;openSheet('group');return}
+  if(mode==='group'&&multi){if(d.glock){gUnlock=!gUnlock;render();return}if(d.gtog){gToggle(d.gtog);return}if(d.gdone){gEnd();openSheet('build');return}
+    const its=gItems();if((d.gn||d.gr||d.gs||d.gh||d.gdelok)&&!gUnlock){toast('🔒 群組鎖定中：先按「解鎖」才能一起動');return}
+    if(d.gn){const f=new THREE.Vector3();camera.getWorldDirection(f);f.y=0;f.normalize();const r=new THREE.Vector3(-f.z,0,f.x),v={f:f,b:f.clone().negate(),l:r.clone().negate(),r:r}[d.gn];its.forEach(it=>{it.x+=v.x*0.25;it.z+=v.z*0.25});gApply(its);return}
+    if(d.gr){const a=(+d.gr)*Math.PI/180,c=gCenter(its);its.forEach(it=>{const dx=it.x-c.x,dz=it.z-c.z;it.x=c.x+dx*Math.cos(a)+dz*Math.sin(a);it.z=c.z-dx*Math.sin(a)+dz*Math.cos(a);it.ry=(it.ry||0)+a});gApply(its);return}
+    if(d.gs){const f=+d.gs,c=gCenter(its);its.forEach(it=>{it.x=c.x+(it.x-c.x)*f;it.z=c.z+(it.z-c.z)*f;it.s=+Math.max(0.2,Math.min(5,(it.s||1)*f)).toFixed(3);it.y=+((it.y||0)*f).toFixed(3)});gApply(its);return}
+    if(d.gh){its.forEach(it=>it.y=+Math.max(0,(it.y||0)+(+d.gh)).toFixed(2));gApply(its);return}
+    if(d.gdup){const nu=its.map(it=>{const c=JSON.parse(JSON.stringify(it));c.id=uid();delete c.unlocked;c.x=+(c.x+1).toFixed(2);c.z=+(c.z+0.6).toFixed(2);S.items.push(c);addItemObj(c);return c.id});multi=nu;obstDirty=true;save();gRefresh();render();toast('📄 複製好了，新的群組已經選好');return}
+    if(d.gdelok){its.forEach(it=>removeItemObj(it.id));const ids=multi.slice();S.items=S.items.filter(x=>!ids.includes(x.id));multi=[];confirmKey='';save();gRefresh();render();toast('🧹 群組收起來了');return}}
+  if(d.perf){S.ui.perf=d.v;if(d.v!=='auto')autoLow=false;save();applyPerf();render();toast(d.v==='low'?'🐢 已切到省電模式':d.v==='high'?'✨ 已切到高畫質':'⚙️ 自動模式');return}
+  if(d.additem){addItem(d.additem,d.content);return}
   if(d.selitem){pickItem(d.selitem,true);return}
   if(d.edititem){selectItem(d.edititem);return}
   if(d.lockitem){if(selItem!==d.lockitem){selItem=d.lockitem;measureSel()}toggleLock(d.lockitem);return}
@@ -2841,6 +2881,7 @@ sBody.addEventListener('change',e=>{
   if(e.target.id==='imFile'){const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const t=document.getElementById('im');if(t)t.value=String(r.result||'');previewImport(String(r.result||''))};r.onerror=()=>toast('讀不到這個檔案');r.readAsText(f);return}if(e.target.id==='fIsle'&&draft){draft.isle=e.target.value;const th=isleTheme(draft.isle),L=Object.assign({},draft.look);if(!L.outfit||L.outfit==='uniform')L.shirt=th?th.shirt:HUB_SHIRT;L.capColor=L.capC||L.shirt;pvSet(L)}});
 sBody.addEventListener('input',e=>{
   if(e.target.id==='iSearch'){buildQ=e.target.value;const l=document.getElementById('iList');if(l)l.innerHTML=itemListHTML();return}
+  if(e.target.id==='catSearch'){buildCatQ=e.target.value;const gEl=document.getElementById('igrid');if(gEl)gEl.innerHTML=catGridHTML();sBody.querySelectorAll('[data-icat]').forEach(t=>t.setAttribute('aria-selected',String(!buildCatQ&&t.dataset.icat===buildCat)));return}
   if(mode==='item'&&e.target.id==='fSign'){const it=S.items.find(x=>x.id===arg);if(it){it.text=e.target.value.trim();rebuildItem(it);saveSoon()}return}
   if(mode==='item'){const it=S.items.find(x=>x.id===arg);if(it){if(!it.c)it.c={};if(cpInput(sBody,e.target,it.c,()=>{rebuildItem(it);saveSoon()}))return;const k=e.target.dataset.isl;
     if(k&&isLocked(it)){isFixed(it);syncSliders(it);return}
@@ -2933,8 +2974,14 @@ function startGame(first){if(S.ui.paused)setTimeout(()=>toast('⏸️ 島民和�
 /* =========================================================
    19. 動畫迴圈
    ========================================================= */
+let autoLow=false,fpsN=0,fpsT=performance.now(),fpsSince=performance.now();
+function perfLow(){const m=(S&&S.ui&&S.ui.perf)||'auto';return m==='low'||(m==='auto'&&autoLow)}
+function applyPerf(){const low=perfLow();renderer.setPixelRatio(low?1:Math.min(window.devicePixelRatio||1,2));if(renderer.shadowMap.enabled===low){renderer.shadowMap.enabled=!low;scene.traverse(o=>{if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.needsUpdate=true)})}resize()}
+function perfTick(){fpsN++;const now=performance.now();if(now-fpsT<5000)return;const fps=fpsN*1000/(now-fpsT);fpsN=0;fpsT=now;
+  if(document.hidden||now-fpsSince<9000)return;if(((S&&S.ui&&S.ui.perf)||'auto')==='auto'&&!autoLow&&fps<28){autoLow=true;applyPerf();toast('🐢 畫面有點卡，已自動切換成「省電模式」（設定 → ⚡ 效能模式可以改）')}}
+function islandStats(){let bytes=0;try{bytes=(localStorage.getItem('ai-dongzi-island-3d-v1')||'').length}catch(e){}let meshes=0;scene.traverse(o=>{if(o.isMesh)meshes++});return {kb:Math.round(bytes/1024*10)/10,items:S.items.length,people:S.people.length,pets:S.pets.length,meshes}}
 function resize(){W=stage.clientWidth;H=stage.clientHeight;renderer.setSize(W,H,false);camera.aspect=W/H;camera.updateProjectionMatrix()}
-window.addEventListener('resize',resize);resize();
+window.addEventListener('resize',resize);resize();if(perfLow())applyPerf();
 const clock=new THREE.Clock();let dayCheck=0;
 function loop(){const dt=Math.min(0.05,clock.getDelta());
   simHour=S.ui.timeMode==='live'?localHour():S.ui.hour;applySky(simHour);document.getElementById('railClock').textContent=fmtHour(simHour);
@@ -2953,7 +3000,7 @@ function loop(){const dt=Math.min(0.05,clock.getDelta());
     marker.position.set(meState.x,me.g.position.y+0.33+2.55*me.g.scale.y+Math.sin(meState.t*3)*0.12,meState.z);marker.rotation.y+=dt*1.5}
   if(editOn()&&selItem&&itemObjs[selItem]){const o=itemObjs[selItem];selRing.position.set(o.position.x,o.position.y+0.05,o.position.z);selRing.scale.setScalar(selR/0.85*(1+Math.sin(meState.t*4)*0.04));selRing.visible=true}
   else{selRing.scale.setScalar(1);const sv=sel&&byId[sel]?byId[sel].c.g:selPet&&petById[selPet]?petById[selPet].m.g:null;if(sv){selRing.position.set(sv.position.x,TOP+0.2+bridgeY(sv.position.x,sv.position.z),sv.position.z);selRing.visible=true}else selRing.visible=false;}
-  if(!S.ui.paused){const tt=clock.elapsedTime;for(const id in itemObjs){const an=itemObjs[id].userData.anims;if(an)for(const f of an)f(tt,dt)}}
+  if(!S.ui.paused){const tt=clock.elapsedTime,tg=controls.target;for(const id in itemObjs){const o=itemObjs[id],an=o.userData.anims;if(an&&o.position.distanceToSquared(tg)<1800)for(const f of an)f(tt,dt)}}perfTick();
   if(!S.ui.paused){const a=bokehGeo.attributes.position;for(let i=0;i<NB;i++){let y=a.getY(i)+dt*0.25;if(y>11)y=2;a.setY(i,y);a.setX(i,a.getX(i)+Math.sin(meState.t*0.5+i)*dt*0.08)}a.needsUpdate=true}
   followLock(dt);updateViewOffset(dt);
   if(tw){tw.t=Math.min(1,tw.t+dt/0.9);const e=1-Math.pow(1-tw.t,3);controls.target.lerpVectors(tw.ft,tw.tt,e);camera.position.lerpVectors(tw.fp,tw.tp,e);if(tw.t>=1)tw=null}
