@@ -353,9 +353,9 @@ html,body,#app{touch-action:none;overscroll-behavior:none}
    1. 常數
    ========================================================= */
 const KEY='ai-dongzi-island-3d-v1';
-const APP_VERSION='1.4.2';
-const APP_NOTES=['🔄 物件可以 360° 旋轉：除了水平方向，還能調「前後傾斜（垂直）」和「左右傾斜」，也有躺平、側躺、倒過來、回正快速鍵'];
-const APP_OLD=['📍 新增物件放在你正在看的地方','🧱 牆壁可調長寬高、玻璃門、出菜口、招牌、告示牌、牛角椅；🍳 早午餐、漢堡、披薩、甜點、飲料；🐮 牛、黑柴犬','🥛 牛奶盒、旋奶機、鋼杯、冰杓、餐具、餐巾紙、衛生紙、抱枕','🐷 小豬、蛇、倉鼠、烏龜＋每種動物 5 種以上品種；💰 錢幣鈔票、信用卡、筆電、雨衣；☕ 咖啡廳桌椅、水杯、菜單','👀 編輯時預覽跟著捲動','🦜 鸚鵡嘴巴換顏色','😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
+const APP_VERSION='1.5.0';
+const APP_NOTES=['⛲ 中央噴水池真的會噴水了（水柱、水花、瀑布、漣漪）','🟫 地板材質：沙灘（有小螃蟹走來走去）、柏油路、小碎石、草地、行人道、斑馬線、磁磚、木地板、純色，大小可調、大家都能走上去','🌉 橋可以換顏色花樣、改成地板材質、高速公路或玻璃隧道（點小島 → 🌉）','🚇 隧道、🪜 樓梯、🪨 大石頭、小石頭'];
+const APP_OLD=['🔄 物件 360° 旋轉','📍 新增物件放在你正在看的地方','🧱 牆壁可調長寬高、玻璃門、出菜口、招牌、告示牌、牛角椅；🍳 早午餐、漢堡、披薩、甜點、飲料；🐮 牛、黑柴犬','🥛 牛奶盒、旋奶機、鋼杯、冰杓、餐具、餐巾紙、衛生紙、抱枕','🐷 小豬、蛇、倉鼠、烏龜＋每種動物 5 種以上品種；💰 錢幣鈔票、信用卡、筆電、雨衣；☕ 咖啡廳桌椅、水杯、菜單','👀 編輯時預覽跟著捲動','🦜 鸚鵡嘴巴換顏色','😊 表情喜怒哀樂、💞 家人抱抱／同事聊天','👖 褲子看得出來了：長褲／短褲／阿伯西裝褲','🆕 電視、電視櫃、衣櫃、衣帽架；💪 身材可選；💇 中分；🧢 帽簷方向','✋ 左右手拿東西、🍽️ 髒碗盤洗手槽、🚧 不會穿過物件','⏳ 冰滴咖啡站新造型（單座）','🔒 物件預設鎖定，按 🔓 才能移動','🍳 鍋鏟、炒鍋、歐姆蛋、義大利麵、紅色電鍋、工業電扇、直立冰箱、調味料架、切片蛋糕櫃、收餐具推車','🧊 雙門冰箱、煎台、油鍋、電鍋、大烤箱、蛋糕櫃、禮品架、冰滴塔','🗓️ 島民作息、32 種職業、21 種工作動作','📲 安裝成 App、🔔 新版本通知','📥 匯入／匯出島嶼','☕ 熱吧機、收銀台、冰滴咖啡組','📋 擺設清單分組、搜尋']; 
 const STATUS={'進行中':'#2f9e5f','待辦':'#e9952a','穩定運作':'#3f84cf','暫停':'#8f847c','閒置':'#d9473a'};
 const STATUS_TIP={'進行中':'正在忙，快步走來走去','待辦':'在等你給東西，邊走邊舉手','穩定運作':'固定在跑，悠閒散步','暫停':'先放著，慢慢晃','閒置':'很久沒動，在打瞌睡'};
 const ICON={
@@ -631,6 +631,29 @@ const PET_X={
 PET_X.cow=__cowX;
 
 /* 可以擺設的物件（cols = [顏色鍵, 名稱, 預設色]；small = 小東西，拖曳時會自動放到桌面上） */
+/* 地板材質：沙灘、柏油路、小碎石、草地、行人道、斑馬線、磁磚、木地板、純色（貼圖 1 張＝1 公尺） */
+const GROUND={sand:{n:'沙灘',c:['#ead9ab','#d6c08c']},asphalt:{n:'柏油路',c:['#3c3e43','#5a5d63']},gravel:{n:'小碎石',c:['#a39d93','#6f6a62']},grass:{n:'草地',c:['#62ad4c','#4a8c38']},
+  sidewalk:{n:'行人道',c:['#cbc6bd','#9e998f']},zebra:{n:'斑馬線',c:['#3c3e43','#f4f4f4']},tile:{n:'磁磚',c:['#f2efe8','#c9c4bb']},wood:{n:'木地板',c:['#c9a27a','#a88058']},solid:{n:'純色',c:['#e9e2d4','#e9e2d4']}};
+const GROUND_OPTS=Object.keys(GROUND).map(k=>[k,GROUND[k].n]);
+const GTX={};function groundMat(st,c1,c2,w,d){const G=GROUND[st]||GROUND.solid;c1=c1||G.c[0];c2=c2||G.c[1];const key=st+c1+c2;
+  if(!GTX[key]){const cv=document.createElement('canvas');cv.width=cv.height=128;const x=cv.getContext('2d'),R=srand(key);x.fillStyle=c1;x.fillRect(0,0,128,128);x.fillStyle=c2;x.strokeStyle=c2;
+    if(st==='sand')for(let i=0;i<500;i++)x.fillRect(R()*128,R()*128,1.5,1.5);
+    else if(st==='asphalt'){for(let i=0;i<700;i++){x.fillStyle=R()<0.5?c2:shade(c1,-0.08);x.fillRect(R()*128,R()*128,1.4,1.4)}}
+    else if(st==='gravel')for(let i=0;i<170;i++){x.fillStyle=[c2,shade(c1,0.12),shade(c2,-0.1)][i%3];x.beginPath();x.ellipse(R()*128,R()*128,2+R()*3,1.5+R()*2,R()*3,0,7);x.fill()}
+    else if(st==='grass'){x.lineWidth=1.4;for(let i=0;i<420;i++){const px=R()*128,py=R()*128;x.strokeStyle=R()<0.5?c2:shade(c1,0.1);x.beginPath();x.moveTo(px,py);x.lineTo(px+(R()-0.5)*3,py-4-R()*4);x.stroke()}}
+    else if(st==='sidewalk'){x.lineWidth=3;[0,64].forEach(v=>{x.beginPath();x.moveTo(v,0);x.lineTo(v,128);x.moveTo(0,v);x.lineTo(128,v);x.stroke()})}
+    else if(st==='zebra')x.fillRect(0,0,64,128);
+    else if(st==='tile'){x.lineWidth=4;x.strokeRect(0,0,128,128);x.lineWidth=2;x.beginPath();x.moveTo(64,0);x.lineTo(64,128);x.moveTo(0,64);x.lineTo(128,64);x.stroke()}
+    else if(st==='wood'){x.lineWidth=2;for(let i=0;i<4;i++){x.beginPath();x.moveTo(0,i*32);x.lineTo(128,i*32);x.stroke();const o=(i%2)*64;x.beginPath();x.moveTo(o+20,i*32);x.lineTo(o+20,i*32+32);x.stroke()}}
+    GTX[key]=new THREE.CanvasTexture(cv)}
+  const t=GTX[key].clone();t.needsUpdate=true;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(Math.max(0.2,w),st==='zebra'?1:Math.max(0.2,d));return new THREE.MeshStandardMaterial({map:t,roughness:0.95})}
+function own(m){m.userData.ownMat=true;return m}
+function makeCrab(){const c=new THREE.Group(),red='#e0533a';const b=sph(0.09,red,0,0.06,0,c,{flatShading:false},12);b.scale.set(1.35,0.55,1);
+  [-1,1].forEach(s=>{cyl(0.006,0.006,0.06,5,red,s*0.035,0.1,0.06,c);sph(0.015,'#1a1513',s*0.035,0.135,0.06,c,null,6);const cl=sph(0.035,red,s*0.13,0.06,0.08,c,null,8);cl.scale.set(1,0.7,1.3);
+    for(let i=0;i<3;i++){const l=box(0.09,0.012,0.012,red,s*0.15,0.03,-0.04+i*0.04,c);l.rotation.z=s*-0.5;l.userData.leg=s*(i+1)}});return c}
+/* 橋：可愛木橋（可換顏色、交錯／單色）、地板材質、高速公路、玻璃隧道 */
+const BR_TYPES=[['cute','🌉 可愛木橋'],['floor','🟫 地板材質'],['highway','🛣️ 高速公路'],['tunnel','🚇 隧道']];
+const BR_DEF={type:'cute',pat:'alt',c1:'#e9b98a',c2:'#dca777',rail:'#f4a3c4',ball:'#ffffff',surf:'asphalt',glass:'#bfe3ef'};
 const ITEM_CAT=[['isle','島嶼設施'],['build','牆壁・門窗'],['food','餐點・飲料'],['kitchen','廚房'],['bake','烘焙'],['cafe','咖啡・裝飾'],['bed','臥室'],['living','客廳'],['outdoor','戶外'],['garden','庭園・農場']];
 const ITEMS={
   lamp:{n:'路燈',e:'💡',cat:'isle',cols:[['pole','燈柱','#2b2421'],['light','燈泡','#fff2c4']]},
@@ -643,6 +666,11 @@ const ITEMS={
   island:{n:'中島櫃',e:'🍳',cat:'kitchen',cols:[['main','櫃體','#f4efe6'],['top','檯面','#c9a27a'],['knob','把手','#c9a27a']]},
   stove:{n:'爐台',e:'🔥',cat:'kitchen',cols:[['main','櫃體','#f4efe6'],['top','檯面','#8f847c']]},
   gas:{n:'瓦斯爐',e:'🍲',cat:'kitchen',small:1,cols:[['main','爐身','#d9dde3'],['grate','爐架','#2b2421'],['flame','火焰','#4fa3ff']]},
+  ground:{n:'地板材質（大家都能走上去）',e:'🟫',cat:'build',cols:[['main','主色（不選＝材質原色）',''],['accent','花紋色',''],['rail','欄杆','#8b5a34']],opts:[['style','材質',GROUND_OPTS,'sand'],['crab','沙灘小螃蟹',[['1','要'],['0','不要']],'1']],dims:[['w','長度',0.5,30,0.1,4],['d','寬度',0.5,30,0.1,3]]},
+  stairs:{n:'樓梯（一樓到二樓）',e:'🪜',cat:'build',cols:[['main','主色（不選＝材質原色）',''],['accent','花紋色',''],['rail','扶手','#2b2421']],opts:[['style','材質',GROUND_OPTS,'wood'],['rail','扶手',[['both','兩邊'],['left','一邊'],['none','不要']],'both']],dims:[['w','寬度',0.6,4,0.1,1.2],['h','高度',0.5,5,0.1,2.6]]},
+  tunnel:{n:'隧道',e:'🚇',cat:'build',cols:[['outer','外牆','#8f847c'],['inner','內牆','#d8d2c6'],['top','山頂草皮','#5fa84a']],opts:[['style','樣式',[['rock','山洞'],['concrete','水泥']],'rock']],dims:[['l','長度',2,20,0.5,6],['w','寬度',2,6,0.1,3.4],['h','高度',2,5,0.1,3]]},
+  bigrock:{n:'大石頭',e:'🪨',cat:'outdoor',cols:[['stone','石頭','#9a958c'],['moss','青苔','#6b8f4a']]},
+  smallrock:{n:'小石頭',e:'🪨',cat:'outdoor',small:1,cols:[['stone','石頭','#a39d93']]},
   wall:{n:'牆壁（長寬高可調）',e:'🧱',cat:'build',cols:[['main','底色','#f4efe6'],['accent','花紋／條紋顏色','#c9a27a']],opts:[['style','樣式',[['solid','純色'],['pattern','花紋'],['hstripe','橫條紋'],['vstripe','直條紋']],'solid']],dims:[['w','長度',0.3,12,0.1,3],['h','高度',0.3,5,0.1,2.5],['t','厚度',0.05,0.8,0.01,0.15]]},
   glassdoor:{n:'玻璃門',e:'🚪',cat:'build',cols:[['frame','門框','#2b2421'],['glass','玻璃','#cfe9f3'],['handle','把手','#c9ced6']]},
   passwin:{n:'出菜口（菜口）',e:'🛎️',cat:'build',cols:[['wall','牆面','#f4efe6'],['shelf','出菜台','#c9a27a'],['lamp','保溫燈','#2b2421']]},
@@ -806,16 +834,23 @@ function hexIsland(cx,cz,r,top,own){const g=new THREE.Group();g.position.set(cx,
   cyl(r*1.1,r*1.16,0.1,6,'#d9f0f2',0,0.17,0,g);cyl(r*1.03,r*1.09,0.6,6,'#e9dcc0',0,0.36,0,g);cyl(r*0.97,r*1.0,0.5,6,'#8a6a4c',0,0.74,0,g);
   const t=new THREE.Mesh(new THREE.CylinderGeometry(r*0.95,r*0.95,0.06,6),own?new THREE.MeshStandardMaterial({color:top,roughness:0.9,flatShading:true}):mat(top));
   t.position.y=TOP-0.02;t.receiveShadow=true;g.add(t);return t}
-function cuteBridge(ax,az,bx,bz){const dx=bx-ax,dz=bz-az,D=Math.hypot(dx,dz),ux=dx/D,uz=dz/D;
-  const x0=ax+ux*HEX_R*0.8,z0=az+uz*HEX_R*0.8,x1=bx-ux*HEX_R*0.8,z1=bz-uz*HEX_R*0.8,Lb=Math.hypot(x1-x0,z1-z0),Hb=0.75;
+function cuteBridge(ax,az,bx,bz,brIn){const br=Object.assign({},BR_DEF,brIn||{}),T=br.type;const dx=bx-ax,dz=bz-az,D=Math.hypot(dx,dz),ux=dx/D,uz=dz/D;
+  const x0=ax+ux*HEX_R*0.8,z0=az+uz*HEX_R*0.8,x1=bx-ux*HEX_R*0.8,z1=bz-uz*HEX_R*0.8,Lb=Math.hypot(x1-x0,z1-z0),Hb=T==='highway'?0.3:T==='tunnel'?0.4:0.75;
   const g=new THREE.Group();g.position.set((x0+x1)/2,TOP-0.02,(z0+z1)/2);g.rotation.y=Math.atan2(x1-x0,z1-z0);world.add(g);
-  const n=Math.max(6,Math.round(Lb/0.45)),cols=['#e9b98a','#dca777'];
-  for(let i=0;i<n;i++){const t=(i+0.5)/n,zz=-Lb/2+t*Lb,y=Math.sin(t*Math.PI)*Hb;const p=box(2.4,0.14,Lb/n+0.04,cols[i%2],0,y,zz,g);p.rotation.x=-Math.cos(t*Math.PI)*Math.PI*Hb/Lb}
-  const posts=Math.max(6,Math.round(Lb/1.2));
-  [-1.25,1.25].forEach(sx=>{for(let i=0;i<=posts;i++){const t=i/posts,zz=-Lb/2+t*Lb,y=Math.sin(t*Math.PI)*Hb;cyl(0.08,0.08,0.75,6,'#f4a3c4',sx,y+0.4,zz,g);
-      const b=new THREE.Mesh(new THREE.SphereGeometry(0.13,8,6),mat('#ffffff',{flatShading:false}));b.position.set(sx,y+0.82,zz);g.add(b);
-      if(i<posts){const t2=(i+0.5)/posts,y2=Math.sin(t2*Math.PI)*Hb;const r=box(0.07,0.07,Lb/posts,'#f4a3c4',sx,y2+0.7,-Lb/2+t2*Lb,g);r.rotation.x=-Math.cos(t2*Math.PI)*Math.PI*Hb/Lb}}
-    const lt=new THREE.Mesh(new THREE.SphereGeometry(0.12,8,6),glowBulb);lt.position.set(sx,Hb+1.0,0);g.add(lt)});
+  const n=Math.max(6,Math.round(Lb/0.45)),W=T==='highway'?3.6:2.4,yAt=t=>Math.sin(t*Math.PI)*Hb,rotAt=t=>-Math.cos(t*Math.PI)*Math.PI*Hb/Lb;
+  const deckM=T==='cute'?null:own(groundMat(T==='highway'?'asphalt':br.surf,T==='floor'?br.c1x:null,null,W,Lb/n+0.04));
+  for(let i=0;i<n;i++){const t=(i+0.5)/n,zz=-Lb/2+t*Lb;let p;if(deckM){p=new THREE.Mesh(new THREE.BoxGeometry(W,0.14,Lb/n+0.04),deckM);p.position.set(0,yAt(t),zz);p.receiveShadow=true;g.add(p)}else p=box(W,0.14,Lb/n+0.04,br.pat==='solid'?br.c1:(i%2?br.c2:br.c1),0,yAt(t),zz,g);p.rotation.x=rotAt(t);
+    if(T==='highway'){if(i%2===0){const l=box(0.1,0.01,Lb/n*0.9,'#f2d23c',0,yAt(t)+0.075,zz,g);l.rotation.x=rotAt(t)}[-1,1].forEach(s=>{const e=box(0.08,0.01,Lb/n+0.04,'#f4f4f4',s*(W/2-0.25),yAt(t)+0.075,zz,g);e.rotation.x=rotAt(t)})}}
+  if(T==='highway'){[-1,1].forEach(s=>{for(let i=0;i<n;i++){const t=(i+0.5)/n,b=box(0.25,0.5,Lb/n+0.04,'#c9c6bf',s*(W/2+0.05),yAt(t)+0.3,-Lb/2+t*Lb,g);b.rotation.x=rotAt(t)}
+      [0.3,0.7].forEach(t=>{const zz=-Lb/2+t*Lb,y=yAt(t);cyl(0.06,0.07,2.6,8,'#8f959e',s*(W/2+0.05),y+1.6,zz,g);box(0.7,0.06,0.12,'#8f959e',s*(W/2-0.28),y+2.9,zz,g);sph(0.1,'#fff3c4',s*(W/2-0.55),y+2.84,zz,g,{emissive:'#ffd27a',emissiveIntensity:0.9},8)})})}
+  else if(T==='tunnel'){const gm=own(new THREE.MeshStandardMaterial({color:br.glass,transparent:true,opacity:0.32,roughness:0.05,side:THREE.DoubleSide}));
+    for(let i=0;i<n;i++){const t=(i+0.5)/n,zz=-Lb/2+t*Lb,s=new THREE.Mesh(new THREE.CylinderGeometry(1.3,1.3,Lb/n+0.02,16,1,true,Math.PI/2,Math.PI),gm);s.rotation.set(Math.PI/2+rotAt(t),0,0);s.scale.set(1,1,1.7);s.position.set(0,yAt(t)+0.07,zz);g.add(s)}
+    const ribs=Math.max(4,Math.round(Lb/1.5));for(let i=0;i<=ribs;i++){const t=i/ribs,r=new THREE.Mesh(new THREE.TorusGeometry(1.3,0.05,6,18,Math.PI),mat(br.rail));r.scale.set(1,1.7,1);r.position.set(0,yAt(t)+0.07,-Lb/2+t*Lb);r.rotation.x=rotAt(t);g.add(r)}}
+  else{const posts=Math.max(6,Math.round(Lb/1.2));
+    [-1.25,1.25].forEach(sx=>{for(let i=0;i<=posts;i++){const t=i/posts,zz=-Lb/2+t*Lb,y=yAt(t);cyl(0.08,0.08,0.75,6,br.rail,sx,y+0.4,zz,g);
+        const b=new THREE.Mesh(new THREE.SphereGeometry(0.13,8,6),mat(br.ball,{flatShading:false}));b.position.set(sx,y+0.82,zz);g.add(b);
+        if(i<posts){const t2=(i+0.5)/posts,y2=yAt(t2);const r=box(0.07,0.07,Lb/posts,br.rail,sx,y2+0.7,-Lb/2+t2*Lb,g);r.rotation.x=rotAt(t2)}}
+      const lt=new THREE.Mesh(new THREE.SphereGeometry(0.12,8,6),glowBulb);lt.position.set(sx,Hb+1.0,0);g.add(lt)})}
   const B={x0,z0,x1,z1,Lb,Hb};BRIDGES.push(B);return B}
 function bridgeY(x,z){for(const b of BRIDGES){const vx=b.x1-b.x0,vz=b.z1-b.z0,t=((x-b.x0)*vx+(z-b.z0)*vz)/(b.Lb*b.Lb);if(t<=0||t>=1)continue;
     const px=b.x0+vx*t,pz=b.z0+vz*t;if(Math.hypot(x-px,z-pz)<1.3)return Math.sin(t*Math.PI)*b.Hb+0.05}return 0}
@@ -1186,6 +1221,24 @@ const BUILD={
     for(let i=0;i<8;i++){const n=box(0.135,0.12,0.004,C.paper,0,0.07,-0.025+i*0.007,g);n.rotation.x=(i-4)*0.02}},
   tissue(g,C){const m=txMat('tissue'+C.pack,(x,w,h)=>{x.fillStyle=C.pack;x.fillRect(0,0,w,h);x.fillStyle='rgba(255,255,255,.75)';x.font='bold 40px sans-serif';x.textAlign='center';x.fillText('面紙',w/2,h*0.62);x.beginPath();x.arc(w*0.25,h*0.25,14,0,7);x.arc(w*0.75,h*0.8,10,0,7);x.fill()},200,140);
     box(0.11,0.05,0.11,C.pack,0,0.025,0,g);const f=new THREE.Mesh(new THREE.PlaneGeometry(0.108,0.048),m);f.position.set(0,0.025,0.0552);g.add(f);const t=box(0.06,0.04,0.01,C.paper,0,0.065,0,g);t.rotation.z=0.2;const t2=box(0.05,0.03,0.008,C.paper,0.01,0.075,0.006,g);t2.rotation.set(0.3,0,-0.3)},
+  ground(g,C,it){const d=Object.assign({w:4,d:3},it&&it.d),o=Object.assign({style:'sand',crab:'1'},it&&it.o),c=it&&it.c||{};const m=new THREE.Mesh(new THREE.BoxGeometry(d.w,0.04,d.d),own(groundMat(o.style,c.main,c.accent,d.w,d.d)));m.position.y=0.02;m.receiveShadow=true;g.add(m);
+    if(o.style==='sand'&&o.crab!=='0'){const n=Math.max(1,Math.min(4,Math.round(d.w*d.d/6)));for(let i=0;i<n;i++){const cr=makeCrab(),ph=i*2.3,sp=0.6+i*0.17;g.add(cr);
+      A(t=>{const k=t*0.35*sp+ph;cr.position.set(Math.sin(k)*d.w*0.38,0.04,Math.sin(k*0.61+ph)*d.d*0.38);cr.rotation.y=Math.sin(k*0.2)*0.4;const run=Math.cos(k)!==0;cr.children.forEach(ch=>{if(ch.userData.leg)ch.rotation.x=Math.sin(t*14+ch.userData.leg)*0.5})})}}},
+  stairs(g,C,it){const d=Object.assign({w:1.2,h:2.6},it&&it.d),o=Object.assign({style:'wood',rail:'both'},it&&it.o),c=it&&it.c||{},n=Math.max(2,Math.round(d.h/0.2)),sh=d.h/n,dp=0.28,L=n*dp;
+    const m=own(groundMat(o.style,c.main,c.accent,d.w,dp));for(let i=0;i<n;i++){const s=new THREE.Mesh(new THREE.BoxGeometry(d.w,sh*(i+1),dp),m);s.position.set(0,sh*(i+1)/2,L/2-dp/2-i*dp);s.castShadow=s.receiveShadow=true;g.add(s)}
+    const sides=o.rail==='both'?[-1,1]:o.rail==='left'?[-1]:[];sides.forEach(sx=>{const x=sx*(d.w/2-0.04),ang=Math.atan2(d.h,L);for(let i=0;i<=n;i+=Math.max(1,Math.round(n/4))){const zz=L/2-i*dp-dp/2;cyl(0.025,0.025,0.9,8,C.rail,x,sh*(i+1)+0.45,zz,g)}
+      const r=cyl(0.03,0.03,Math.hypot(L-dp,d.h-sh),8,C.rail,x,(sh+d.h)/2+0.9,0,g);r.rotation.x=-Math.atan2(L-dp,d.h-sh)})},
+  tunnel(g,C,it){const d=Object.assign({l:6,w:3.4,h:3},it&&it.d),o=Object.assign({style:'rock'},it&&it.o),R=d.w/2,sy=d.h/R;
+    const shell=(r,col,side)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,d.l,20,1,true,Math.PI/2,Math.PI),mat(col,{side,flatShading:o.style==='rock'}));m.rotation.x=Math.PI/2;m.scale.set(1,1,sy);g.add(m);return m};
+    shell(R+0.45,C.outer,THREE.FrontSide);shell(R,C.inner,THREE.BackSide);
+    [1,-1].forEach(s=>{const ring=new THREE.Mesh(new THREE.RingGeometry(R,R+0.45,20,1,0,Math.PI),mat(C.outer,{side:THREE.DoubleSide}));ring.scale.set(1,sy,1);ring.position.z=s*d.l/2;g.add(ring)});
+    const rd=new THREE.Mesh(new THREE.BoxGeometry(d.w,0.04,d.l),own(groundMat('asphalt',null,null,d.w,d.l)));rd.position.y=0.02;g.add(rd);for(let z=-d.l/2+0.5;z<d.l/2;z+=1.2)box(0.08,0.005,0.6,'#f2d23c',0,0.045,z,g);
+    for(let z=-d.l/2+1;z<d.l/2;z+=2){sph(0.08,'#fff3c4',0,d.h-0.12,z,g,{emissive:'#ffd27a',emissiveIntensity:0.9},8)}
+    if(o.style==='rock'){const Rr=srand('tun'+(it&&it.id));for(let i=0;i<6;i++){const b=new THREE.Mesh(new THREE.IcosahedronGeometry(0.4+Rr()*0.5,0),mat(shade(C.outer,(Rr()-0.5)*0.15)));b.position.set((Rr()-0.5)*d.w,d.h*0.85+Rr()*0.3,(Rr()-0.5)*d.l*0.9);g.add(b)}
+      const gr=sph(1,C.top,0,d.h+0.1,0,g,{flatShading:true},10);gr.scale.set(R+0.4,0.35,d.l/2)}},
+  bigrock(g,C,it){const Rr=srand('rk'+(it&&it.id));const m=new THREE.Mesh(new THREE.IcosahedronGeometry(0.7,0),mat(C.stone));m.scale.set(1.2,0.8,1);m.position.y=0.5;m.rotation.set(Rr(),Rr()*3,Rr());g.add(m);
+    const m2=new THREE.Mesh(new THREE.IcosahedronGeometry(0.35,0),mat(shade(C.stone,-0.08)));m2.position.set(0.75,0.25,0.3);m2.rotation.set(Rr(),Rr(),0);g.add(m2);sph(0.25,C.moss,0,0.95,0.05,g,{flatShading:true},6).scale.set(1.2,0.3,1)},
+  smallrock(g,C,it){const Rr=srand('srk'+(it&&it.id));for(let i=0;i<5;i++){const m=new THREE.Mesh(new THREE.IcosahedronGeometry(0.05+Rr()*0.06,0),mat(shade(C.stone,(Rr()-0.5)*0.2)));m.position.set((Rr()-0.5)*0.35,0.05,(Rr()-0.5)*0.35);m.rotation.set(Rr()*3,Rr()*3,0);g.add(m)}},
   wall(g,C,it){const d=Object.assign({w:3,h:2.5,t:0.15},it&&it.d),st=(it&&it.o&&it.o.style)||'solid';const m=new THREE.Mesh(new THREE.BoxGeometry(d.w,d.h,d.t),wallMat(st,C.main,C.accent,d.w,d.h));m.position.y=d.h/2;g.add(m)},
   glassdoor(g,C){const fm={metalness:0.2,roughness:0.4};[-0.5,0.5].forEach(x=>box(0.07,2.25,0.09,C.frame,x,1.125,0,g,fm));box(1.07,0.08,0.09,C.frame,0,2.21,0,g,fm);box(1.07,0.1,0.09,C.frame,0,0.05,0,g,fm);
     const gl=box(0.93,2.06,0.02,C.glass,0,1.13,0,g,{transparent:true,opacity:0.32,roughness:0.05,metalness:0.1});gl.castShadow=false;gl.userData.noShadow=true;
@@ -1576,7 +1629,18 @@ Object.assign(BUILD,{
     [-1,1].forEach(sx=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w*0.22,h*0.3),new THREE.MeshStandardMaterial({color:0xa9cfe0,emissive:0xffc860,emissiveIntensity:0,roughness:0.4}));m.position.set(sx*w*0.22,h*0.55,d/2+0.01);m.userData.ownMat=true;g.add(m);windows.push(m)});
     box(0.7,1.2,0.05,C.door,0,0.6,d/2+0.02,g)},
   fountain(g,C){cyl(2.6,2.8,0.5,16,C.stone,0,0.25,0,g);const w=new THREE.Mesh(new THREE.CylinderGeometry(2.25,2.25,0.06,16),new THREE.MeshStandardMaterial({color:C.water,emissive:shade(C.water,-0.3),emissiveIntensity:0.25,roughness:0.2}));w.position.y=0.47;w.userData.ownMat=true;g.add(w);
-    cyl(0.35,0.5,1.6,8,C.stone,0,1.1,0,g);cyl(0.9,0.9,0.15,10,C.stone,0,1.9,0,g);const top=new THREE.Mesh(new THREE.CylinderGeometry(0.75,0.75,0.04,12),mat(C.water,{transparent:true,opacity:0.8}));top.position.y=1.98;g.add(top)},
+    cyl(0.35,0.5,1.6,8,C.stone,0,1.1,0,g);cyl(0.9,0.9,0.15,10,C.stone,0,1.9,0,g);const top=new THREE.Mesh(new THREE.CylinderGeometry(0.75,0.75,0.04,12),mat(C.water,{transparent:true,opacity:0.8}));top.position.y=1.98;g.add(top);
+    {const wm=own(new THREE.MeshStandardMaterial({color:'#e4f6fd',transparent:true,opacity:0.78,emissive:C.water,emissiveIntensity:0.3,roughness:0.1}));
+     const jet=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.1,1,10),wm);g.add(jet);const dg=new THREE.SphereGeometry(0.05,6,4);
+     const drops=[],casc=[];for(let i=0;i<40;i++){const d=new THREE.Mesh(dg,wm);d.userData.a=i/40*6.283;d.userData.ph=(i*0.37)%1;g.add(d);drops.push(d)}
+     for(let i=0;i<32;i++){const d=new THREE.Mesh(dg,wm);d.userData.a=i/32*6.283+0.1;d.userData.ph=(i*0.61)%1;g.add(d);casc.push(d)}
+     const cur=new THREE.Mesh(new THREE.CylinderGeometry(0.9,1.15,1.4,24,1,true),own(new THREE.MeshStandardMaterial({color:'#e4f6fd',transparent:true,opacity:0.2,side:THREE.DoubleSide})));cur.position.y=1.22;g.add(cur);
+     const rips=[0,1,2].map(()=>{const r=new THREE.Mesh(new THREE.TorusGeometry(1,0.025,4,40),own(new THREE.MeshBasicMaterial({color:'#ffffff',transparent:true,opacity:0.5})));r.rotation.x=Math.PI/2;r.position.y=0.51;g.add(r);return r});
+     A(t=>{const h=0.85+Math.sin(t*3)*0.15;jet.scale.y=h;jet.position.y=2.0+h/2;
+       drops.forEach(d=>{const k=(t*0.9+d.userData.ph)%1,r=0.72*k;d.position.set(Math.cos(d.userData.a)*r,2.0+h+0.5*k-(h+0.5)*k*k,Math.sin(d.userData.a)*r)});
+       casc.forEach(d=>{const k=(t*0.8+d.userData.ph)%1,r=0.92+0.32*k;d.position.set(Math.cos(d.userData.a)*r,1.95-1.45*k*k,Math.sin(d.userData.a)*r)});
+       cur.material.opacity=0.16+Math.sin(t*5)*0.05;rips.forEach((r,i)=>{const s=(t*0.35+i/3)%1;r.scale.set(0.8+1.35*s,0.8+1.35*s,1);r.material.opacity=0.5*(1-s)})})}
+},
   bench(g,C){box(2.2,0.12,0.6,C.wood,0,0.55,0,g);box(2.2,0.5,0.1,C.wood,0,0.85,-0.28,g);box(0.1,0.5,0.5,C.legs,-0.9,0.27,0,g);box(0.1,0.5,0.5,C.legs,0.9,0.27,0,g)},
   sign(g,C,it){cyl(0.08,0.08,2.4,6,C.frame,-2.2,1.2,0,g);cyl(0.08,0.08,2.4,6,C.frame,2.2,1.2,0,g);
     const cv=document.createElement('canvas');cv.width=1024;cv.height=200;const tex=new THREE.CanvasTexture(cv);tex.anisotropy=4;
@@ -1639,7 +1703,7 @@ function buildWorld(){
   S.isles.slice().sort((a,b)=>a.slot-b.slot).forEach(is=>{
     const s=SLOTS[is.slot],th=THEMES[is.theme%THEMES.length],cx=s.x,cz=s.z;
     const pal=is.floor?floorPal(is.floor):th.tiles;hexIsland(cx,cz,HEX_R,pal[1]);tiles(cx,cz,15,14,pal);
-    const pc=isleCenter(parentOf(is));BR_OF[is.id]=cuteBridge(pc.x,pc.z,cx,cz);
+    const pc=isleCenter(parentOf(is));BR_OF[is.id]=cuteBridge(pc.x,pc.z,cx,cz,is.br);
     DESKS[is.id]=[];[cz+0.2,cz+3.4].forEach(r=>[cx-5,cx,cx+5].forEach(c=>DESKS[is.id].push({x:c,z:r,taken:null})));
   });
   /* 外海的小點綴 */
@@ -2138,7 +2202,7 @@ function placeItem(g,it){g.position.set(it.x,TOP+(it.y||0),it.z);g.rotation.orde
   /* 前後／左右傾斜時繞著物件中心轉，不會插進地板 */
   if(it.rx||it.rz){const hc=(g.userData.hc||0)*(it.s||1),v=new THREE.Vector3(0,hc,0).applyEuler(g.rotation);g.position.x-=v.x;g.position.z-=v.z;g.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(g);if(!b.isEmpty())g.position.y+=TOP+(it.y||0)-b.min.y}obstDirty=true}
 /* 不穿過家具：每個大型物件有一個「腳印」方框，人物和動物走路會繞開 */
-let OBST=[],obstDirty=true;const BODY=0.42,NOCOLL={balcony:1},TRUNK={tree:1,ptree:1,pine:1};
+let OBST=[],obstDirty=true;const BODY=0.42,NOCOLL={balcony:1,ground:1,tunnel:1},TRUNK={tree:1,ptree:1,pine:1};
 function footprint(g,type){if(NOCOLL[type])return null;if(TRUNK[type])return {cx:0,cz:0,hx:0.35,hz:0.35};
   const b=new THREE.Box3().setFromObject(g);if(b.isEmpty())return null;return {cx:(b.min.x+b.max.x)/2,cz:(b.min.z+b.max.z)/2,hx:(b.max.x-b.min.x)/2,hz:(b.max.z-b.min.z)/2}}
 function obstRebuild(){OBST=[];for(const id in itemObjs){const fp=itemObjs[id].userData.fp;if(!fp)continue;const it=S.items.find(x=>x.id===id);if(!it||(it.y||0)>0.6)continue;const k=it.s||1,ry=it.ry||0;
@@ -2378,6 +2442,10 @@ function render(){
     h+='<div class="grp">🧑 島民（'+ps.length+'）</div>'+(ps.length?ps.map(personRow).join(''):'<div class="meta">這座島還沒有島民。</div>');
     const pts=S.pets.filter(p=>p.isle===id);h+='<div class="grp">🐾 小動物（'+pts.length+'）</div>'+(pts.length?'<div class="tabs">'+pts.map(p=>'<button type="button" class="tab" data-pet="'+p.id+'">'+PET_KIND[p.kind].emoji+' '+esc(p.name)+'</button>').join('')+'</div>':'<div class="meta">這座島還沒有小動物。</div>');
     h+='<div class="btnrow"><button class="btn on" data-newp="'+id+'">＋ 在這裡新增島民</button><button class="btn on" data-newpet="'+id+'">🐾 放一隻動物</button><button class="btn" data-editisle="'+id+'">✏️ 編輯</button>'+(hub?'':'<button class="btn red" data-ask="deli">🗑️ 拆掉</button>')+'</div>';
+    if(!hub){const br=Object.assign({},BR_DEF,is.br);h+='<div class="grp">🌉 通往這座島的橋</div>'+tabRow('樣式','type',BR_TYPES,br.type,'brt');
+      if(br.type==='cute'){h+=tabRow('橋板花樣','pat',[['alt','兩色交錯'],['solid','單色']],br.pat,'brt')+cpRow('c1','橋板顏色 1',br.c1);if(br.pat!=='solid')h+=cpRow('c2','橋板顏色 2',br.c2);h+=cpRow('rail','欄杆顏色',br.rail)+cpRow('ball','欄杆圓球',br.ball)}
+      if(br.type==='floor')h+=tabRow('地板材質','surf',GROUND_OPTS,br.surf,'brt')+cpRow('rail','欄杆顏色',br.rail)+cpRow('ball','欄杆圓球',br.ball);
+      if(br.type==='tunnel')h+=cpRow('glass','玻璃顏色',br.glass)+cpRow('rail','骨架顏色',br.rail);if(br.type==='highway')h+='<div class="hint">柏油路面、黃色中線、白色邊線、水泥護欄和路燈。</div>'}
     if(confirmKey==='deli')h+='<div class="confirm"><span>確定拆掉「'+esc(is.name)+'」？島民會搬回主島，任務都保留。</span><button class="btn" data-ask="">取消</button><button class="btn redfill" data-deli="'+id+'">確定</button></div>'}
   else if(mode==='pet'){const p=S.pets.find(x=>x.id===arg);if(!p){closeSheet();return}const K=PET_KIND[p.kind];
     sTitle.textContent=K.emoji+' '+p.name;
@@ -2550,6 +2618,7 @@ sBody.addEventListener('click',e=>{const b=e.target.closest('button,input[type=c
   if(d.delpet){const p=S.pets.find(x=>x.id===d.delpet);S.pets=S.pets.filter(x=>x.id!==d.delpet);save();buildWorld();closeSheet();toast('🌿 '+(p?p.name:'小動物')+' 回到大自然了');return}
   if(d.edit){draft=null;openSheet('vform',d.edit);return}
   if(d.ask!=null){confirmKey=d.ask||null;render();return}
+  if(mode==='isle'){const is=isleById(arg);if(is){if(d.brt){is.br=Object.assign({},is.br,{[d.brt]:d.v});save();buildWorld();render();return}is.br=is.br||{};if(cpClick(sBody,b,is.br,()=>{save();buildWorld()}))return}}
   if(d.delp){const p=S.people.find(x=>x.id===d.delp);S.people=S.people.filter(x=>x.id!==d.delp);S.rels=(S.rels||[]).filter(r=>r.a!==d.delp&&r.b!==d.delp);save();buildWorld();updateHud();closeSheet();toast('👋 '+(p?p.name:'島民')+' 搬走了');return}
   if(d.st){draft.status=d.st;sBody.querySelectorAll('[data-st]').forEach(x=>x.setAttribute('aria-selected',String(x.dataset.st===d.st)));document.getElementById('stTip').textContent=STATUS_TIP[d.st];return}
   if(d.savep){const n=document.getElementById('fName').value.trim();if(!n){toast('島民要有名字喔');document.getElementById('fName').focus();return}
@@ -2601,6 +2670,7 @@ sBody.addEventListener('input',e=>{
     if(k&&k.startsWith('d_')){const v=+e.target.value;it.d=Object.assign({},it.d,{[k.slice(2)]:v});const lb=sBody.querySelector('[data-isv="'+k+'"]');if(lb)lb.textContent=v.toFixed(2)+' m';rebuildItem(it);obstDirty=true;saveSoon();return}
     if(k){const v=+e.target.value;if(k==='iy')it.y=v;else if(k==='iry')it.ry=v*Math.PI/180;else if(k==='irx')it.rx=v*Math.PI/180;else if(k==='irz')it.rz=v*Math.PI/180;else if(k==='is')it.s=v;const o=itemObjs[it.id];if(o)placeItem(o,it);syncSliders(it);if(k==='is')measureSel();saveSoon();return}}}
   if(mode==='iform'&&draft&&cpInput(sBody,e.target,draft,null))return;
+  if(mode==='isle'){const is=isleById(arg);if(is){is.br=is.br||{};if(cpInput(sBody,e.target,is.br,()=>{save();buildWorld()}))return}}
 if(e.target.id==='tSlider'){S.ui.timeMode='manual';S.ui.hour=+e.target.value;save();sBody.querySelectorAll('[data-tm]').forEach(x=>x.classList.toggle('on',x.dataset.tm==='manual'))}});
 
 function openIsle(id){const c=isleCenter(id);flyTo(new THREE.Vector3(c.x,TOP,c.z),34);draft=null;openSheet('isle',id)}
